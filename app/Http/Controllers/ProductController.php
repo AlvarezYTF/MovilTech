@@ -11,18 +11,6 @@ use Illuminate\Support\Facades\Storage;
 class ProductController extends Controller
 {
     /**
-     * Create a new controller instance.
-     */
-    public function __construct()
-    {
-        $this->middleware('auth');
-        $this->middleware('permission:view_products')->only(['index', 'show']);
-        $this->middleware('permission:create_products')->only(['create', 'store']);
-        $this->middleware('permission:edit_products')->only(['edit', 'update']);
-        $this->middleware('permission:delete_products')->only(['destroy']);
-    }
-
-    /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
