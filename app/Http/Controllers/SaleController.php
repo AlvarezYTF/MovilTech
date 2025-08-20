@@ -52,6 +52,13 @@ class SaleController extends Controller
         try {
             DB::beginTransaction();
 
+            // Verificar stock disponible
+            $product = Product::find($request->product_id);
+            if ($product->quantity < $request->quantity) {
+                return back()->withInput()
+                    ->with('error', 'Stock insuficiente. Stock disponible: ' . $product->quantity);
+            }
+
             // Crear la venta
             $sale = Sale::create([
                 'invoice_number' => $this->generateInvoiceNumber(),
@@ -76,7 +83,6 @@ class SaleController extends Controller
             ]);
 
             // Actualizar stock del producto
-            $product = Product::find($request->product_id);
             $product->decrement('quantity', $request->quantity);
 
             DB::commit();
@@ -137,6 +143,13 @@ class SaleController extends Controller
                 $originalProduct->increment('quantity', $originalItem->quantity);
             }
 
+            // Verificar stock disponible para el nuevo producto
+            $newProduct = Product::find($request->product_id);
+            if ($newProduct->quantity < $request->quantity) {
+                return back()->withInput()
+                    ->with('error', 'Stock insuficiente. Stock disponible: ' . $newProduct->quantity);
+            }
+
             // Actualizar la venta
             $sale->update([
                 'customer_id' => $request->customer_id,
@@ -157,7 +170,6 @@ class SaleController extends Controller
             }
 
             // Actualizar stock del nuevo producto
-            $newProduct = Product::find($request->product_id);
             $newProduct->decrement('quantity', $request->quantity);
 
             DB::commit();

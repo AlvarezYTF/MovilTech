@@ -3,7 +3,7 @@
 @section('title', 'Editar Venta')
 @section('header', 'Editar Venta')
 
-@section('content')
+@section('content') 
 <div class="p-6">
     <div class="max-w-4xl mx-auto">
         <!-- Header -->
