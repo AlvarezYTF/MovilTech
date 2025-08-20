@@ -13,19 +13,13 @@ return new class extends Migration
     {
         Schema::create('repairs', function (Blueprint $table) {
             $table->id();
-            $table->string('repair_number')->unique();
             $table->foreignId('customer_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('device_type');
-            $table->string('brand');
-            $table->string('model');
-            $table->text('problem_description');
-            $table->text('solution_description')->nullable();
-            $table->enum('status', ['pending', 'in_progress', 'completed', 'cancelled'])->default('pending');
-            $table->decimal('estimated_cost', 10, 2)->nullable();
-            $table->decimal('final_cost', 10, 2)->nullable();
-            $table->date('estimated_completion_date')->nullable();
-            $table->date('completion_date')->nullable();
+            $table->string('phone_model');
+            $table->string('imei')->unique();
+            $table->text('issue_description');
+            $table->enum('repair_status', ['pending', 'in_progress', 'completed', 'delivered'])->default('pending');
+            $table->decimal('repair_cost', 10, 2);
+            $table->date('repair_date');
             $table->text('notes')->nullable();
             $table->timestamps();
         });

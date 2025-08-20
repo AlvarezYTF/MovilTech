@@ -69,25 +69,8 @@ Route::middleware('auth')->group(function () {
     });
 
 
-    // Reparaciones - con middleware de permisos
-    Route::middleware('permission:view_repairs')->group(function () {
-        Route::get('/repairs', [RepairController::class, 'index'])->name('repairs.index');
-        Route::get('/repairs/{repair}', [RepairController::class, 'show'])->name('repairs.show');
-    });
-
-    Route::middleware('permission:create_repairs')->group(function () {
-        Route::get('/repairs/create', [RepairController::class, 'create'])->name('repairs.create');
-        Route::post('/repairs', [RepairController::class, 'store'])->name('repairs.store');
-    });
-
-    Route::middleware('permission:edit_repairs')->group(function () {
-        Route::get('/repairs/{repair}/edit', [RepairController::class, 'edit'])->name('repairs.edit');
-        Route::put('/repairs/{repair}', [RepairController::class, 'update'])->name('repairs.update');
-    });
-
-    Route::middleware('permission:delete_repairs')->group(function () {
-        Route::delete('/repairs/{repair}', [RepairController::class, 'destroy'])->name('repairs.destroy');
-    });
+    // Reparaciones - Resource route
+    Route::resource('repairs', RepairController::class);
 
     // Reportes - con middleware de permisos
     Route::middleware('permission:view_reports')->group(function () {

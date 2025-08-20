@@ -10,27 +10,19 @@ class Repair extends Model
     use HasFactory;
 
     protected $fillable = [
-        'repair_number',
         'customer_id',
-        'user_id',
-        'device_type',
-        'brand',
-        'model',
-        'problem_description',
-        'solution_description',
-        'status',
-        'estimated_cost',
-        'final_cost',
-        'estimated_completion_date',
-        'completion_date',
+        'phone_model',
+        'imei',
+        'issue_description',
+        'repair_status',
+        'repair_cost',
+        'repair_date',
         'notes',
     ];
 
     protected $casts = [
-        'estimated_cost' => 'decimal:2',
-        'final_cost' => 'decimal:2',
-        'estimated_completion_date' => 'date',
-        'completion_date' => 'date',
+        'repair_cost' => 'decimal:2',
+        'repair_date' => 'date',
     ];
 
     /**
@@ -42,19 +34,11 @@ class Repair extends Model
     }
 
     /**
-     * Get the user that owns the repair.
-     */
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    /**
      * Scope a query to only include pending repairs.
      */
     public function scopePending($query)
     {
-        return $query->where('status', 'pending');
+        return $query->where('repair_status', 'pending');
     }
 
     /**
@@ -62,7 +46,7 @@ class Repair extends Model
      */
     public function scopeInProgress($query)
     {
-        return $query->where('status', 'in_progress');
+        return $query->where('repair_status', 'in_progress');
     }
 
     /**
@@ -70,36 +54,42 @@ class Repair extends Model
      */
     public function scopeCompleted($query)
     {
-        return $query->where('status', 'completed');
+        return $query->where('repair_status', 'completed');
     }
 
     /**
-     * Check if repair is overdue.
+     * Scope a query to only include delivered repairs.
      */
-    public function isOverdue()
+    public function scopeDelivered($query)
     {
-        if ($this->estimated_completion_date && $this->status !== 'completed') {
-            return now()->isAfter($this->estimated_completion_date);
-        }
-        return false;
+        return $query->where('repair_status', 'delivered');
     }
 
     /**
-     * Mark repair as completed.
+     * Get the status badge color.
      */
-    public function markAsCompleted()
+    public function getStatusColorAttribute()
     {
-        $this->status = 'completed';
-        $this->completion_date = now();
-        $this->save();
+        return match($this->repair_status) {
+            'pending' => 'bg-yellow-100 text-yellow-800',
+            'in_progress' => 'bg-blue-100 text-blue-800',
+            'completed' => 'bg-green-100 text-green-800',
+            'delivered' => 'bg-purple-100 text-purple-800',
+            default => 'bg-gray-100 text-gray-800',
+        };
     }
 
     /**
-     * Mark repair as in progress.
+     * Get the status display name.
      */
-    public function markAsInProgress()
+    public function getStatusDisplayAttribute()
     {
-        $this->status = 'in_progress';
-        $this->save();
+        return match($this->repair_status) {
+            'pending' => 'Pendiente',
+            'in_progress' => 'En Progreso',
+            'completed' => 'Completado',
+            'delivered' => 'Entregado',
+            default => 'Desconocido',
+        };
     }
 }
