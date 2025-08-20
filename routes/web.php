@@ -72,13 +72,11 @@ Route::middleware('auth')->group(function () {
     // Reparaciones - Resource route
     Route::resource('repairs', RepairController::class);
 
-    // Reportes - con middleware de permisos
-    Route::middleware('permission:view_reports')->group(function () {
-        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-        Route::get('/reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
-        Route::get('/reports/inventory', [ReportController::class, 'inventory'])->name('reports.inventory');
-        Route::get('/reports/repairs', [ReportController::class, 'repairs'])->name('reports.repairs');
-    });
+    // Reportes
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/sales', [ReportController::class, 'salesReport'])->name('reports.sales');
+    Route::get('reports/repairs', [ReportController::class, 'repairsReport'])->name('reports.repairs');
+    Route::post('reports/pdf', [ReportController::class, 'generatePDF'])->name('reports.pdf');
 
     // Facturación - con middleware de permisos
     Route::middleware('permission:generate_invoices')->group(function () {
