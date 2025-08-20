@@ -38,25 +38,8 @@ Route::middleware('auth')->group(function () {
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // Productos (Inventario) - con middleware de permisos
-    Route::middleware('permission:view_products')->group(function () {
-        Route::get('/products', [ProductController::class, 'index'])->name('products.index');
-        Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
-    });
-
-    Route::middleware('permission:create_products')->group(function () {
-        Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
-        Route::post('/products', [ProductController::class, 'store'])->name('products.store');
-    });
-
-    Route::middleware('permission:edit_products')->group(function () {
-        Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
-        Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
-    });
-
-    Route::middleware('permission:delete_products')->group(function () {
-        Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
-    });
+    // Productos (Inventario) - Resource route
+    Route::resource('products', ProductController::class);
 
     // Ventas - con middleware de permisos
     Route::middleware('permission:view_sales')->group(function () {
