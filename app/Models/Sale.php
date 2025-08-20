@@ -13,6 +13,7 @@ class Sale extends Model
         'invoice_number',
         'customer_id',
         'user_id',
+        'sale_date',
         'subtotal',
         'tax_amount',
         'discount_amount',
@@ -22,6 +23,7 @@ class Sale extends Model
     ];
 
     protected $casts = [
+        'sale_date' => 'date',
         'subtotal' => 'decimal:2',
         'tax_amount' => 'decimal:2',
         'discount_amount' => 'decimal:2',
