@@ -4,19 +4,38 @@
 @section('header', 'Gestión de Ventas')
 
 @section('content')
-<div class="p-6">
-    <!-- Header con botón de crear -->
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-900">Ventas</h1>
-            <p class="text-gray-600">Gestiona todas las ventas del sistema</p>
+<div class="space-y-6 p-6">
+    <!-- Header con acciones -->
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 mb-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+            <div class="space-y-2">
+                <div class="flex items-center">
+                    <div class="mr-4 p-2 rounded-lg bg-gray-50 border border-gray-100">
+                        <i class="fas fa-cash-register text-gray-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-semibold text-gray-800">Gestión de Ventas</h1>
+                        <div class="flex items-center space-x-3 mt-1">
+                            <span class="text-sm font-medium text-gray-600">
+                                <span class="text-gray-800 font-semibold">{{ $sales->total() }}</span> ventas registradas
+                            </span>
+                            <span class="text-gray-400">•</span>
+                            <span class="text-sm text-gray-500">
+                                <i class="fas fa-chart-bar mr-1"></i> Panel de ventas
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            @can('create_sales')
+            <a href="{{ route('sales.create') }}" 
+               class="inline-flex items-center px-5 py-2.5 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200">
+                <i class="fas fa-plus mr-2 text-gray-500"></i>
+                <span>Nueva Venta</span>
+            </a>
+            @endcan
         </div>
-        
-        @can('create_sales')
-        <a href="{{ route('sales.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-            <i class="fas fa-plus mr-2"></i>Nueva Venta
-        </a>
-        @endcan
     </div>
 
     <!-- Mensajes de éxito/error -->

@@ -5,12 +5,34 @@
 
 @section('content')
 <div class="space-y-6">
-    <!-- Header -->
-    <div class="text-center">
-        <h1 class="text-3xl font-bold text-gray-900">Centro de Reportes</h1>
-        <p class="text-gray-600 mt-2">Genera y visualiza reportes detallados de tu negocio</p>
+    <!-- Header con acciones -->
+    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 mb-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+            <div class="space-y-2">
+                <div class="flex items-center">
+                    <div class="mr-4 p-2 rounded-lg bg-gray-50 border border-gray-100">
+                        <i class="fas fa-chart-pie text-gray-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-semibold text-gray-800">Centro de Reportes</h1>
+                        <div class="flex items-center space-x-3 mt-1">
+                            <span class="text-sm font-medium text-gray-600">
+                                <i class="fas fa-info-circle mr-1"></i> Análisis y estadísticas
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex space-x-3">
+                <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                    <i class="fas fa-download mr-2 text-gray-500"></i>
+                    Exportar
+                </button>
+            </div>
+        </div>
     </div>
-    
+
     <!-- Reportes disponibles -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
         <!-- Reporte de Ventas -->
@@ -21,13 +43,13 @@
                 </div>
                 <span class="text-sm text-gray-500">Ventas</span>
             </div>
-            
+
             <h3 class="text-xl font-semibold text-gray-900 mb-2">Reporte de Ventas</h3>
             <p class="text-gray-600 text-sm mb-4">
-                Visualiza todas las ventas realizadas con filtros por fecha, cliente y producto. 
+                Visualiza todas las ventas realizadas con filtros por fecha, cliente y producto.
                 Incluye totales y análisis detallado.
             </p>
-            
+
             <div class="flex items-center justify-between">
                 <div class="text-xs text-gray-500">
                     <i class="fas fa-filter mr-1"></i>
@@ -48,13 +70,13 @@
                 </div>
                 <span class="text-sm text-gray-500">Reparaciones</span>
             </div>
-            
+
             <h3 class="text-xl font-semibold text-gray-900 mb-2">Reporte de Reparaciones</h3>
             <p class="text-gray-600 text-sm mb-4">
-                Analiza todas las reparaciones de teléfonos con filtros por fecha, estado y cliente. 
+                Analiza todas las reparaciones de teléfonos con filtros por fecha, estado y cliente.
                 Incluye ingresos totales.
             </p>
-            
+
             <div class="flex items-center justify-between">
                 <div class="text-xs text-gray-500">
                     <i class="fas fa-filter mr-1"></i>
@@ -75,12 +97,12 @@
                 </div>
                 <span class="text-sm text-gray-500">Resumen</span>
             </div>
-            
+
             <h3 class="text-xl font-semibold text-gray-900 mb-2">Vista General</h3>
             <p class="text-gray-600 text-sm mb-4">
                 Resumen rápido de las métricas más importantes de tu negocio en tiempo real.
             </p>
-            
+
             <div class="space-y-2">
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Ventas del Mes:</span>
