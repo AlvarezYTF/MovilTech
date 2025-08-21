@@ -51,23 +51,7 @@
                     @enderror
                 </div>
 
-                <!-- Proveedor -->
-                <div>
-                    <label for="supplier_id" class="form-label">Proveedor *</label>
-                    <select id="supplier_id" name="supplier_id" 
-                            class="form-input @error('supplier_id') border-red-500 @enderror" required>
-                        <option value="">Seleccionar proveedor</option>
-                        @foreach($suppliers as $supplier)
-                            <option value="{{ $supplier->id }}" 
-                                {{ old('supplier_id', $product->supplier_id) == $supplier->id ? 'selected' : '' }}>
-                                {{ $supplier->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('supplier_id')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
+
 
                 <!-- Cantidad/Stock -->
                 <div>

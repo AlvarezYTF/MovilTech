@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
-use App\Models\Supplier;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
@@ -15,7 +14,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::with(['category', 'supplier']);
+        $query = Product::with(['category']);
 
         // Filtros
         if ($request->filled('search')) {
@@ -43,9 +42,8 @@ class ProductController extends Controller
     public function create()
     {
         $categories = Category::active()->get();
-        $suppliers = Supplier::active()->get();
 
-        return view('products.create', compact('categories', 'suppliers'));
+        return view('products.create', compact('categories'));
     }
 
     /**
@@ -58,7 +56,6 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'sku' => 'required|string|unique:products|max:255',
             'category_id' => 'required|exists:categories,id',
-            'supplier_id' => 'required|exists:suppliers,id',
             'quantity' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'cost_price' => 'nullable|numeric|min:0',
@@ -67,6 +64,7 @@ class ProductController extends Controller
         ]);
 
         $data = $request->all();
+        $data['status'] = 'active'; // Establecer status como activo por defecto
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('products', 'public');
@@ -83,7 +81,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        $product->load(['category', 'supplier']);
+        $product->load(['category']);
         return view('products.show', compact('product'));
     }
 
@@ -93,9 +91,8 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::active()->get();
-        $suppliers = Supplier::active()->get();
 
-        return view('products.edit', compact('product', 'categories', 'suppliers'));
+        return view('products.edit', compact('product', 'categories'));
     }
 
     /**
@@ -108,7 +105,6 @@ class ProductController extends Controller
             'description' => 'nullable|string',
             'sku' => 'required|string|max:255|unique:products,sku,' . $product->id,
             'category_id' => 'required|exists:categories,id',
-            'supplier_id' => 'required|exists:suppliers,id',
             'quantity' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'cost_price' => 'nullable|numeric|min:0',
