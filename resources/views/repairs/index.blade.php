@@ -84,13 +84,13 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Reparación
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Cliente
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Teléfono
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            IMEI
+                            Dispositivo
                         </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Estado
@@ -111,41 +111,80 @@
                     <tr class="hover:bg-gray-50">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
-                                <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                                    <i class="fas fa-user text-blue-600"></i>
+                                <div class="h-8 w-8 rounded-lg bg-orange-100 flex items-center justify-center mr-3">
+                                    <i class="fas fa-tools text-orange-600 text-sm"></i>
                                 </div>
                                 <div>
-                                    <div class="text-sm font-medium text-gray-900">{{ $repair->customer->name }}</div>
-                                    <div class="text-sm text-gray-500">{{ $repair->customer->phone ?? 'Sin teléfono' }}</div>
+                                    <div class="text-sm font-medium text-gray-900">#{{ $repair->id }}</div>
+                                    <div class="text-xs text-gray-500">{{ $repair->created_at->format('d/m/Y') }}</div>
                                 </div>
                             </div>
                         </td>
                         
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ $repair->phone_model }}</div>
+                            <div class="flex items-center">
+                                <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                    <i class="fas fa-user text-blue-600 text-sm"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">{{ $repair->customer->name }}</div>
+                                    <div class="text-xs text-gray-500">{{ $repair->customer->phone ?? 'Sin teléfono' }}</div>
+                                </div>
+                            </div>
                         </td>
                         
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900 font-mono">{{ $repair->imei }}</div>
+                            <div class="text-sm text-gray-900">
+                                <div class="flex items-center">
+                                    <i class="fas fa-mobile-alt text-gray-400 mr-1"></i>
+                                    {{ $repair->phone_model }}
+                                </div>
+                                <div class="text-xs text-gray-500 font-mono">{{ $repair->imei }}</div>
+                            </div>
                         </td>
                         
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $repair->status_color }}">
-                                {{ $repair->status_display }}
-                            </span>
+                            @if($repair->repair_status === 'pending')
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    <i class="fas fa-clock mr-1"></i>
+                                    Pendiente
+                                </span>
+                            @elseif($repair->repair_status === 'in_progress')
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    <i class="fas fa-tools mr-1"></i>
+                                    En Progreso
+                                </span>
+                            @elseif($repair->repair_status === 'completed')
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <i class="fas fa-check-circle mr-1"></i>
+                                    Completado
+                                </span>
+                            @elseif($repair->repair_status === 'delivered')
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                    <i class="fas fa-handshake mr-1"></i>
+                                    Entregado
+                                </span>
+                            @endif
                         </td>
                         
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">${{ number_format($repair->repair_cost, 2) }}</div>
+                            <div class="text-sm font-medium text-gray-900">
+                                ${{ number_format($repair->repair_cost, 2) }}
+                            </div>
                         </td>
                         
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ $repair->repair_date->format('d/m/Y') }}</div>
+                            <div class="text-sm text-gray-900">
+                                {{ $repair->repair_date->format('d/m/Y') }}
+                            </div>
+                            <div class="text-xs text-gray-500">
+                                {{ $repair->created_at->format('H:i') }}
+                            </div>
                         </td>
                         
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div class="flex space-x-2">
-                                <a href="{{ route('repairs.show', $repair) }}" class="text-blue-600 hover:text-blue-900" title="Ver">
+                                <a href="{{ route('repairs.show', $repair) }}" class="text-blue-600 hover:text-blue-900" title="Ver detalles">
                                     <i class="fas fa-eye"></i>
                                 </a>
                                 
@@ -167,7 +206,11 @@
                     @empty
                     <tr>
                         <td colspan="7" class="px-6 py-4 text-center text-gray-500">
-                            No se encontraron reparaciones
+                            <div class="flex flex-col items-center py-8">
+                                <i class="fas fa-tools text-4xl text-gray-300 mb-4"></i>
+                                <p class="text-lg font-medium text-gray-500 mb-2">No se encontraron reparaciones</p>
+                                <p class="text-sm text-gray-400">Crea tu primera reparación para comenzar</p>
+                            </div>
                         </td>
                     </tr>
                     @endforelse
