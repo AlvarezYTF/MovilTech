@@ -82,6 +82,7 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
+        $customer->loadCount(['sales', 'repairs']);
         $customer->load(['sales' => function($query) {
             $query->latest()->limit(5);
         }, 'repairs' => function($query) {
@@ -96,6 +97,7 @@ class CustomerController extends Controller
      */
     public function edit(Customer $customer)
     {
+        $customer->loadCount(['sales', 'repairs']);
         return view('customers.edit', compact('customer'));
     }
 

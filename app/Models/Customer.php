@@ -54,7 +54,7 @@ class Customer extends Model
      */
     public function getTotalSpentAttribute()
     {
-        return $this->sales()->where('status', 'completed')->sum('total');
+        return $this->sales()->where('status', 'completed')->sum('total') ?? 0;
     }
 
     /**

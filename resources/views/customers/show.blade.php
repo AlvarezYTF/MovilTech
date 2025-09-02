@@ -307,22 +307,27 @@
                                     #{{ $repair->id }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900">{{ $repair->device_type }}</div>
-                                    <div class="text-xs text-gray-500">{{ $repair->device_model }}</div>
+                                    <div class="text-sm text-gray-900">{{ $repair->phone_model }}</div>
+                                    <div class="text-xs text-gray-500">{{ $repair->imei }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-orange-600">
-                                    ${{ number_format($repair->cost, 2) }}
+                                    ${{ number_format($repair->repair_cost, 2) }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    @if($repair->status == 'completed')
+                                    @if($repair->repair_status == 'completed')
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                             <i class="fas fa-check-circle mr-1"></i>
                                             Completada
                                         </span>
-                                    @elseif($repair->status == 'in_progress')
+                                    @elseif($repair->repair_status == 'in_progress')
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                             <i class="fas fa-clock mr-1"></i>
                                             En Progreso
+                                        </span>
+                                    @elseif($repair->repair_status == 'delivered')
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                            <i class="fas fa-handshake mr-1"></i>
+                                            Entregada
                                         </span>
                                     @else
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
