@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\RepairController;
 use App\Http\Controllers\ReportController;
@@ -40,6 +41,26 @@ Route::middleware('auth')->group(function () {
 
     // Productos (Inventario) - Resource route
     Route::resource('products', ProductController::class);
+
+    // Categorías - con middleware de permisos para administradores
+    Route::middleware('permission:view_categories')->group(function () {
+        Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
+    });
+
+    Route::middleware('permission:create_categories')->group(function () {
+        Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
+        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+    });
+
+    Route::middleware('permission:edit_categories')->group(function () {
+        Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
+        Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+    });
+
+    Route::middleware('permission:delete_categories')->group(function () {
+        Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+    });
 
     // Ventas - con middleware de permisos
     Route::middleware('permission:view_sales')->group(function () {

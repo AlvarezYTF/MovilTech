@@ -43,6 +43,13 @@
                 </a>
                 @endcan
                 
+                @can('view_categories')
+                <a href="{{ route('categories.index') }}" class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors {{ request()->routeIs('categories.*') ? 'bg-gray-700 text-white' : '' }}">
+                    <i class="fas fa-tags w-5"></i>
+                    <span class="ml-3">Categorías</span>
+                </a>
+                @endcan
+                
                 @can('view_sales')
                 <a href="{{ route('sales.index') }}" class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors {{ request()->routeIs('sales.*') ? 'bg-gray-700 text-white' : '' }}">
                     <i class="fas fa-shopping-cart w-5"></i>
