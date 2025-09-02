@@ -5,39 +5,67 @@
 
 @section('content')
 <div class="max-w-4xl mx-auto">
-    <div class="bg-white rounded-lg shadow p-6">
-        <form method="POST" action="{{ route('products.update', $product) }}" enctype="multipart/form-data" class="space-y-6">
+    <div class="bg-white rounded-lg shadow">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center">
+                <div class="mr-3 p-2 rounded-lg bg-indigo-50 border border-indigo-100">
+                    <i class="fas fa-edit text-indigo-600 text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900">Editar Producto</h3>
+                    <p class="text-sm text-gray-500">Modifica la información del producto</p>
+                </div>
+            </div>
+        </div>
+        
+        <form method="POST" action="{{ route('products.update', $product) }}" class="p-6 space-y-6">
             @csrf
             @method('PUT')
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Nombre del producto -->
-                <div class="col-span-2">
-                    <label for="name" class="form-label">Nombre del Producto *</label>
-                    <input type="text" id="name" name="name" value="{{ old('name', $product->name) }}" 
-                           class="form-input @error('name') border-red-500 @enderror" 
-                           placeholder="Nombre del producto" required>
+                <div class="md:col-span-2">
+                    <label for="name" class="form-label">
+                        Nombre del producto <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           id="name" 
+                           name="name" 
+                           value="{{ old('name', $product->name) }}" 
+                           class="form-input @error('name') border-red-300 @enderror" 
+                           placeholder="Nombre del producto" 
+                           required>
                     @error('name')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <!-- SKU -->
                 <div>
-                    <label for="sku" class="form-label">SKU *</label>
-                    <input type="text" id="sku" name="sku" value="{{ old('sku', $product->sku) }}" 
-                           class="form-input @error('sku') border-red-500 @enderror" 
-                           placeholder="Código único del producto" required>
+                    <label for="sku" class="form-label">
+                        SKU <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" 
+                           id="sku" 
+                           name="sku" 
+                           value="{{ old('sku', $product->sku) }}" 
+                           class="form-input @error('sku') border-red-300 @enderror" 
+                           placeholder="Código único del producto" 
+                           required>
                     @error('sku')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <!-- Categoría -->
                 <div>
-                    <label for="category_id" class="form-label">Categoría *</label>
-                    <select id="category_id" name="category_id" 
-                            class="form-input @error('category_id') border-red-500 @enderror" required>
+                    <label for="category_id" class="form-label">
+                        Categoría <span class="text-red-500">*</span>
+                    </label>
+                    <select id="category_id" 
+                            name="category_id" 
+                            class="form-input @error('category_id') border-red-300 @enderror" 
+                            required>
                         <option value="">Seleccionar categoría</option>
                         @foreach($categories as $category)
                             <option value="{{ $category->id }}" 
@@ -47,113 +75,121 @@
                         @endforeach
                     </select>
                     @error('category_id')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
 
 
-                <!-- Cantidad/Stock -->
+                <!-- Stock -->
                 <div>
-                    <label for="quantity" class="form-label">Stock *</label>
-                    <input type="number" id="quantity" name="quantity" value="{{ old('quantity', $product->quantity) }}" 
-                           class="form-input @error('quantity') border-red-500 @enderror" 
-                           min="0" required>
+                    <label for="quantity" class="form-label">
+                        Stock <span class="text-red-500">*</span>
+                    </label>
+                    <input type="number" 
+                           id="quantity" 
+                           name="quantity" 
+                           value="{{ old('quantity', $product->quantity) }}" 
+                           class="form-input @error('quantity') border-red-300 @enderror" 
+                           min="0" 
+                           required>
                     @error('quantity')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <!-- Precio de venta -->
                 <div>
-                    <label for="price" class="form-label">Precio de Venta *</label>
+                    <label for="price" class="form-label">
+                        Precio de venta <span class="text-red-500">*</span>
+                    </label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">$</span>
-                        <input type="number" id="price" name="price" value="{{ old('price', $product->price) }}" 
-                               class="form-input pl-8 @error('price') border-red-500 @enderror" 
-                               step="0.01" min="0" placeholder="0.00" required>
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500">$</span>
+                        </div>
+                        <input type="number" 
+                               id="price" 
+                               name="price" 
+                               value="{{ old('price', $product->price) }}" 
+                               class="pl-8 form-input @error('price') border-red-300 @enderror" 
+                               step="0.01" 
+                               min="0" 
+                               placeholder="0.00" 
+                               required>
                     </div>
                     @error('price')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <!-- Precio de costo -->
                 <div>
-                    <label for="cost_price" class="form-label">Precio de Costo</label>
+                    <label for="cost_price" class="form-label">Precio de costo</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">$</span>
-                        <input type="number" id="cost_price" name="cost_price" value="{{ old('cost_price', $product->cost_price) }}" 
-                               class="form-input pl-8 @error('cost_price') border-red-500 @enderror" 
-                               step="0.01" min="0" placeholder="0.00">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500">$</span>
+                        </div>
+                        <input type="number" 
+                               id="cost_price" 
+                               name="cost_price" 
+                               value="{{ old('cost_price', $product->cost_price) }}" 
+                               class="pl-8 form-input @error('cost_price') border-red-300 @enderror" 
+                               step="0.01" 
+                               min="0" 
+                               placeholder="0.00">
                     </div>
                     @error('cost_price')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <!-- Estado -->
                 <div>
-                    <label for="status" class="form-label">Estado *</label>
-                    <select id="status" name="status" 
-                            class="form-input @error('status') border-red-500 @enderror" required>
+                    <label for="status" class="form-label">Estado</label>
+                    <select id="status" 
+                            name="status" 
+                            class="form-input @error('status') border-red-300 @enderror">
                         <option value="active" {{ old('status', $product->status) == 'active' ? 'selected' : '' }}>Activo</option>
                         <option value="inactive" {{ old('status', $product->status) == 'inactive' ? 'selected' : '' }}>Inactivo</option>
                         <option value="discontinued" {{ old('status', $product->status) == 'discontinued' ? 'selected' : '' }}>Descontinuado</option>
                     </select>
                     @error('status')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <!-- Imagen actual -->
-                <div class="col-span-2">
-                    <label class="form-label">Imagen Actual</label>
-                    @if($product->image)
-                        <div class="flex items-center space-x-4">
-                            <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" 
-                                 class="h-20 w-20 rounded-lg object-cover">
-                            <div>
-                                <p class="text-sm text-gray-600">Imagen actual del producto</p>
-                                <p class="text-xs text-gray-500">Sube una nueva imagen para reemplazarla</p>
-                            </div>
-                        </div>
-                    @else
-                        <p class="text-sm text-gray-500">No hay imagen actual</p>
-                    @endif
-                </div>
 
-                <!-- Nueva imagen -->
-                <div class="col-span-2">
-                    <label for="image" class="form-label">Nueva Imagen (opcional)</label>
-                    <input type="file" id="image" name="image" 
-                           class="form-input @error('image') border-red-500 @enderror" 
-                           accept="image/*">
-                    <p class="text-sm text-gray-500 mt-1">Formatos permitidos: JPEG, PNG, JPG, GIF. Máximo 2MB.</p>
-                    @error('image')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
-                </div>
+            </div>
 
-                <!-- Descripción -->
-                <div class="col-span-2">
-                    <label for="description" class="form-label">Descripción</label>
-                    <textarea id="description" name="description" rows="4" 
-                              class="form-input @error('description') border-red-500 @enderror" 
-                              placeholder="Descripción detallada del producto">{{ old('description', $product->description) }}</textarea>
-                    @error('description')
-                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                    @enderror
+            <!-- Información adicional -->
+            <div class="border-t border-gray-200 pt-6">
+                <h4 class="text-sm font-medium text-gray-900 mb-3">Información adicional</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                    <div>
+                        <span class="font-medium">ID:</span> {{ $product->id }}
+                    </div>
+                    <div>
+                        <span class="font-medium">SKU:</span> {{ $product->sku }}
+                    </div>
+                    <div>
+                        <span class="font-medium">Creado:</span> {{ $product->created_at->format('d/m/Y H:i') }}
+                    </div>
+                    <div>
+                        <span class="font-medium">Última actualización:</span> {{ $product->updated_at->format('d/m/Y H:i') }}
+                    </div>
                 </div>
             </div>
 
-            <!-- Botones de acción -->
-            <div class="flex justify-end space-x-4 pt-6 border-t">
-                <a href="{{ route('products.show', $product) }}" class="btn btn-secondary">
+            <!-- Botones -->
+            <div class="flex items-center justify-end space-x-3 pt-6 border-t border-gray-200">
+                <a href="{{ route('products.index') }}" 
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200">
                     <i class="fas fa-times mr-2"></i>
                     Cancelar
                 </a>
-                <button type="submit" class="btn btn-primary">
+                
+                <button type="submit" 
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
                     <i class="fas fa-save mr-2"></i>
                     Actualizar Producto
                 </button>

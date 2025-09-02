@@ -11,14 +11,12 @@ class Product extends Model
 
     protected $fillable = [
         'name',
-        'description',
         'sku',
         'category_id',
         'quantity',
         'price',
         'cost_price',
         'status',
-        'image',
     ];
 
     protected $casts = [

@@ -119,13 +119,9 @@
                                 <tr class="hover:bg-gray-50">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
-                                            @if($product->image)
-                                                <img class="h-8 w-8 rounded object-cover mr-3" src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}">
-                                            @else
-                                                <div class="h-8 w-8 rounded bg-gray-200 flex items-center justify-center mr-3">
-                                                    <i class="fas fa-box text-gray-400 text-xs"></i>
-                                                </div>
-                                            @endif
+                                            <div class="h-8 w-8 rounded bg-gray-200 flex items-center justify-center mr-3">
+                                                <i class="fas fa-box text-gray-400 text-xs"></i>
+                                            </div>
                                             <div class="text-sm font-medium text-gray-900">{{ $product->name }}</div>
                                         </div>
                                     </td>

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
-use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -53,22 +52,16 @@ class ProductController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
             'sku' => 'required|string|unique:products|max:255',
             'category_id' => 'required|exists:categories,id',
             'quantity' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'cost_price' => 'nullable|numeric|min:0',
             'status' => 'required|in:active,inactive,discontinued',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $data = $request->all();
         $data['status'] = 'active'; // Establecer status como activo por defecto
-
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('products', 'public');
-        }
 
         Product::create($data);
 
@@ -102,25 +95,15 @@ class ProductController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
             'sku' => 'required|string|max:255|unique:products,sku,' . $product->id,
             'category_id' => 'required|exists:categories,id',
             'quantity' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
             'cost_price' => 'nullable|numeric|min:0',
             'status' => 'required|in:active,inactive,discontinued',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $data = $request->all();
-
-        if ($request->hasFile('image')) {
-            // Eliminar imagen anterior si existe
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
-            }
-            $data['image'] = $request->file('image')->store('products', 'public');
-        }
 
         $product->update($data);
 
@@ -136,11 +119,6 @@ class ProductController extends Controller
         // Verificar si el producto tiene ventas asociadas
         if ($product->saleItems()->exists()) {
             return back()->with('error', 'No se puede eliminar el producto porque tiene ventas asociadas.');
-        }
-
-        // Eliminar imagen si existe
-        if ($product->image) {
-            Storage::disk('public')->delete($product->image);
         }
 
         $product->delete();

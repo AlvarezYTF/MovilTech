@@ -19,7 +19,6 @@ class ProductSeeder extends Seeder
         $products = [
             [
                 'name' => 'iPhone 15 Pro',
-                'description' => 'Smartphone Apple iPhone 15 Pro 128GB',
                 'sku' => 'IPH15P-128',
                 'category_id' => $categories->where('name', 'Teléfonos')->first()->id,
                 'quantity' => 10,
@@ -29,7 +28,6 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Samsung Galaxy S24',
-                'description' => 'Smartphone Samsung Galaxy S24 256GB',
                 'sku' => 'SAMS24-256',
                 'category_id' => $categories->where('name', 'Teléfonos')->first()->id,
                 'quantity' => 15,
@@ -39,7 +37,6 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Carcasa iPhone 15 Pro',
-                'description' => 'Carcasa protectora para iPhone 15 Pro',
                 'sku' => 'CARC-IPH15P',
                 'category_id' => $categories->where('name', 'Accesorios')->first()->id,
                 'quantity' => 50,
@@ -49,7 +46,6 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Cable USB-C',
-                'description' => 'Cable USB-C de alta velocidad 2m',
                 'sku' => 'CABLE-USBC-2M',
                 'category_id' => $categories->where('name', 'Cables y Cargadores')->first()->id,
                 'quantity' => 100,
@@ -59,7 +55,6 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Auriculares Bluetooth',
-                'description' => 'Auriculares inalámbricos con cancelación de ruido',
                 'sku' => 'AUR-BT-NC',
                 'category_id' => $categories->where('name', 'Auriculares')->first()->id,
                 'quantity' => 25,
@@ -69,7 +64,6 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Pantalla iPhone 14',
-                'description' => 'Pantalla de repuesto para iPhone 14',
                 'sku' => 'PANT-IPH14',
                 'category_id' => $categories->where('name', 'Repuestos')->first()->id,
                 'quantity' => 8,
@@ -79,7 +73,6 @@ class ProductSeeder extends Seeder
             ],
             [
                 'name' => 'Kit de herramientas',
-                'description' => 'Kit completo de herramientas para reparación',
                 'sku' => 'KIT-HERR-COMP',
                 'category_id' => $categories->where('name', 'Herramientas')->first()->id,
                 'quantity' => 12,

@@ -109,13 +109,9 @@
                     <tr class="hover:bg-gray-50">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
-                                @if($product->image)
-                                    <img class="h-10 w-10 rounded-lg object-cover mr-3" src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}">
-                                @else
-                                    <div class="h-10 w-10 rounded-lg bg-gray-200 flex items-center justify-center mr-3">
-                                        <i class="fas fa-box text-gray-400"></i>
-                                    </div>
-                                @endif
+                                <div class="h-10 w-10 rounded-lg bg-gray-200 flex items-center justify-center mr-3">
+                                    <i class="fas fa-box text-gray-400"></i>
+                                </div>
                                 <div>
                                     <div class="text-sm font-medium text-gray-900">{{ $product->name }}</div>
                                     <div class="text-sm text-gray-500">{{ $product->sku }}</div>
@@ -163,13 +159,13 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div class="flex space-x-2">
                                 @can('view_products')
-                                <a href="{{ route('products.show', $product) }}" class="text-blue-600 hover:text-blue-900">
+                                <a href="{{ route('products.show', $product) }}" class="text-blue-600 hover:text-blue-900" title="Ver detalles">
                                     <i class="fas fa-eye"></i>
                                 </a>
                                 @endcan
                                 
                                 @can('edit_products')
-                                <a href="{{ route('products.edit', $product) }}" class="text-indigo-600 hover:text-indigo-900">
+                                <a href="{{ route('products.edit', $product) }}" class="text-indigo-600 hover:text-indigo-900" title="Editar">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 @endcan
@@ -179,7 +175,7 @@
                                       onsubmit="return confirm('¿Estás seguro de que quieres eliminar este producto?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900">
+                                    <button type="submit" class="text-red-600 hover:text-red-900" title="Eliminar">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -190,7 +186,11 @@
                     @empty
                     <tr>
                         <td colspan="6" class="px-6 py-4 text-center text-gray-500">
-                            No se encontraron productos
+                            <div class="flex flex-col items-center py-8">
+                                <i class="fas fa-boxes text-4xl text-gray-300 mb-4"></i>
+                                <p class="text-lg font-medium text-gray-500 mb-2">No se encontraron productos</p>
+                                <p class="text-sm text-gray-400">Crea tu primer producto para comenzar</p>
+                            </div>
                         </td>
                     </tr>
                     @endforelse
