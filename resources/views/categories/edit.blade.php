@@ -100,13 +100,13 @@
                 <h4 class="text-sm font-medium text-gray-900 mb-3">Vista previa</h4>
                 <div class="bg-gray-50 rounded-lg p-4">
                     <div class="flex items-center">
-                        <div class="h-8 w-8 rounded-lg flex items-center justify-center mr-3" 
-                             id="preview-icon" 
-                             style="background-color: {{ $category->color }}20;">
-                            <i class="fas fa-tag text-sm" style="color: {{ $category->color }};"></i>
+                        <div class="h-8 w-8 rounded-lg flex items-center justify-center mr-3"
+                             id="preview-icon"
+                             data-color="{{ old('color', $category->color) ?: '#3B82F6' }}">
+                            <i class="fas fa-tag text-sm" id="preview-icon-i"></i>
                         </div>
                         <div>
-                            <div class="text-sm font-medium text-gray-900" id="preview-name">{{ $category->name }}</div>
+                            <div class="text-sm font-medium text-gray-900" id="preview-name">{{ old('name', $category->name) }}</div>
                             <div class="text-xs text-gray-500" id="preview-description">{{ $category->description ?: 'Sin descripción' }}</div>
                         </div>
                     </div>
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const description = descriptionInput.value || 'Sin descripción';
         
         previewIcon.style.backgroundColor = color + '20';
-        previewIcon.querySelector('i').style.color = color;
+        previewIcon.querySelector('#preview-icon-i').style.color = color;
         previewName.textContent = name;
         previewDescription.textContent = description;
     }

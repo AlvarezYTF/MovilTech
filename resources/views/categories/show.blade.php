@@ -10,8 +10,8 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
             <div class="flex items-center">
                 <div class="mr-4 p-3 rounded-lg flex items-center justify-center" 
-                     style="background-color: {{ $category->color }}20;">
-                    <i class="fas fa-tag text-2xl" style="color: {{ $category->color }};"></i>
+                     data-color="{{ $category->color }}">
+                    <i class="fas fa-tag text-2xl"></i>
                 </div>
                 <div>
                     <h1 class="text-2xl font-semibold text-gray-800">{{ $category->name }}</h1>
@@ -62,7 +62,7 @@
                         <dt class="text-sm font-medium text-gray-500">Color</dt>
                         <dd class="mt-1 flex items-center">
                             <div class="h-6 w-6 rounded-full mr-2 border border-gray-300" 
-                                 style="background-color: {{ $category->color }};"></div>
+                                 data-color="{{ $category->color }}"></div>
                             <span class="text-sm text-gray-900">{{ $category->color }}</span>
                         </dd>
                     </div>
@@ -227,4 +227,23 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Aplicar colores a los elementos de categoría
+    document.querySelectorAll('[data-color]').forEach(function(element) {
+        const color = element.getAttribute('data-color');
+        if (element.querySelector('i')) {
+            // Es el ícono principal
+            element.style.backgroundColor = color + '20';
+            element.querySelector('i').style.color = color;
+        } else {
+            // Es el círculo de color
+            element.style.backgroundColor = color;
+        }
+    });
+});
+</script>
+@endpush
 @endsection

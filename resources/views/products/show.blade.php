@@ -65,7 +65,7 @@
                         <dt class="text-sm font-medium text-gray-500">Categoría</dt>
                         <dd class="mt-1">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" 
-                                  style="background-color: {{ $product->category->color }}20; color: {{ $product->category->color }};">
+                                  data-color="{{ $product->category->color }}">
                                 {{ $product->category->name }}
                             </span>
                         </dd>
@@ -138,7 +138,7 @@
                     @endphp
                     
                     <div class="w-full bg-gray-200 rounded-full h-2">
-                        <div class="h-2 rounded-full {{ $stockColor }}" style="width: {{ $stockPercentage }}%"></div>
+                        <div class="h-2 rounded-full {{ $stockColor }}" data-width="{{ $stockPercentage }}"></div>
                     </div>
                     
                     <div class="flex justify-between text-xs text-gray-500">
@@ -190,4 +190,23 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Aplicar colores a las etiquetas de categoría
+    document.querySelectorAll('[data-color]').forEach(function(element) {
+        const color = element.getAttribute('data-color');
+        element.style.backgroundColor = color + '20';
+        element.style.color = color;
+    });
+    
+    // Aplicar ancho a la barra de progreso
+    document.querySelectorAll('[data-width]').forEach(function(element) {
+        const width = element.getAttribute('data-width');
+        element.style.width = width + '%';
+    });
+});
+</script>
+@endpush
 @endsection

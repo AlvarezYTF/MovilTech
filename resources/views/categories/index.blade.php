@@ -94,9 +94,11 @@
                     <tr class="hover:bg-gray-50">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
-                                <div class="h-10 w-10 rounded-lg flex items-center justify-center mr-3" 
-                                     style="background-color: {{ $category->color }}20;">
-                                    <i class="fas fa-tag" style="color: {{ $category->color }};"></i>
+                                <div 
+                                    class="h-10 w-10 rounded-lg flex items-center justify-center mr-3" 
+                                    data-color="{{ $category->color }}"
+                                >
+                                    <i class="fas fa-tag"></i>
                                 </div>
                                 <div>
                                     <div class="text-sm font-medium text-gray-900">{{ $category->name }}</div>
@@ -114,7 +116,7 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 <div class="h-6 w-6 rounded-full mr-2 border border-gray-300" 
-                                     style="background-color: {{ $category->color }};"></div>
+                                     data-color="{{ $category->color }}"></div>
                                 <span class="text-sm text-gray-600">{{ $category->color }}</span>
                             </div>
                         </td>
@@ -181,4 +183,23 @@
         @endif
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Aplicar colores a los íconos de categorías
+    document.querySelectorAll('[data-color]').forEach(function(element) {
+        const color = element.getAttribute('data-color');
+        if (element.querySelector('i')) {
+            // Es el ícono principal
+            element.style.backgroundColor = color + '20';
+            element.querySelector('i').style.color = color;
+        } else {
+            // Es el círculo de color
+            element.style.backgroundColor = color;
+        }
+    });
+});
+</script>
+@endpush
 @endsection

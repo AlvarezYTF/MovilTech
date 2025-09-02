@@ -121,7 +121,7 @@
                         
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" 
-                                  style="background-color: {{ $product->category->color }}20; color: {{ $product->category->color }};">
+                                  data-color="{{ $product->category->color }}">
                                 {{ $product->category->name }}
                             </span>
                         </td>
@@ -206,4 +206,17 @@
         @endif
     </div>
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Aplicar colores a las etiquetas de categoría
+    document.querySelectorAll('[data-color]').forEach(function(element) {
+        const color = element.getAttribute('data-color');
+        element.style.backgroundColor = color + '20';
+        element.style.color = color;
+    });
+});
+</script>
+@endpush
 @endsection
