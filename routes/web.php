@@ -49,7 +49,6 @@ Route::middleware('auth')->group(function () {
     // Categorías - con middleware de permisos para administradores
     Route::middleware('permission:view_categories')->group(function () {
         Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-        Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
     });
 
     Route::middleware('permission:create_categories')->group(function () {
@@ -64,6 +63,11 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('permission:delete_categories')->group(function () {
         Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+    });
+
+    // Show debe ir al final para evitar conflictos con create y edit
+    Route::middleware('permission:view_categories')->group(function () {
+        Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
     });
 
     // Ventas - con middleware de permisos
