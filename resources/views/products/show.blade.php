@@ -146,11 +146,11 @@
                         <span>{{ $stockPercentage }}%</span>
                     </div>
                     
-                    @if($product->quantity < 10 && $product->quantity > 0)
+                    @if($product->hasLowStock())
                         <div class="text-center">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                 <i class="fas fa-exclamation-triangle mr-1"></i>
-                                Stock bajo
+                                Stock bajo (≤{{ $product->low_stock_threshold }})
                             </span>
                         </div>
                     @elseif($product->quantity == 0)

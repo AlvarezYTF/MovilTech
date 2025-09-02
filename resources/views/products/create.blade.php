@@ -77,22 +77,40 @@
                     @enderror
                 </div>
 
-                <!-- Stock -->
-                <div>
-                    <label for="quantity" class="form-label">
-                        Stock <span class="text-red-500">*</span>
-                    </label>
-                    <input type="number" 
-                           id="quantity" 
-                           name="quantity" 
-                           value="{{ old('quantity', 0) }}"
-                           class="form-input @error('quantity') border-red-300 @enderror" 
-                           min="0" 
-                           required>
-                    @error('quantity')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                </div>
+                                    <!-- Stock -->
+                    <div>
+                        <label for="quantity" class="form-label">
+                            Stock <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number"
+                               id="quantity"
+                               name="quantity"
+                               value="{{ old('quantity', 0) }}"
+                               class="form-input @error('quantity') border-red-300 @enderror"
+                               min="0"
+                               required>
+                        @error('quantity')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Stock bajo -->
+                    <div>
+                        <label for="low_stock_threshold" class="form-label">
+                            Alerta de stock bajo <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number"
+                               id="low_stock_threshold"
+                               name="low_stock_threshold"
+                               value="{{ old('low_stock_threshold', 10) }}"
+                               class="form-input @error('low_stock_threshold') border-red-300 @enderror"
+                               min="0"
+                               required>
+                        @error('low_stock_threshold')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                        <p class="mt-1 text-xs text-gray-500">Se mostrará alerta cuando el stock sea menor o igual a este valor</p>
+                    </div>
 
                 <!-- Precio de venta -->
                 <div>

@@ -138,8 +138,8 @@
                                     Vendido: <span class="font-medium text-green-600">{{ $product->sold_quantity }}</span>
                                 </div>
                             </div>
-                            @if($product->quantity < 10 && $product->quantity > 0)
-                                <div class="text-xs text-red-600 mt-1">Stock bajo</div>
+                            @if($product->hasLowStock())
+                                <div class="text-xs text-red-600 mt-1">Stock bajo (≤{{ $product->low_stock_threshold }})</div>
                             @elseif($product->quantity == 0)
                                 <div class="text-xs text-red-600 mt-1">Sin stock</div>
                             @endif

@@ -14,6 +14,7 @@ class Product extends Model
         'sku',
         'category_id',
         'quantity',
+        'low_stock_threshold',
         'price',
         'cost_price',
         'status',
@@ -23,6 +24,7 @@ class Product extends Model
         'price' => 'decimal:2',
         'cost_price' => 'decimal:2',
         'quantity' => 'integer',
+        'low_stock_threshold' => 'integer',
     ];
 
     /**
@@ -63,6 +65,14 @@ class Product extends Model
     public function isInStock()
     {
         return $this->quantity > 0;
+    }
+
+    /**
+     * Check if product has low stock.
+     */
+    public function hasLowStock()
+    {
+        return $this->quantity <= $this->low_stock_threshold && $this->quantity > 0;
     }
 
     /**
