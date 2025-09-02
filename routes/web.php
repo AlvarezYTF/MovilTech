@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\RepairController;
 use App\Http\Controllers\ReportController;
@@ -41,6 +42,9 @@ Route::middleware('auth')->group(function () {
 
     // Productos (Inventario) - Resource route
     Route::resource('products', ProductController::class);
+
+    // Clientes - Resource route
+    Route::resource('customers', CustomerController::class);
 
     // Categorías - con middleware de permisos para administradores
     Route::middleware('permission:view_categories')->group(function () {

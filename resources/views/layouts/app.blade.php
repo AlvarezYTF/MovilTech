@@ -50,6 +50,11 @@
                 </a>
                 @endcan
                 
+                <a href="{{ route('customers.index') }}" class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors {{ request()->routeIs('customers.*') ? 'bg-gray-700 text-white' : '' }}">
+                    <i class="fas fa-users w-5"></i>
+                    <span class="ml-3">Clientes</span>
+                </a>
+                
                 @can('view_sales')
                 <a href="{{ route('sales.index') }}" class="flex items-center px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors {{ request()->routeIs('sales.*') ? 'bg-gray-700 text-white' : '' }}">
                     <i class="fas fa-shopping-cart w-5"></i>
