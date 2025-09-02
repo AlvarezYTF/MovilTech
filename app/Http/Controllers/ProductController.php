@@ -13,7 +13,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::with(['category']);
+        $query = Product::with(['category', 'saleItems']);
 
         // Filtros
         if ($request->filled('search')) {

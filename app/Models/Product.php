@@ -75,4 +75,20 @@ class Product extends Model
         }
         return 0;
     }
+
+    /**
+     * Get the total quantity sold.
+     */
+    public function getSoldQuantityAttribute()
+    {
+        return $this->saleItems()->sum('quantity');
+    }
+
+    /**
+     * Get the initial stock (current stock + sold quantity).
+     */
+    public function getInitialStockAttribute()
+    {
+        return $this->quantity + $this->sold_quantity;
+    }
 }

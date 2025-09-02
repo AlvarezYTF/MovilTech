@@ -127,9 +127,21 @@
                         </td>
                         
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ $product->quantity }}</div>
-                            @if($product->quantity < 10)
-                                <div class="text-xs text-red-600">Stock bajo</div>
+                            <div class="space-y-1">
+                                <div class="text-sm text-gray-900">
+                                    <span class="font-medium">{{ $product->quantity }}</span> disponible
+                                </div>
+                                <div class="text-xs text-gray-500">
+                                    Inicial: <span class="font-medium">{{ $product->initial_stock }}</span>
+                                </div>
+                                <div class="text-xs text-gray-500">
+                                    Vendido: <span class="font-medium text-green-600">{{ $product->sold_quantity }}</span>
+                                </div>
+                            </div>
+                            @if($product->quantity < 10 && $product->quantity > 0)
+                                <div class="text-xs text-red-600 mt-1">Stock bajo</div>
+                            @elseif($product->quantity == 0)
+                                <div class="text-xs text-red-600 mt-1">Sin stock</div>
                             @endif
                         </td>
                         
