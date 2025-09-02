@@ -193,6 +193,10 @@
                         
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div class="flex space-x-2">
+                                <a href="{{ route('sales.pdf', $sale) }}" class="text-red-600 hover:text-red-900" title="Descargar PDF">
+                                    <i class="fas fa-file-pdf"></i>
+                                </a>
+                                
                                 @can('view_sales')
                                 <a href="{{ route('sales.show', $sale) }}" class="text-blue-600 hover:text-blue-900" title="Ver detalles">
                                     <i class="fas fa-eye"></i>

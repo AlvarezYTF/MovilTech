@@ -295,6 +295,12 @@
                 <h3 class="text-lg font-medium text-gray-900 mb-4">Acciones rápidas</h3>
                 
                 <div class="space-y-3">
+                    <a href="{{ route('sales.pdf', $sale) }}" 
+                       class="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200">
+                        <i class="fas fa-file-pdf mr-2"></i>
+                        Descargar PDF
+                    </a>
+                    
                     @can('edit_sales')
                     <a href="{{ route('sales.edit', $sale) }}" 
                        class="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">

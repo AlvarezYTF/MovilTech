@@ -103,9 +103,8 @@ Route::middleware('auth')->group(function () {
     Route::get('reports/repairs', [ReportController::class, 'repairsReport'])->name('reports.repairs');
     Route::post('reports/pdf', [ReportController::class, 'generatePDF'])->name('reports.pdf');
 
-    // Facturación - con middleware de permisos
-    Route::middleware('permission:generate_invoices')->group(function () {
-        Route::get('/sales/{sale}/invoice', [SaleController::class, 'generateInvoice'])->name('sales.invoice');
-        Route::get('/sales/{sale}/download', [SaleController::class, 'downloadInvoice'])->name('sales.download');
+    // PDF de ventas - con middleware de permisos
+    Route::middleware('permission:view_sales')->group(function () {
+        Route::get('/sales/{sale}/pdf', [SaleController::class, 'pdf'])->name('sales.pdf');
     });
 });

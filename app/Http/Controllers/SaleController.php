@@ -9,6 +9,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class SaleController extends Controller
 {
@@ -239,5 +240,17 @@ class SaleController extends Controller
         }
 
         return $prefix . $year . $month . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Generate PDF for the sale.
+     */
+    public function pdf(Sale $sale)
+    {
+        $sale->load(['customer', 'user', 'saleItems.product']);
+        
+        $pdf = Pdf::loadView('sales.pdf', compact('sale'));
+        
+        return $pdf->download('factura-' . $sale->invoice_number . '.pdf');
     }
 }
