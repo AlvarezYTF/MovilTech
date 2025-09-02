@@ -56,9 +56,22 @@ class CustomerController extends Controller
         ]);
 
         $data = $request->all();
-        $data['is_active'] = $request->has('is_active');
+        $data['is_active'] = $request->has('is_active') || true; // Por defecto activo
 
-        Customer::create($data);
+        $customer = Customer::create($data);
+
+        // Si es una petición AJAX, devolver JSON
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'customer' => [
+                    'id' => $customer->id,
+                    'name' => $customer->name,
+                    'email' => $customer->email,
+                ],
+                'message' => 'Cliente creado exitosamente.'
+            ]);
+        }
 
         return redirect()->route('customers.index')
             ->with('success', 'Cliente creado exitosamente.');
