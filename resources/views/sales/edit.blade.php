@@ -3,39 +3,38 @@
 @section('title', 'Editar Venta')
 @section('header', 'Editar Venta')
 
-@section('content') 
-<div class="p-6">
-    <div class="max-w-4xl mx-auto">
-        <!-- Header -->
-        <div class="mb-6">
-            <h1 class="text-2xl font-bold text-gray-900">Editar Venta</h1>
-            <p class="text-gray-600">Modifica la información de la venta #{{ $sale->invoice_number }}</p>
-        </div>
-
-        <!-- Mensajes de error -->
-        @if($errors->any())
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                <ul class="list-disc list-inside">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
+@section('content')
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-lg shadow">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center">
+                <div class="mr-3 p-2 rounded-lg bg-indigo-50 border border-indigo-100">
+                    <i class="fas fa-edit text-indigo-600 text-lg"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-medium text-gray-900">Editar Venta</h3>
+                    <p class="text-sm text-gray-500">Modifica la información de la venta #{{ $sale->invoice_number }}</p>
+                </div>
             </div>
-        @endif
-
-        <!-- Formulario -->
-        <form action="{{ route('sales.update', $sale) }}" method="POST" class="bg-white shadow-sm rounded-lg p-6">
+        </div>
+        
+        <form method="POST" action="{{ route('sales.update', $sale) }}" class="p-6 space-y-6">
             @csrf
             @method('PUT')
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Información básica -->
+                <div class="md:col-span-2">
+                    <h4 class="text-md font-medium text-gray-900 mb-4">Información básica</h4>
+                </div>
+                
                 <!-- Cliente -->
-                <div class="col-span-1">
-                    <label for="customer_id" class="block text-sm font-medium text-gray-700 mb-2">
+                <div>
+                    <label for="customer_id" class="form-label">
                         Cliente <span class="text-red-500">*</span>
                     </label>
                     <select name="customer_id" id="customer_id" required 
-                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            class="form-input @error('customer_id') border-red-300 @enderror">
                         <option value="">Selecciona un cliente</option>
                         @foreach($customers as $customer)
                             <option value="{{ $customer->id }}" 
@@ -44,25 +43,36 @@
                             </option>
                         @endforeach
                     </select>
+                    @error('customer_id')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Fecha de Venta -->
-                <div class="col-span-1">
-                    <label for="sale_date" class="block text-sm font-medium text-gray-700 mb-2">
+                <div>
+                    <label for="sale_date" class="form-label">
                         Fecha de Venta <span class="text-red-500">*</span>
                     </label>
                     <input type="date" name="sale_date" id="sale_date" required
                            value="{{ old('sale_date', $sale->sale_date ? $sale->sale_date->format('Y-m-d') : $sale->created_at->format('Y-m-d')) }}"
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                           class="form-input @error('sale_date') border-red-300 @enderror">
+                    @error('sale_date')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Productos -->
+                <div class="md:col-span-2">
+                    <h4 class="text-md font-medium text-gray-900 mb-4 mt-6">Productos</h4>
                 </div>
 
                 <!-- Producto -->
-                <div class="col-span-1">
-                    <label for="product_id" class="block text-sm font-medium text-gray-700 mb-2">
+                <div>
+                    <label for="product_id" class="form-label">
                         Producto <span class="text-red-500">*</span>
                     </label>
                     <select name="product_id" id="product_id" required 
-                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            class="form-input @error('product_id') border-red-300 @enderror">
                         <option value="">Selecciona un producto</option>
                         @foreach($products as $product)
                             @php
@@ -81,62 +91,75 @@
                             </option>
                         @endforeach
                     </select>
+                    @error('product_id')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Cantidad -->
-                <div class="col-span-1">
-                    <label for="quantity" class="block text-sm font-medium text-gray-700 mb-2">
+                <div>
+                    <label for="quantity" class="form-label">
                         Cantidad <span class="text-red-500">*</span>
                     </label>
                     <input type="number" name="quantity" id="quantity" min="1" required
                            value="{{ old('quantity', $sale->saleItems->first() ? $sale->saleItems->first()->quantity : 1) }}"
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                    <p class="text-sm text-gray-500 mt-1">Stock disponible: <span id="stock-display">-</span></p>
+                           class="form-input @error('quantity') border-red-300 @enderror">
+                    @error('quantity')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                    <p class="mt-1 text-sm text-gray-500">Stock disponible: <span id="stock-display" class="font-medium">-</span></p>
                 </div>
 
                 <!-- Precio Unitario -->
-                <div class="col-span-1">
-                    <label for="unit_price" class="block text-sm font-medium text-gray-700 mb-2">
+                <div>
+                    <label for="unit_price" class="form-label">
                         Precio Unitario <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">$</span>
                         <input type="number" name="unit_price" id="unit_price" step="0.01" min="0" required
                                value="{{ old('unit_price', $sale->saleItems->first() ? $sale->saleItems->first()->unit_price : '0.00') }}"
-                               class="w-full pl-8 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                               class="form-input pl-8 @error('unit_price') border-red-300 @enderror">
                     </div>
+                    @error('unit_price')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <!-- Total -->
-                <div class="col-span-1">
-                    <label for="total" class="block text-sm font-medium text-gray-700 mb-2">
+                <div>
+                    <label for="total" class="form-label">
                         Total <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">$</span>
                         <input type="number" name="total" id="total" step="0.01" min="0" required readonly
                                value="{{ old('total', $sale->total) }}"
-                               class="w-full pl-8 bg-gray-100 border-gray-300 rounded-md shadow-sm">
+                               class="form-input pl-8 bg-gray-100">
                     </div>
+                    @error('total')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Notas -->
+                <div class="md:col-span-2">
+                    <label for="notes" class="form-label">Notas adicionales</label>
+                    <textarea name="notes" id="notes" rows="3"
+                              class="form-input @error('notes') border-red-300 @enderror"
+                              placeholder="Agrega notas adicionales sobre la venta...">{{ old('notes', $sale->notes) }}</textarea>
+                    @error('notes')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
-
-            <!-- Notas -->
-            <div class="mt-6">
-                <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">
-                    Notas (opcional)
-                </label>
-                <textarea name="notes" id="notes" rows="3"
-                          class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                          placeholder="Agrega notas adicionales sobre la venta...">{{ old('notes', $sale->notes) }}</textarea>
-            </div>
-
-            <!-- Información de la venta -->
-            <div class="mt-6 p-4 bg-gray-50 rounded-lg">
-                <h3 class="text-sm font-medium text-gray-700 mb-2">Información de la Venta</h3>
-                <div class="grid grid-cols-2 gap-4 text-sm text-gray-600">
+            
+            <!-- Información adicional -->
+            <div class="border-t border-gray-200 pt-6">
+                <h4 class="text-sm font-medium text-gray-900 mb-3">Información adicional</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
                     <div>
-                        <span class="font-medium">Número de Factura:</span> {{ $sale->invoice_number }}
+                        <span class="font-medium">Número de factura:</span> {{ $sale->invoice_number }}
                     </div>
                     <div>
                         <span class="font-medium">Estado:</span> 
@@ -156,16 +179,19 @@
                     </div>
                 </div>
             </div>
-
+            
             <!-- Botones -->
-            <div class="flex justify-end space-x-3 mt-6 pt-6 border-t border-gray-200">
+            <div class="flex items-center justify-end space-x-3 pt-6 border-t border-gray-200">
                 <a href="{{ route('sales.show', $sale) }}" 
-                   class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-md transition-colors">
+                   class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200">
+                    <i class="fas fa-times mr-2"></i>
                     Cancelar
                 </a>
+                
                 <button type="submit" 
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors">
-                    <i class="fas fa-save mr-2"></i>Actualizar Venta
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
+                    <i class="fas fa-save mr-2"></i>
+                    Actualizar Venta
                 </button>
             </div>
         </form>
