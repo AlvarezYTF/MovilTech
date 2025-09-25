@@ -1,0 +1,83 @@
+version: '3.8'
+
+services:
+  # Aplicación Laravel
+  app:
+    build: .
+    container_name: moviltech-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - moviltech-network
+    depends_on:
+      - db
+      - redis
+
+  # Nginx como proxy reverso
+  nginx:
+    image: nginx:alpine
+    container_name: moviltech-nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - moviltech-network
+    depends_on:
+      - app
+
+  # Base de datos MySQL
+  db:
+    image: mysql:8.0
+    container_name: moviltech-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: moviltech
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_USER: moviltech
+      MYSQL_PASSWORD: moviltech123
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+    ports:
+      - "3306:3306"
+    networks:
+      - moviltech-network
+
+  # Redis para cache y sesiones
+  redis:
+    image: redis:7-alpine
+    container_name: moviltech-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - moviltech-network
+
+  # Worker para colas (opcional)
+  queue:
+    build: .
+    container_name: moviltech-queue
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+    command: php artisan queue:work --verbose --tries=3 --timeout=90
+    networks:
+      - moviltech-network
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  db_data:
+    driver: local
+
+networks:
+  moviltech-network:
+    driver: bridge

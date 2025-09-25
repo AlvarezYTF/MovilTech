@@ -1,0 +1,62 @@
+# Dockerfile para desarrollo
+FROM php:8.2-fpm
+
+# Instalar dependencias del sistema
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    nodejs \
+    npm \
+    sqlite3 \
+    libsqlite3-dev \
+    && docker-php-ext-install pdo_mysql pdo_sqlite mbstring exif pcntl bcmath gd zip
+
+# Instalar Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Configurar el directorio de trabajo
+WORKDIR /var/www/html
+
+# Copiar composer files
+COPY composer.json composer.lock ./
+
+# Instalar dependencias de PHP (incluyendo dev)
+RUN composer install --optimize-autoloader --no-interaction
+
+# Copiar package.json
+COPY package*.json ./
+
+# Instalar dependencias de Node.js
+RUN npm install
+
+# Copiar el resto de la aplicación
+COPY . .
+
+# Copiar archivo de configuración de entorno
+COPY .env.docker .env
+
+# Generar clave de aplicación
+RUN php artisan key:generate
+
+# Crear directorio de base de datos y archivo SQLite
+RUN mkdir -p database && touch database/database.sqlite
+
+# Configurar permisos
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 755 /var/www/html/bootstrap/cache
+
+# Exponer puerto 9000 para PHP-FPM
+EXPOSE 9000
+
+# Comando por defecto
+CMD ["php-fpm"]
+
+
+
