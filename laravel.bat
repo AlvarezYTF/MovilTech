@@ -8,5 +8,4 @@ if "%1"=="" (
     goto :eof
 )
 
-cd laravel_app
 php artisan %*

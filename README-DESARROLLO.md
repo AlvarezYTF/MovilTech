@@ -5,27 +5,32 @@
 ### Estructura para Desarrollo
 ```
 MovilTech/
-├── index.php              # Punto de entrada para desarrollo local
-├── .htaccess             # Configuración Apache para desarrollo
+├── app/                  # Lógica de aplicación
+├── bootstrap/            # Archivos de inicialización
+├── config/              # Configuraciones
+├── database/             # Migraciones y seeders
+├── public/               # Directorio público (punto de entrada)
+│   ├── index.php
+│   └── .htaccess
+├── resources/            # Vistas, CSS, JS
+├── routes/               # Definición de rutas
+├── storage/              # Archivos de almacenamiento
+├── tests/                # Tests
+├── vendor/               # Dependencias de Composer
+├── artisan               # CLI de Laravel
+├── composer.json         # Dependencias PHP
+├── package.json          # Dependencias Node.js
+├── vite.config.js        # Configuración Vite
+├── tailwind.config.js    # Configuración Tailwind
+├── phpunit.xml           # Configuración PHPUnit
 ├── laravel.bat           # Script para comandos de Laravel
 ├── dev-serve.bat         # Script para iniciar servidor
 ├── dev-build.bat         # Script para compilar assets
-├── storage/              # Enlace simbólico para desarrollo
 │
-├── public_html/          # Estructura para producción (Hostinger)
-│   ├── index.php
-│   ├── .htaccess
-│   └── storage/
-│
-└── laravel_app/          # Código fuente de Laravel
-    ├── app/
-    ├── config/
-    ├── database/
-    ├── resources/
-    ├── routes/
-    ├── storage/
-    ├── vendor/
-    └── artisan
+└── public_html/          # Estructura para producción (Hostinger)
+    ├── index.php
+    ├── .htaccess
+    └── storage/
 ```
 
 ## 🛠️ Comandos de Desarrollo
@@ -36,7 +41,6 @@ MovilTech/
 dev-serve.bat
 
 # Opción 2: Comando directo
-cd laravel_app
 php artisan serve
 ```
 
@@ -48,7 +52,6 @@ laravel.bat "make:controller ProductController"
 laravel.bat route:list
 
 # O directamente
-cd laravel_app
 php artisan [comando]
 ```
 
@@ -64,13 +67,13 @@ npm run build
 ## 📁 Flujo de Trabajo
 
 ### 1. Desarrollo Local
-- Trabaja normalmente en `laravel_app/`
+- Trabaja normalmente en la raíz del proyecto
 - Usa `dev-serve.bat` para iniciar el servidor
 - Accede a `http://localhost:8000`
 
 ### 2. Compilar para Producción
 - Ejecuta `dev-build.bat` para compilar assets
-- Los assets se compilan en `laravel_app/public/build/`
+- Los assets se compilan en `public/build/`
 
 ### 3. Preparar para Hostinger
 - La carpeta `public_html/` ya está lista
@@ -79,10 +82,10 @@ npm run build
 ## 🔧 Configuración de Base de Datos
 
 ### Para Desarrollo Local
-Edita `laravel_app/.env`:
+Edita `.env`:
 ```env
 DB_CONNECTION=sqlite
-DB_DATABASE=laravel_app/database/database.sqlite
+DB_DATABASE=database/database.sqlite
 ```
 
 ### Para Producción
