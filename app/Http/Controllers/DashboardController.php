@@ -21,7 +21,7 @@ class DashboardController extends Controller
             'low_stock_products' => Product::where('quantity', '<', 10)->count(),
             'total_sales' => Sale::count(),
             'total_revenue' => Sale::where('status', 'completed')->sum('total'),
-            'pending_repairs' => Repair::where('status', 'pending')->count(),
+            'pending_repairs' => Repair::where('repair_status', 'pending')->count(),
             'total_customers' => Customer::count(),
         ];
 
@@ -41,8 +41,8 @@ class DashboardController extends Controller
             ->get();
 
         // Reparaciones por estado
-        $repairStatuses = Repair::select('status', DB::raw('count(*) as total'))
-            ->groupBy('status')
+        $repairStatuses = Repair::select('repair_status', DB::raw('count(*) as total'))
+            ->groupBy('repair_status')
             ->get();
 
         return view('dashboard', compact('stats', 'monthlySales', 'topProducts', 'repairStatuses'));

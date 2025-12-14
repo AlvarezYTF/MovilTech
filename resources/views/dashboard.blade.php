@@ -124,11 +124,9 @@
             @if($repairStatuses->count() > 0)
                 <div class="space-y-4">
                     @foreach($repairStatuses as $status)
-                    <div class="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
-                        <span class="text-sm text-gray-700 capitalize">{{ str_replace('_', ' ', $status->status) }}</span>
-                        <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-900 text-sm font-semibold">
-                            {{ $status->total }}
-                        </span>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600 capitalize">{{ str_replace('_', ' ', $status->repair_status) }}</span>
+                        <span class="text-sm font-medium text-gray-900">{{ $status->total }}</span>
                     </div>
                     @endforeach
                 </div>

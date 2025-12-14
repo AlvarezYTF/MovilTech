@@ -37,7 +37,6 @@ return new class extends Migration
         // Add indexes to customers table
         Schema::table('customers', function (Blueprint $table) {
             $table->index('is_active');
-            $table->index('type');
         });
     }
 
@@ -72,7 +71,6 @@ return new class extends Migration
         // Remove indexes from customers table
         Schema::table('customers', function (Blueprint $table) {
             $table->dropIndex(['is_active']);
-            $table->dropIndex(['type']);
         });
     }
 };

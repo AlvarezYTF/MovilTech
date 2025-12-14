@@ -9,8 +9,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\RepairController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\Auth\PasswordResetLinkController;
-use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\DeploymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -119,4 +118,34 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:view_sales')->group(function () {
         Route::get('/sales/{sale}/pdf', [SaleController::class, 'pdf'])->name('sales.pdf');
     });
+});
+
+/*
+|--------------------------------------------------------------------------
+| TEMPORARY DEPLOYMENT ROUTES - REMOVE AFTER DEPLOYMENT
+|--------------------------------------------------------------------------
+|
+| ⚠️ WARNING: These routes are for deployment purposes only.
+| Remove them immediately after completing the deployment.
+|
+| Usage:
+| - /__deploy__?token=YOUR_TOKEN - Deployment dashboard
+| - /__infra__/migrate?token=YOUR_TOKEN - Run migrations
+| - /__infra__/seed?token=YOUR_TOKEN - Run seeders
+| - /__infra__/status?token=YOUR_TOKEN - Check status
+|
+| IMPORTANT: Change DEPLOYMENT_TOKEN in DeploymentController.php
+| before using these routes in production.
+|
+*/
+Route::prefix('__deploy__')->group(function () {
+    Route::get('/', [DeploymentController::class, 'index'])->name('deployment.index');
+});
+
+Route::prefix('__infra__')->group(function () {
+    Route::post('/migrate', [DeploymentController::class, 'migrate'])->name('deployment.migrate');
+    Route::get('/migrate', [DeploymentController::class, 'migrate'])->name('deployment.migrate.get');
+    Route::post('/seed', [DeploymentController::class, 'seed'])->name('deployment.seed');
+    Route::get('/seed', [DeploymentController::class, 'seed'])->name('deployment.seed.get');
+    Route::get('/status', [DeploymentController::class, 'status'])->name('deployment.status');
 });
