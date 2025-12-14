@@ -12,6 +12,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\DeploymentController;
 use App\Http\Controllers\ElectronicInvoiceController;
 use App\Http\Controllers\CompanyTaxSettingController;
+use App\Http\Middleware\VerifyCsrfToken;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 
@@ -175,12 +176,15 @@ Route::middleware('auth')->group(function () {
 | IMPORTANT: Change DEPLOYMENT_TOKEN in DeploymentController.php
 | before using these routes in production.
 |
+| NOTE: These routes use withoutMiddleware(VerifyCsrfToken::class) to
+| avoid CSRF token issues. They are protected by deployment token instead.
+|
 */
-Route::prefix('__deploy__')->group(function () {
+Route::prefix('__deploy__')->withoutMiddleware([VerifyCsrfToken::class])->group(function () {
     Route::get('/', [DeploymentController::class, 'index'])->name('deployment.index');
 });
 
-Route::prefix('__infra__')->group(function () {
+Route::prefix('__infra__')->withoutMiddleware([VerifyCsrfToken::class])->group(function () {
     Route::post('/migrate', [DeploymentController::class, 'migrate'])->name('deployment.migrate');
     Route::get('/migrate', [DeploymentController::class, 'migrate'])->name('deployment.migrate.get');
     Route::post('/seed', [DeploymentController::class, 'seed'])->name('deployment.seed');

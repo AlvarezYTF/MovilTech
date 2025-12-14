@@ -14,7 +14,7 @@ class DeploymentController extends Controller
      * Security token for deployment routes
      * IMPORTANT: Change this token and remove routes after deployment
      */
-    private const DEPLOYMENT_TOKEN = 'CHANGE_THIS_TOKEN_IN_PRODUCTION';
+    private const DEPLOYMENT_TOKEN = 'DeployMovilTech2025!SecretKeyXYZ789';
 
     /**
      * Verify deployment token
