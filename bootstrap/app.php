@@ -11,6 +11,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withProviders([
+        \App\Providers\PublicPathServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
     ])
     ->withMiddleware(function (Middleware $middleware): void {
