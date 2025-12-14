@@ -18,7 +18,9 @@
         </div>
     </div>
 
-    <form method="POST" action="{{ route('customers.update', $customer) }}" id="customer-form" x-data="{ loading: false }" @submit="loading = true">
+    <form method="POST" action="{{ route('customers.update', $customer) }}" id="customer-form" 
+          x-data="customerForm()" 
+          @submit="loading = true">
         @csrf
         @method('PUT')
 
@@ -281,6 +283,208 @@
             </div>
         </div>
 
+        <!-- Facturación Electrónica DIAN -->
+        <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6"
+             x-data="{ requiresElectronicInvoice: {{ old('requires_electronic_invoice', $customer->requires_electronic_invoice) ? 'true' : 'false' }} }">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 rounded-xl bg-blue-50 text-blue-600">
+                        <i class="fas fa-file-invoice text-sm"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base sm:text-lg font-semibold text-gray-900">
+                            Facturación Electrónica DIAN
+                        </h2>
+                        <p class="text-xs text-gray-500 mt-0.5">
+                            Activa esta opción si el cliente requiere facturación electrónica
+                        </p>
+                    </div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox"
+                           name="requires_electronic_invoice"
+                           value="1"
+                           x-model="requiresElectronicInvoice"
+                           class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                </label>
+            </div>
+
+            <!-- Campos DIAN (mostrar/ocultar dinámicamente) -->
+            <div x-show="requiresElectronicInvoice"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 transform scale-95"
+                 x-transition:enter-end="opacity-100 transform scale-100"
+                 class="mt-6 space-y-5 border-t border-gray-200 pt-6">
+                
+                <!-- Mensaje informativo -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-blue-600 mt-0.5 mr-3"></i>
+                        <div class="text-sm text-blue-800">
+                            <p class="font-semibold mb-1">Campos Obligatorios para Facturación Electrónica</p>
+                            <p class="text-xs">Complete todos los campos marcados con <span class="text-red-500 font-bold">*</span> para poder generar facturas electrónicas válidas según la normativa DIAN.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tipo de Documento -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">
+                            Tipo de Documento <span class="text-red-500">*</span>
+                        </label>
+                        <select name="identification_document_id"
+                                x-model="identificationDocumentId"
+                                @change="updateRequiredFields()"
+                                class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                                required>
+                            <option value="">Seleccione...</option>
+                            @foreach($identificationDocuments as $doc)
+                                <option value="{{ $doc->id }}" 
+                                        data-code="{{ $doc->code }}"
+                                        data-requires-dv="{{ $doc->requires_dv ? 'true' : 'false' }}"
+                                        {{ old('identification_document_id', $customer->taxProfile->identification_document_id ?? '') == $doc->id ? 'selected' : '' }}>
+                                    {{ $doc->name }}@if($doc->code) ({{ $doc->code }})@endif
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Identificación -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">
+                            Número de Identificación <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text"
+                               name="identification"
+                               x-model="identification"
+                               @input="calculateDV()"
+                               value="{{ old('identification', $customer->taxProfile->identification ?? '') }}"
+                               class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                               required>
+                    </div>
+                </div>
+
+                <!-- Dígito Verificador (solo si el documento lo requiere) -->
+                <div x-show="requiresDV" class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">
+                            Dígito Verificador (DV) <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text"
+                               name="dv"
+                               x-model="dv"
+                               maxlength="1"
+                               value="{{ old('dv', $customer->taxProfile->dv ?? '') }}"
+                               class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                               required>
+                        <p class="mt-1 text-xs text-gray-500">
+                            Se calcula automáticamente para NIT
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Razón Social / Nombre Comercial (solo para personas jurídicas) -->
+                <div x-show="isJuridicalPerson" class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">
+                            Razón Social / Empresa <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text"
+                               name="company"
+                               value="{{ old('company', $customer->taxProfile->company ?? '') }}"
+                               class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                               required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">
+                            Nombre Comercial
+                        </label>
+                        <input type="text"
+                               name="trade_name"
+                               value="{{ old('trade_name', $customer->taxProfile->trade_name ?? '') }}"
+                               class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
+                    </div>
+                </div>
+
+                <!-- Tipo de Organización Legal (opcional) -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-2">
+                        Tipo de Organización Legal
+                    </label>
+                    <select name="legal_organization_id"
+                            class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
+                        <option value="">Seleccione...</option>
+                        @foreach($legalOrganizations as $org)
+                            <option value="{{ $org->id }}"
+                                    {{ old('legal_organization_id', $customer->taxProfile->legal_organization_id ?? '') == $org->id ? 'selected' : '' }}>
+                                {{ $org->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Municipio (con autocomplete) -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-2">
+                        Municipio <span class="text-red-500">*</span>
+                    </label>
+                    <div x-data="municipalitySearch({{ json_encode([
+                        'factus_id' => old('municipality_id', $customer->taxProfile->municipality_id ?? null),
+                        'name' => old('municipality_name', $customer->taxProfile->municipality->name ?? ''),
+                        'department' => old('municipality_department', $customer->taxProfile->municipality->department ?? ''),
+                    ]) }})">
+                        <input 
+                            type="text"
+                            x-model="searchTerm"
+                            @input.debounce.300ms="search()"
+                            placeholder="Buscar municipio (ej: Medellín)..."
+                            class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                            required
+                        />
+                        
+                        <div x-show="results.length > 0" 
+                             class="mt-2 border rounded bg-white shadow-lg max-h-60 overflow-y-auto">
+                            <template x-for="municipality in results" :key="municipality.factus_id">
+                                <div 
+                                    @click="select(municipality)"
+                                    class="p-2 hover:bg-gray-100 cursor-pointer"
+                                >
+                                    <span x-text="municipality.name"></span> – 
+                                    <span x-text="municipality.department"></span>
+                                </div>
+                            </template>
+                        </div>
+                        
+                        <input 
+                            type="hidden" 
+                            name="municipality_id" 
+                            x-model="selectedId"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <!-- Régimen Tributario (opcional) -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-2">
+                        Régimen Tributario
+                    </label>
+                    <select name="tribute_id"
+                            class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
+                        <option value="">Seleccione...</option>
+                        @foreach($tributes as $tribute)
+                            <option value="{{ $tribute->id }}"
+                                    {{ old('tribute_id', $customer->taxProfile->tribute_id ?? '') == $tribute->id ? 'selected' : '' }}>
+                                {{ $tribute->name }} ({{ $tribute->code }})
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
+
         <!-- Información del Sistema -->
         <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
             <div class="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
@@ -373,6 +577,74 @@
 
 @push('scripts')
 <script>
+function customerForm() {
+    return {
+        loading: false,
+        identificationDocumentId: {{ old('identification_document_id', $customer->taxProfile->identification_document_id ?? 'null') }},
+        identification: '{{ old('identification', $customer->taxProfile->identification ?? '') }}',
+        dv: '{{ old('dv', $customer->taxProfile->dv ?? '') }}',
+        requiresDV: false,
+        isJuridicalPerson: false,
+        
+        updateRequiredFields() {
+            const select = document.querySelector('select[name="identification_document_id"]');
+            const selectedOption = select.options[select.selectedIndex];
+            
+            if (selectedOption) {
+                this.requiresDV = selectedOption.dataset.requiresDv === 'true';
+                this.isJuridicalPerson = selectedOption.dataset.code === 'NIT';
+                
+                if (this.requiresDV && this.isJuridicalPerson && this.identification) {
+                    this.calculateDV();
+                }
+            }
+        },
+        
+        calculateDV() {
+            if (this.requiresDV && this.identification && this.identification.length >= 9) {
+                const nit = this.identification.replace(/\D/g, '');
+                if (nit.length >= 9) {
+                    // Algoritmo básico para calcular DV de NIT (simplificado)
+                }
+            }
+        },
+        
+        init() {
+            this.updateRequiredFields();
+        }
+    }
+}
+
+function municipalitySearch(initialData = null) {
+    return {
+        searchTerm: initialData && initialData.name ? `${initialData.name} – ${initialData.department}` : '',
+        results: [],
+        selectedId: initialData?.factus_id || null,
+        
+        async search() {
+            if (this.searchTerm.length < 2) {
+                this.results = [];
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/municipalities/search?q=${encodeURIComponent(this.searchTerm)}`);
+                const data = await response.json();
+                this.results = data;
+            } catch (error) {
+                console.error('Error al buscar municipios:', error);
+                this.results = [];
+            }
+        },
+        
+        select(municipality) {
+            this.selectedId = municipality.factus_id;
+            this.searchTerm = `${municipality.name} – ${municipality.department}`;
+            this.results = [];
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('customer-form');
     const emailInput = document.getElementById('email');

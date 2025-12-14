@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Customer;
+use App\Models\CustomerTaxProfile;
+use App\Http\Requests\StoreCustomerRequest;
+use App\Http\Requests\UpdateCustomerRequest;
 
 class CustomerController extends Controller
 {
@@ -35,7 +38,15 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        return view('customers.create');
+        $identificationDocuments = \App\Models\DianIdentificationDocument::orderBy('id')->get();
+        $legalOrganizations = \App\Models\DianLegalOrganization::orderBy('id')->get();
+        $tributes = \App\Models\DianCustomerTribute::orderBy('id')->get();
+        
+        return view('customers.create', compact(
+            'identificationDocuments',
+            'legalOrganizations',
+            'tributes'
+        ));
     }
 
     /**
@@ -97,31 +108,67 @@ class CustomerController extends Controller
      */
     public function edit(Customer $customer)
     {
+        $customer->load(['taxProfile']);
         $customer->loadCount(['sales', 'repairs']);
-        return view('customers.edit', compact('customer'));
+        
+        $identificationDocuments = \App\Models\DianIdentificationDocument::orderBy('id')->get();
+        $legalOrganizations = \App\Models\DianLegalOrganization::orderBy('id')->get();
+        $tributes = \App\Models\DianCustomerTribute::orderBy('id')->get();
+        
+        return view('customers.edit', compact(
+            'customer',
+            'identificationDocuments',
+            'legalOrganizations',
+            'tributes'
+        ));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Customer $customer)
+    public function update(UpdateCustomerRequest $request, Customer $customer)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'nullable|email|max:255|unique:customers,email,' . $customer->id,
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:255',
-            'city' => 'nullable|string|max:100',
-            'state' => 'nullable|string|max:100',
-            'zip_code' => 'nullable|string|max:10',
-            'notes' => 'nullable|string',
-            'is_active' => 'boolean',
-        ]);
+        $data = $request->validated();
+        $data['is_active'] = $request->has('is_active') ? true : false;
+        $requiresElectronicInvoice = $request->boolean('requires_electronic_invoice');
 
-        $data = $request->all();
-        $data['is_active'] = $request->has('is_active');
-
+        // Update customer
         $customer->update($data);
+
+        // Handle tax profile
+        if ($requiresElectronicInvoice) {
+            if ($customer->taxProfile) {
+                // Update existing profile
+                $customer->taxProfile->update([
+                    'identification_document_id' => $request->input('identification_document_id'),
+                    'identification' => $request->input('identification'),
+                    'dv' => $request->input('dv'),
+                    'legal_organization_id' => $request->input('legal_organization_id'),
+                    'company' => $request->input('company'),
+                    'trade_name' => $request->input('trade_name'),
+                    'tribute_id' => $request->input('tribute_id'),
+                    'municipality_id' => $request->input('municipality_id'),
+                ]);
+            } else {
+                // Create new profile
+                CustomerTaxProfile::create([
+                    'customer_id' => $customer->id,
+                    'identification_document_id' => $request->input('identification_document_id'),
+                    'identification' => $request->input('identification'),
+                    'dv' => $request->input('dv'),
+                    'legal_organization_id' => $request->input('legal_organization_id'),
+                    'company' => $request->input('company'),
+                    'trade_name' => $request->input('trade_name'),
+                    'tribute_id' => $request->input('tribute_id'),
+                    'municipality_id' => $request->input('municipality_id'),
+                ]);
+            }
+        } else {
+            // Remove tax profile if exists
+            if ($customer->taxProfile) {
+                $customer->taxProfile->delete();
+            }
+        }
 
         return redirect()->route('customers.index')
             ->with('success', 'Cliente actualizado exitosamente.');

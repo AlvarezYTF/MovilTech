@@ -10,6 +10,7 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\RepairController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\DeploymentController;
+use App\Http\Controllers\ElectronicInvoiceController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 
@@ -119,6 +120,17 @@ Route::middleware('auth')->group(function () {
     // PDF de ventas - con middleware de permisos
     Route::middleware('permission:view_sales')->group(function () {
         Route::get('/sales/{sale}/pdf', [SaleController::class, 'pdf'])->name('sales.pdf');
+    });
+
+    // Facturas electrónicas
+    Route::middleware('permission:create_sales')->group(function () {
+        Route::post('/sales/{sale}/electronic-invoice/generate', [\App\Http\Controllers\ElectronicInvoiceController::class, 'generate'])
+            ->name('electronic-invoices.generate');
+    });
+
+    Route::middleware('permission:view_sales')->group(function () {
+        Route::get('/electronic-invoices/{electronicInvoice}', [\App\Http\Controllers\ElectronicInvoiceController::class, 'show'])
+            ->name('electronic-invoices.show');
     });
 });
 

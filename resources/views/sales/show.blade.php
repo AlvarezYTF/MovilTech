@@ -55,6 +55,23 @@
                 </a>
                 @endcan
                 
+                @if($sale->requiresElectronicInvoice() && !$sale->hasElectronicInvoice())
+                    <form method="POST" action="{{ route('electronic-invoices.generate', $sale) }}" class="inline">
+                        @csrf
+                        <button type="submit" 
+                                class="inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-blue-600 bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 hover:border-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-sm hover:shadow-md">
+                            <i class="fas fa-file-invoice mr-2"></i>
+                            <span>Generar Factura Electrónica</span>
+                        </button>
+                    </form>
+                @elseif($sale->hasElectronicInvoice())
+                    <a href="{{ route('electronic-invoices.show', $sale->electronicInvoice) }}" 
+                       class="inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-green-600 bg-green-600 text-white text-sm font-semibold hover:bg-green-700 hover:border-green-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 shadow-sm hover:shadow-md">
+                        <i class="fas fa-file-invoice-dollar mr-2"></i>
+                        <span>Ver Factura Electrónica</span>
+                    </a>
+                @endif
+                
                 <a href="{{ route('sales.index') }}" 
                    class="inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-emerald-600 bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 hover:border-emerald-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 shadow-sm hover:shadow-md">
                     <i class="fas fa-arrow-left mr-2"></i>

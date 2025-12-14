@@ -2,21 +2,48 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\V1\ProductController;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::get('/municipalities/search', function (Request $request) {
+    $term = $request->query('q', '');
+    
+    if (strlen($term) < 2) {
+        return response()->json([]);
+    }
+    
+    $municipalities = \App\Models\DianMunicipality::search($term)
+        ->limit(20)
+        ->get()
+        ->map(function ($municipality) {
+            return [
+                'factus_id' => $municipality->factus_id,
+                'name' => $municipality->name,
+                'department' => $municipality->department,
+                'code' => $municipality->code,
+                'display' => "{$municipality->name} – {$municipality->department}",
+            ];
+        });
+    
+    return response()->json($municipalities);
 });
 
-Route::get('products/', [ProductController::class, 'index'])->name('api.product.index');
+Route::get('/measurement-units/search', function (Request $request) {
+    $term = $request->query('q', '');
+    
+    if (strlen($term) < 2) {
+        return response()->json([]);
+    }
+    
+    $units = \App\Models\DianMeasurementUnit::search($term)
+        ->limit(20)
+        ->get()
+        ->map(function ($unit) {
+            return [
+                'factus_id' => $unit->factus_id,
+                'name' => $unit->name,
+                'code' => $unit->code,
+                'display' => "{$unit->name} ({$unit->code})",
+            ];
+        });
+    
+    return response()->json($units);
+});
