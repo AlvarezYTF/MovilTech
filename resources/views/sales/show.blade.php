@@ -48,14 +48,14 @@
             
             <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 @can('edit_sales')
-                <a href="{{ route('sales.edit', $sale) }}"
+                <a href="{{ route('sales.edit', $sale) }}" 
                    class="inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-gray-200 bg-white text-gray-700 text-sm font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
                     <i class="fas fa-edit mr-2"></i>
                     <span>Editar</span>
                 </a>
                 @endcan
                 
-                <a href="{{ route('sales.index') }}"
+                <a href="{{ route('sales.index') }}" 
                    class="inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-emerald-600 bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 hover:border-emerald-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 shadow-sm hover:shadow-md">
                     <i class="fas fa-arrow-left mr-2"></i>
                     <span>Volver</span>
@@ -259,7 +259,7 @@
                                 </td>
                                 <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
                                     <span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-gray-100 text-gray-700 text-sm font-semibold">
-                                        {{ $item->quantity }}
+                                    {{ $item->quantity }}
                                     </span>
                                 </td>
                                 <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -267,7 +267,7 @@
                                 </td>
                                 <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-right">
                                     <span class="text-sm font-bold text-emerald-600">
-                                        ${{ number_format($item->total_price, 2) }}
+                                    ${{ number_format($item->total_price, 2) }}
                                     </span>
                                 </td>
                             </tr>
@@ -435,7 +435,7 @@
                 
                 <div class="space-y-3">
                     @if(route('sales.pdf', $sale))
-                    <a href="{{ route('sales.pdf', $sale) }}"
+                    <a href="{{ route('sales.pdf', $sale) }}" 
                        class="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl border-2 border-red-600 bg-red-600 text-white text-sm font-semibold hover:bg-red-700 hover:border-red-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 shadow-sm hover:shadow-md">
                         <i class="fas fa-file-pdf mr-2"></i>
                         Descargar PDF
@@ -443,7 +443,7 @@
                     @endif
                     
                     @can('edit_sales')
-                    <a href="{{ route('sales.edit', $sale) }}"
+                    <a href="{{ route('sales.edit', $sale) }}" 
                        class="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-gray-700 text-sm font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
                         <i class="fas fa-edit mr-2"></i>
                         Editar Venta

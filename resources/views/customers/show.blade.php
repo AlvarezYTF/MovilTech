@@ -51,14 +51,14 @@
             
             <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 @can('edit_customers')
-                <a href="{{ route('customers.edit', $customer) }}"
+                <a href="{{ route('customers.edit', $customer) }}" 
                    class="inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-gray-200 bg-white text-gray-700 text-sm font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
                     <i class="fas fa-edit mr-2"></i>
                     <span>Editar Cliente</span>
                 </a>
                 @endcan
                 
-                <a href="{{ route('customers.index') }}"
+                <a href="{{ route('customers.index') }}" 
                    class="inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-emerald-600 bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 hover:border-emerald-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 shadow-sm hover:shadow-md">
                     <i class="fas fa-arrow-left mr-2"></i>
                     <span>Volver</span>
@@ -81,7 +81,7 @@
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div class="space-y-4">
-                        <div>
+                            <div>
                             <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                                 ID del Cliente
                             </label>
@@ -92,36 +92,36 @@
                         </div>
                         
                         @if($customer->email)
-                        <div>
+                            <div>
                             <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                                 Correo Electrónico
                             </label>
                             <div class="flex items-center space-x-2 text-sm">
                                 <i class="fas fa-envelope text-gray-400"></i>
                                 <a href="mailto:{{ $customer->email }}" class="text-emerald-600 hover:text-emerald-700 hover:underline">
-                                    {{ $customer->email }}
-                                </a>
+                                        {{ $customer->email }}
+                                    </a>
                             </div>
                         </div>
                         @endif
                         
                         @if($customer->phone)
-                        <div>
+                            <div>
                             <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                                 Teléfono
                             </label>
                             <div class="flex items-center space-x-2 text-sm">
                                 <i class="fas fa-phone text-gray-400"></i>
                                 <a href="tel:{{ $customer->phone }}" class="text-emerald-600 hover:text-emerald-700 hover:underline">
-                                    {{ $customer->phone }}
-                                </a>
+                                        {{ $customer->phone }}
+                                    </a>
                             </div>
                         </div>
                         @endif
                     </div>
                     
                     <div class="space-y-4">
-                        <div>
+                            <div>
                             <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                                 Fecha de Registro
                             </label>
@@ -131,7 +131,7 @@
                             </div>
                         </div>
                         
-                        <div>
+                            <div>
                             <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                                 Última Actualización
                             </label>
@@ -151,14 +151,14 @@
                     <div class="flex items-start space-x-2 text-sm text-gray-900">
                         <i class="fas fa-map-marker-alt text-gray-400 mt-0.5"></i>
                         <div>
-                            @if($customer->address)
-                                <div>{{ $customer->address }}</div>
-                            @endif
-                            @if($customer->city || $customer->state || $customer->zip_code)
+                                @if($customer->address)
+                                    <div>{{ $customer->address }}</div>
+                                @endif
+                                @if($customer->city || $customer->state || $customer->zip_code)
                                 <div class="text-gray-600 mt-0.5">
                                     {{ trim(implode(', ', array_filter([$customer->city, $customer->state, $customer->zip_code]))) }}
-                                </div>
-                            @endif
+                                    </div>
+                                @endif
                         </div>
                     </div>
                 </div>
@@ -221,27 +221,27 @@
                                 </td>
                                 <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
                                     <span class="inline-flex items-center px-2 py-1 rounded-lg bg-gray-100 text-gray-700 text-xs font-mono font-semibold">
-                                        #{{ $sale->id }}
+                                    #{{ $sale->id }}
                                     </span>
                                 </td>
                                 <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
                                     <span class="text-sm font-bold text-emerald-600">
-                                        ${{ number_format($sale->total, 2) }}
+                                    ${{ number_format($sale->total, 2) }}
                                     </span>
                                 </td>
                                 <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex items-center justify-end space-x-3">
-                                        <a href="{{ route('sales.show', $sale) }}"
+                                    <a href="{{ route('sales.show', $sale) }}" 
                                            class="text-blue-600 hover:text-blue-700 transition-colors"
                                            title="Ver detalles">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
+                                        <i class="fas fa-eye"></i>
+                                    </a>
                                         @if(route('sales.pdf', $sale))
-                                        <a href="{{ route('sales.pdf', $sale) }}"
+                                    <a href="{{ route('sales.pdf', $sale) }}" 
                                            class="text-red-600 hover:text-red-700 transition-colors"
                                            title="Descargar PDF">
-                                            <i class="fas fa-file-pdf"></i>
-                                        </a>
+                                        <i class="fas fa-file-pdf"></i>
+                                    </a>
                                         @endif
                                     </div>
                                 </td>
@@ -303,7 +303,7 @@
                                 </td>
                                 <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
                                     <span class="inline-flex items-center px-2 py-1 rounded-lg bg-gray-100 text-gray-700 text-xs font-mono font-semibold">
-                                        #{{ $repair->id }}
+                                    #{{ $repair->id }}
                                     </span>
                                 </td>
                                 <td class="px-4 sm:px-6 py-4">
@@ -314,7 +314,7 @@
                                 </td>
                                 <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
                                     <span class="text-sm font-bold text-amber-600">
-                                        ${{ number_format($repair->repair_cost, 2) }}
+                                    ${{ number_format($repair->repair_cost, 2) }}
                                     </span>
                                 </td>
                                 <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
@@ -341,7 +341,7 @@
                                     @endif
                                 </td>
                                 <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <a href="{{ route('repairs.show', $repair) }}"
+                                    <a href="{{ route('repairs.show', $repair) }}" 
                                        class="text-blue-600 hover:text-blue-700 transition-colors"
                                        title="Ver detalles">
                                         <i class="fas fa-eye"></i>
@@ -439,7 +439,7 @@
                 
                 <div class="space-y-3">
                     @can('edit_customers')
-                    <a href="{{ route('customers.edit', $customer) }}"
+                    <a href="{{ route('customers.edit', $customer) }}" 
                        class="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-gray-700 text-sm font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
                         <i class="fas fa-edit mr-2"></i>
                         Editar Cliente
@@ -447,7 +447,7 @@
                     @endcan
                     
                     @can('create_sales')
-                    <a href="{{ route('sales.create', ['customer_id' => $customer->id]) }}"
+                    <a href="{{ route('sales.create', ['customer_id' => $customer->id]) }}" 
                        class="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl border-2 border-emerald-600 bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 hover:border-emerald-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 shadow-sm hover:shadow-md">
                         <i class="fas fa-shopping-cart mr-2"></i>
                         Nueva Venta
@@ -455,7 +455,7 @@
                     @endcan
                     
                     @can('create_repairs')
-                    <a href="{{ route('repairs.create', ['customer_id' => $customer->id]) }}"
+                    <a href="{{ route('repairs.create', ['customer_id' => $customer->id]) }}" 
                        class="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl border-2 border-amber-600 bg-amber-600 text-white text-sm font-semibold hover:bg-amber-700 hover:border-amber-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 shadow-sm hover:shadow-md">
                         <i class="fas fa-tools mr-2"></i>
                         Nueva Reparación

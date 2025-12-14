@@ -92,11 +92,11 @@
              x-init="init()">
             <div class="flex items-center justify-between mb-4 sm:mb-6">
                 <div class="flex items-center space-x-2 sm:space-x-3">
-                    <div class="p-2 rounded-xl bg-violet-50 text-violet-600">
-                        <i class="fas fa-box text-sm"></i>
-                    </div>
-                    <h2 class="text-base sm:text-lg font-semibold text-gray-900">Productos</h2>
+                <div class="p-2 rounded-xl bg-violet-50 text-violet-600">
+                    <i class="fas fa-box text-sm"></i>
                 </div>
+                <h2 class="text-base sm:text-lg font-semibold text-gray-900">Productos</h2>
+            </div>
                 <div class="text-sm text-gray-600">
                     <span x-text="items.length"></span> producto(s) agregado(s)
                 </div>
@@ -188,8 +188,8 @@
                         <div class="mt-1.5 text-xs" :class="newItem.stock === 0 ? 'text-red-600 font-semibold' : 'text-gray-500'">
                             Stock: <span x-text="newItem.stock || '-'"></span>
                             <span x-show="newItem.stock === 0" class="ml-1">(Sin stock disponible)</span>
-                        </div>
                     </div>
+                </div>
 
                     <!-- Precio Unitario -->
                     <div>
@@ -211,9 +211,9 @@
 
                     <!-- Total y Botón -->
                     <div class="flex flex-col gap-2">
-                        <div>
+                    <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-2">Total</label>
-                            <div class="relative">
+                        <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <span class="text-gray-500 text-xs">$</span>
                                 </div>
@@ -571,7 +571,7 @@ function saleProducts() {
                 if (quantityInput) {
                     quantityInput.focus();
                     quantityInput.select();
-                }
+    }
             });
         },
 
@@ -603,7 +603,7 @@ function saleProducts() {
                     this.newItem.quantity = currentStock > 0 ? 1 : 0;
                 }
                 this.updateItemTotal();
-            } else {
+        } else {
                 this.newItem.product_name = '';
                 if (this.editingIndex === null) {
                     this.newItem.unit_price = 0;

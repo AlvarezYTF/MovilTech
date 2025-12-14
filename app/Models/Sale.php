@@ -98,4 +98,28 @@ class Sale extends Model
         $this->calculateTotal();
         return $this;
     }
+
+    /**
+     * Get the electronic invoice for the sale.
+     */
+    public function electronicInvoice()
+    {
+        return $this->hasOne(ElectronicInvoice::class);
+    }
+
+    /**
+     * Check if sale has electronic invoice.
+     */
+    public function hasElectronicInvoice(): bool
+    {
+        return $this->electronicInvoice !== null;
+    }
+
+    /**
+     * Check if sale requires electronic invoice.
+     */
+    public function requiresElectronicInvoice(): bool
+    {
+        return $this->customer->requires_electronic_invoice ?? false;
+    }
 }

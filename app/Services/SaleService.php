@@ -31,7 +31,7 @@ class SaleService
             $subtotal = 0;
             foreach ($items as $item) {
                 $product = Product::findOrFail($item['product_id']);
-                
+            
                 if ($product->quantity < $item['quantity']) {
                     throw new \Exception('Stock insuficiente para ' . $product->name . '. Stock disponible: ' . $product->quantity);
                 }
@@ -66,15 +66,15 @@ class SaleService
                 $product = Product::findOrFail($item['product_id']);
                 $itemTotal = $item['quantity'] * $item['unit_price'];
 
-                SaleItem::create([
-                    'sale_id' => $sale->id,
+            SaleItem::create([
+                'sale_id' => $sale->id,
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
                     'unit_price' => $item['unit_price'],
                     'total_price' => $itemTotal,
-                ]);
+            ]);
 
-                // Update product stock
+            // Update product stock
                 $product->decrement('quantity', $item['quantity']);
             }
 
@@ -103,15 +103,15 @@ class SaleService
             foreach ($sale->saleItems as $originalItem) {
                 $originalProduct = Product::find($originalItem->product_id);
                 if ($originalProduct) {
-                    $originalProduct->increment('quantity', $originalItem->quantity);
-                }
+                $originalProduct->increment('quantity', $originalItem->quantity);
+            }
             }
 
             // Verify stock availability for all new products
             $subtotal = 0;
             foreach ($items as $item) {
                 $product = Product::findOrFail($item['product_id']);
-                
+            
                 // Check if this product was in the original sale
                 $originalItem = $sale->saleItems->firstWhere('product_id', $item['product_id']);
                 $availableStock = $product->quantity + ($originalItem ? $originalItem->quantity : 0);

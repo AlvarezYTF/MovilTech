@@ -11,23 +11,23 @@
             <div class="flex items-center space-x-3 sm:space-x-4">
                 <div class="p-2.5 sm:p-3 rounded-xl bg-blue-50 text-blue-600">
                     <i class="fas fa-boxes text-lg sm:text-xl"></i>
-                </div>
-                <div>
+                    </div>
+                    <div>
                     <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Gestión de Inventario</h1>
                     <div class="flex items-center space-x-2 mt-1">
                         <span class="text-xs sm:text-sm text-gray-500">
                             <span class="font-semibold text-gray-900">{{ $products->total() }}</span> productos registrados
-                        </span>
+                            </span>
                         <span class="text-gray-300 hidden sm:inline">•</span>
                         <span class="text-xs sm:text-sm text-gray-500 hidden sm:inline">
-                            <i class="fas fa-chart-line mr-1"></i> Panel de control
-                        </span>
+                                <i class="fas fa-chart-line mr-1"></i> Panel de control
+                            </span>
                     </div>
                 </div>
             </div>
             
             @can('create_products')
-            <a href="{{ route('products.create') }}"
+            <a href="{{ route('products.create') }}" 
                class="inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-blue-600 bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 hover:border-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-sm hover:shadow-md">
                 <i class="fas fa-plus mr-2"></i>
                 <span>Nuevo Producto</span>
@@ -40,7 +40,7 @@
     <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
         <form method="GET" action="{{ route('products.index') }}" class="space-y-4">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div>
+            <div>
                     <label for="search" class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
                         Buscar
                     </label>
@@ -48,56 +48,56 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-search text-gray-400 text-sm"></i>
                         </div>
-                        <input type="text" id="search" name="search" value="{{ request('search') }}"
+                <input type="text" id="search" name="search" value="{{ request('search') }}" 
                                class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                placeholder="Nombre o SKU...">
                     </div>
-                </div>
-                
-                <div>
+            </div>
+            
+            <div>
                     <label for="category_id" class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
                         Categoría
                     </label>
                     <div class="relative">
                         <select id="category_id" name="category_id"
                                 class="block w-full pl-3 pr-10 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white">
-                            <option value="">Todas las categorías</option>
-                            @foreach($categories as $category)
-                                <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                                    {{ $category->name }}
-                                </option>
-                            @endforeach
-                        </select>
+                    <option value="">Todas las categorías</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
                         </div>
                     </div>
-                </div>
-                
-                <div>
+            </div>
+            
+            <div>
                     <label for="status" class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
                         Estado
                     </label>
                     <div class="relative">
                         <select id="status" name="status"
                                 class="block w-full pl-3 pr-10 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white">
-                            <option value="">Todos los estados</option>
-                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Activo</option>
-                            <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactivo</option>
-                            <option value="discontinued" {{ request('status') == 'discontinued' ? 'selected' : '' }}>Descontinuado</option>
-                        </select>
+                    <option value="">Todos los estados</option>
+                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Activo</option>
+                    <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactivo</option>
+                    <option value="discontinued" {{ request('status') == 'discontinued' ? 'selected' : '' }}>Descontinuado</option>
+                </select>
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
                         </div>
                     </div>
-                </div>
-                
-                <div class="flex items-end">
+            </div>
+            
+            <div class="flex items-end">
                     <button type="submit"
                             class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl border-2 border-gray-200 bg-white text-gray-700 text-sm font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         <i class="fas fa-filter mr-2"></i>
-                        Filtrar
-                    </button>
+                    Filtrar
+                </button>
                 </div>
             </div>
         </form>
@@ -216,8 +216,8 @@
                                         onclick="openDeleteModal({{ $product->id }}, {{ json_encode($product->name) }}, {{ json_encode($product->sku) }})"
                                         class="text-red-600 hover:text-red-700 transition-colors"
                                         title="Eliminar">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 @endcan
                             </div>
                         </td>
@@ -422,8 +422,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('[data-color]').forEach(function(element) {
         const color = element.getAttribute('data-color');
         if (color) {
-            element.style.backgroundColor = color + '20';
-            element.style.color = color;
+        element.style.backgroundColor = color + '20';
+        element.style.color = color;
         }
     });
 });

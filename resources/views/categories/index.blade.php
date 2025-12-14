@@ -11,23 +11,23 @@
             <div class="flex items-center space-x-3 sm:space-x-4">
                 <div class="p-2.5 sm:p-3 rounded-xl bg-violet-50 text-violet-600">
                     <i class="fas fa-tags text-lg sm:text-xl"></i>
-                </div>
-                <div>
+                    </div>
+                    <div>
                     <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Gestión de Categorías</h1>
                     <div class="flex items-center space-x-2 mt-1">
                         <span class="text-xs sm:text-sm text-gray-500">
                             <span class="font-semibold text-gray-900">{{ $categories->total() }}</span> categorías registradas
-                        </span>
+                            </span>
                         <span class="text-gray-300 hidden sm:inline">•</span>
                         <span class="text-xs sm:text-sm text-gray-500 hidden sm:inline">
-                            <i class="fas fa-chart-line mr-1"></i> Panel de administración
-                        </span>
+                                <i class="fas fa-chart-line mr-1"></i> Panel de administración
+                            </span>
                     </div>
                 </div>
             </div>
             
             @can('create_categories')
-            <a href="{{ route('categories.create') }}"
+            <a href="{{ route('categories.create') }}" 
                class="inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-violet-600 bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 hover:border-violet-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 shadow-sm hover:shadow-md">
                 <i class="fas fa-plus mr-2"></i>
                 <span>Nueva Categoría</span>
@@ -40,7 +40,7 @@
     <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
         <form method="GET" action="{{ route('categories.index') }}" class="space-y-4">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
+            <div>
                     <label for="search" class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
                         Buscar
                     </label>
@@ -48,35 +48,35 @@
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-search text-gray-400 text-sm"></i>
                         </div>
-                        <input type="text" id="search" name="search" value="{{ request('search') }}"
+                <input type="text" id="search" name="search" value="{{ request('search') }}" 
                                class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
                                placeholder="Nombre o descripción...">
                     </div>
-                </div>
-                
-                <div>
+            </div>
+            
+            <div>
                     <label for="status" class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
                         Estado
                     </label>
                     <div class="relative">
                         <select id="status" name="status"
                                 class="block w-full pl-3 sm:pl-4 pr-10 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent appearance-none bg-white">
-                            <option value="">Todos los estados</option>
-                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Activo</option>
-                            <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactivo</option>
-                        </select>
+                    <option value="">Todos los estados</option>
+                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Activo</option>
+                    <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactivo</option>
+                </select>
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
                         </div>
                     </div>
-                </div>
-                
-                <div class="flex items-end">
+            </div>
+            
+            <div class="flex items-end">
                     <button type="submit"
                             class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl border-2 border-gray-200 bg-white text-gray-700 text-sm font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500">
                         <i class="fas fa-filter mr-2"></i>
-                        Filtrar
-                    </button>
+                    Filtrar
+                </button>
                 </div>
             </div>
         </form>
@@ -181,8 +181,8 @@
                                         onclick="openDeleteModal({{ $category->id }}, {{ json_encode($category->name) }})"
                                         class="text-red-600 hover:text-red-700 transition-colors"
                                         title="Eliminar">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 @endcan
                             </div>
                         </td>
