@@ -4,208 +4,270 @@
 @section('header', 'Detalles de Venta')
 
 @section('content')
-<div class="max-w-6xl mx-auto space-y-6">
-    <!-- Header con acciones -->
-    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
-            <div class="flex items-center">
-                <div class="mr-4 p-3 rounded-lg flex items-center justify-center bg-green-50 border border-green-100">
-                    <i class="fas fa-receipt text-2xl text-green-600"></i>
+<div class="space-y-4 sm:space-y-6">
+    <!-- Header -->
+    <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div class="flex items-center space-x-3 sm:space-x-4">
+                <div class="h-12 w-12 sm:h-14 sm:w-14 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-receipt text-lg sm:text-xl"></i>
                 </div>
-                <div>
-                    <h1 class="text-2xl font-semibold text-gray-800">Venta #{{ $sale->invoice_number }}</h1>
-                    <div class="flex items-center space-x-3 mt-1">
+                <div class="flex-1 min-w-0">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-2">
+                        <h1 class="text-xl sm:text-2xl font-bold text-gray-900 truncate">Venta #{{ $sale->invoice_number }}</h1>
                         @if($sale->status === 'completed')
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                <i class="fas fa-check-circle mr-1"></i>
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">
+                                <i class="fas fa-check-circle mr-1.5"></i>
                                 Completada
                             </span>
                         @elseif($sale->status === 'pending')
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                <i class="fas fa-clock mr-1"></i>
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700">
+                                <i class="fas fa-clock mr-1.5"></i>
                                 Pendiente
                             </span>
                         @else
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                <i class="fas fa-times-circle mr-1"></i>
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700">
+                                <i class="fas fa-times-circle mr-1.5"></i>
                                 Cancelada
                             </span>
                         @endif
-                        <span class="text-gray-400">•</span>
-                        <span class="text-sm text-gray-500">
-                            <i class="fas fa-calendar mr-1"></i>
-                            {{ $sale->sale_date ? $sale->sale_date->format('d/m/Y') : $sale->created_at->format('d/m/Y') }}
-                        </span>
-                        <span class="text-gray-400">•</span>
-                        <span class="text-sm text-gray-500">
-                            <i class="fas fa-dollar-sign mr-1"></i>
-                            ${{ number_format($sale->total, 2) }}
-                        </span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm text-gray-500">
+                        <div class="flex items-center space-x-1.5">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>{{ $sale->sale_date ? $sale->sale_date->format('d/m/Y') : $sale->created_at->format('d/m/Y') }}</span>
+                        </div>
+                        <span class="hidden sm:inline text-gray-300">•</span>
+                        <div class="flex items-center space-x-1.5">
+                            <i class="fas fa-dollar-sign"></i>
+                            <span class="font-semibold text-gray-900">${{ number_format($sale->total, 2) }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
             
-            <div class="flex space-x-3">
+            <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 @can('edit_sales')
-                <a href="{{ route('sales.edit', $sale) }}" 
-                   class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200">
+                <a href="{{ route('sales.edit', $sale) }}"
+                   class="inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-gray-200 bg-white text-gray-700 text-sm font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
                     <i class="fas fa-edit mr-2"></i>
-                    Editar
+                    <span>Editar</span>
                 </a>
                 @endcan
                 
-                <a href="{{ route('sales.index') }}" 
-                   class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
+                <a href="{{ route('sales.index') }}"
+                   class="inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-emerald-600 bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 hover:border-emerald-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 shadow-sm hover:shadow-md">
                     <i class="fas fa-arrow-left mr-2"></i>
-                    Volver
+                    <span>Volver</span>
                 </a>
             </div>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Información principal -->
-        <div class="lg:col-span-2 space-y-6">
-            <!-- Detalles de la venta -->
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Información de la venta</h3>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+        <!-- Contenido Principal -->
+        <div class="lg:col-span-2 space-y-4 sm:space-y-6">
+            <!-- Información de la Venta -->
+            <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
+                <div class="flex items-center space-x-3 mb-4 sm:mb-6">
+                    <div class="p-2.5 rounded-xl bg-emerald-50 text-emerald-600">
+                        <i class="fas fa-info-circle text-lg"></i>
+                    </div>
+                    <h2 class="text-lg sm:text-xl font-bold text-gray-900">Información de la Venta</h2>
+                </div>
                 
-                <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Número de factura</dt>
-                        <dd class="mt-1 text-sm text-gray-900">{{ $sale->invoice_number }}</dd>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                            Número de Factura
+                        </label>
+                        <div class="flex items-center space-x-2 text-sm text-gray-900">
+                            <i class="fas fa-hashtag text-gray-400"></i>
+                            <span class="font-mono font-semibold">{{ $sale->invoice_number }}</span>
+                        </div>
                     </div>
                     
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Estado</dt>
-                        <dd class="mt-1">
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                            Estado
+                        </label>
+                        <div>
                             @if($sale->status === 'completed')
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    <i class="fas fa-check-circle mr-1"></i>
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">
+                                    <i class="fas fa-check-circle mr-1.5"></i>
                                     Completada
                                 </span>
                             @elseif($sale->status === 'pending')
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                    <i class="fas fa-clock mr-1"></i>
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700">
+                                    <i class="fas fa-clock mr-1.5"></i>
                                     Pendiente
                                 </span>
                             @else
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                    <i class="fas fa-times-circle mr-1"></i>
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700">
+                                    <i class="fas fa-times-circle mr-1.5"></i>
                                     Cancelada
                                 </span>
                             @endif
-                        </dd>
+                        </div>
                     </div>
                     
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Fecha de venta</dt>
-                        <dd class="mt-1 text-sm text-gray-900">
-                            {{ $sale->sale_date ? $sale->sale_date->format('d/m/Y') : $sale->created_at->format('d/m/Y') }}
-                        </dd>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                            Fecha de Venta
+                        </label>
+                        <div class="flex items-center space-x-2 text-sm text-gray-900">
+                            <i class="fas fa-calendar-alt text-gray-400"></i>
+                            <span>{{ $sale->sale_date ? $sale->sale_date->format('d/m/Y') : $sale->created_at->format('d/m/Y') }}</span>
+                        </div>
                     </div>
                     
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Vendedor</dt>
-                        <dd class="mt-1 text-sm text-gray-900">{{ $sale->user->name }}</dd>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                            Vendedor
+                        </label>
+                        <div class="flex items-center space-x-2 text-sm text-gray-900">
+                            <i class="fas fa-user text-gray-400"></i>
+                            <span>{{ $sale->user->name }}</span>
+                        </div>
                     </div>
                     
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Fecha de creación</dt>
-                        <dd class="mt-1 text-sm text-gray-900">{{ $sale->created_at->format('d/m/Y H:i') }}</dd>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                            Fecha de Creación
+                        </label>
+                        <div class="flex items-center space-x-2 text-sm text-gray-900">
+                            <i class="fas fa-calendar-plus text-gray-400"></i>
+                            <span>{{ $sale->created_at->format('d/m/Y H:i') }}</span>
+                        </div>
                     </div>
                     
                     @if($sale->updated_at != $sale->created_at)
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Última actualización</dt>
-                        <dd class="mt-1 text-sm text-gray-900">{{ $sale->updated_at->format('d/m/Y H:i') }}</dd>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                            Última Actualización
+                        </label>
+                        <div class="flex items-center space-x-2 text-sm text-gray-900">
+                            <i class="fas fa-calendar-edit text-gray-400"></i>
+                            <span>{{ $sale->updated_at->format('d/m/Y H:i') }}</span>
+                        </div>
                     </div>
                     @endif
-                </dl>
+                </div>
             </div>
             
-            <!-- Información del cliente -->
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Cliente</h3>
+            <!-- Información del Cliente -->
+            <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
+                <div class="flex items-center space-x-3 mb-4 sm:mb-6">
+                    <div class="p-2.5 rounded-xl bg-emerald-50 text-emerald-600">
+                        <i class="fas fa-user text-lg"></i>
+                    </div>
+                    <h2 class="text-lg sm:text-xl font-bold text-gray-900">Cliente</h2>
+                </div>
                 
                 <div class="flex items-center mb-4">
-                    <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                        <i class="fas fa-user text-blue-600"></i>
+                    <div class="h-12 w-12 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white text-base font-semibold shadow-sm flex-shrink-0">
+                        {{ strtoupper(substr($sale->customer->name, 0, 1)) }}
                     </div>
-                    <div>
-                        <div class="text-lg font-semibold text-gray-900">{{ $sale->customer->name }}</div>
-                        <div class="text-sm text-gray-500">{{ $sale->customer->email }}</div>
+                    <div class="ml-3 flex-1 min-w-0">
+                        <div class="text-base sm:text-lg font-semibold text-gray-900 truncate">{{ $sale->customer->name }}</div>
+                        @if($sale->customer->email)
+                        <div class="text-sm text-gray-500 truncate">{{ $sale->customer->email }}</div>
+                        @endif
                     </div>
                 </div>
                 
-                <dl class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     @if($sale->customer->phone)
                     <div>
-                        <dt class="text-sm font-medium text-gray-500">Teléfono</dt>
-                        <dd class="mt-1 text-sm text-gray-900">
-                            <a href="tel:{{ $sale->customer->phone }}" class="text-blue-600 hover:text-blue-800">
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                            Teléfono
+                        </label>
+                        <div class="flex items-center space-x-2 text-sm">
+                            <i class="fas fa-phone text-gray-400"></i>
+                            <a href="tel:{{ $sale->customer->phone }}" class="text-emerald-600 hover:text-emerald-700 hover:underline">
                                 {{ $sale->customer->phone }}
                             </a>
-                        </dd>
+                        </div>
                     </div>
                     @endif
                     
                     @if($sale->customer->address)
-                    <div class="md:col-span-2">
-                        <dt class="text-sm font-medium text-gray-500">Dirección</dt>
-                        <dd class="mt-1 text-sm text-gray-900">{{ $sale->customer->address }}</dd>
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
+                            Dirección
+                        </label>
+                        <div class="flex items-start space-x-2 text-sm text-gray-900">
+                            <i class="fas fa-map-marker-alt text-gray-400 mt-0.5"></i>
+                            <span>{{ $sale->customer->address }}</span>
+                        </div>
                     </div>
                     @endif
-                </dl>
+                </div>
             </div>
 
-            <!-- Productos vendidos -->
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Productos vendidos</h3>
+            <!-- Productos Vendidos -->
+            <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+                <div class="px-4 sm:px-6 py-4 border-b border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2 rounded-xl bg-emerald-50 text-emerald-600">
+                                <i class="fas fa-boxes text-lg"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg sm:text-xl font-bold text-gray-900">Productos Vendidos</h2>
+                                <p class="text-xs text-gray-500 mt-0.5">{{ $sale->saleItems->count() }} producto(s)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
+                    <table class="min-w-full divide-y divide-gray-100">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                     Producto
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                     Cantidad
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                     Precio Unitario
                                 </th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th class="px-4 sm:px-6 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">
                                     Total
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class="bg-white divide-y divide-gray-100">
                             @foreach($sale->saleItems as $item)
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap">
+                            <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                <td class="px-4 sm:px-6 py-4">
                                     <div class="flex items-center">
-                                        <div class="h-8 w-8 rounded-lg bg-gray-100 flex items-center justify-center mr-3">
+                                        <div class="h-10 w-10 rounded-xl bg-gray-100 flex items-center justify-center mr-3 flex-shrink-0">
                                             <i class="fas fa-box text-gray-600 text-sm"></i>
                                         </div>
-                                        <div>
-                                            <div class="text-sm font-medium text-gray-900">{{ $item->product->name }}</div>
-                                            <div class="text-sm text-gray-500">{{ $item->product->sku }}</div>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="text-sm font-semibold text-gray-900 truncate">{{ $item->product->name }}</div>
+                                            <div class="text-xs text-gray-500 font-mono mt-0.5">{{ $item->product->sku }}</div>
                                             @if($item->product->category)
-                                                <div class="text-xs text-gray-400">{{ $item->product->category->name }}</div>
+                                                <div class="text-xs text-gray-400 mt-0.5">{{ $item->product->category->name }}</div>
                                             @endif
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {{ $item->quantity }}
+                                <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-lg bg-gray-100 text-gray-700 text-sm font-semibold">
+                                        {{ $item->quantity }}
+                                    </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                     ${{ number_format($item->unit_price, 2) }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    ${{ number_format($item->total_price, 2) }}
+                                <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-right">
+                                    <span class="text-sm font-bold text-emerald-600">
+                                        ${{ number_format($item->total_price, 2) }}
+                                    </span>
                                 </td>
                             </tr>
                             @endforeach
@@ -216,45 +278,62 @@
             
             <!-- Notas -->
             @if($sale->notes)
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Notas</h3>
-                <p class="text-gray-700">{{ $sale->notes }}</p>
+            <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="p-2 rounded-xl bg-amber-50 text-amber-600">
+                        <i class="fas fa-sticky-note text-lg"></i>
+                    </div>
+                    <h2 class="text-lg sm:text-xl font-bold text-gray-900">Notas</h2>
+                </div>
+                <div class="flex items-start space-x-2 text-sm text-gray-700 leading-relaxed">
+                    <i class="fas fa-quote-left text-gray-300 mt-0.5"></i>
+                    <p class="flex-1">{{ $sale->notes }}</p>
+                </div>
             </div>
             @endif
         </div>
         
-        <!-- Panel lateral -->
-        <div class="space-y-6">
-            <!-- Resumen financiero -->
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Resumen financiero</h3>
+        <!-- Panel Lateral -->
+        <div class="space-y-4 sm:space-y-6">
+            <!-- Resumen Financiero -->
+            <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
+                <div class="flex items-center space-x-3 mb-4 sm:mb-6">
+                    <div class="p-2 rounded-xl bg-violet-50 text-violet-600">
+                        <i class="fas fa-calculator text-lg"></i>
+                    </div>
+                    <h2 class="text-lg sm:text-xl font-bold text-gray-900">Resumen Financiero</h2>
+                </div>
                 
                 <div class="space-y-4">
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-500">Subtotal</span>
-                        <span class="text-lg font-semibold text-gray-900">
+                    <div class="flex items-center justify-between pb-3 border-b border-gray-100">
+                        <span class="text-sm text-gray-600">Subtotal</span>
+                        <span class="text-sm font-semibold text-gray-900">
                             ${{ number_format($sale->subtotal, 2) }}
                         </span>
                     </div>
                     
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-500">Impuestos</span>
-                        <span class="text-lg font-semibold text-gray-900">
+                    @if($sale->tax_amount > 0)
+                    <div class="flex items-center justify-between pb-3 border-b border-gray-100">
+                        <span class="text-sm text-gray-600">Impuestos</span>
+                        <span class="text-sm font-semibold text-gray-900">
                             ${{ number_format($sale->tax_amount, 2) }}
                         </span>
                     </div>
+                    @endif
                     
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-500">Descuentos</span>
-                        <span class="text-lg font-semibold text-green-600">
+                    @if($sale->discount_amount > 0)
+                    <div class="flex items-center justify-between pb-3 border-b border-gray-100">
+                        <span class="text-sm text-gray-600">Descuentos</span>
+                        <span class="text-sm font-semibold text-emerald-600">
                             -${{ number_format($sale->discount_amount, 2) }}
                         </span>
                     </div>
+                    @endif
                     
-                    <div class="border-t border-gray-200 pt-4">
+                    <div class="pt-3 border-t-2 border-gray-200">
                         <div class="flex items-center justify-between">
-                            <span class="text-lg font-medium text-gray-900">Total</span>
-                            <span class="text-2xl font-bold text-green-600">
+                            <span class="text-base font-bold text-gray-900">Total</span>
+                            <span class="text-2xl sm:text-3xl font-bold text-emerald-600">
                                 ${{ number_format($sale->total, 2) }}
                             </span>
                         </div>
@@ -263,63 +342,73 @@
             </div>
             
             <!-- Estadísticas -->
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Estadísticas</h3>
+            <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
+                <div class="flex items-center space-x-3 mb-4 sm:mb-6">
+                    <div class="p-2 rounded-xl bg-blue-50 text-blue-600">
+                        <i class="fas fa-chart-bar text-lg"></i>
+                    </div>
+                    <h2 class="text-lg sm:text-xl font-bold text-gray-900">Estadísticas</h2>
+                </div>
                 
                 <div class="space-y-4">
                     <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-500">Productos vendidos</span>
-                        <span class="text-lg font-semibold text-blue-600">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-boxes text-gray-400"></i>
+                            <span class="text-sm text-gray-600">Productos</span>
+                        </div>
+                        <span class="text-lg font-bold text-blue-600">
                             {{ $sale->saleItems->count() }}
                         </span>
                     </div>
                     
                     <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-500">Cantidad total</span>
-                        <span class="text-lg font-semibold text-purple-600">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-layer-group text-gray-400"></i>
+                            <span class="text-sm text-gray-600">Cantidad Total</span>
+                        </div>
+                        <span class="text-lg font-bold text-violet-600">
                             {{ $sale->saleItems->sum('quantity') }}
                         </span>
                     </div>
                     
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm text-gray-500">Promedio por producto</span>
-                        <span class="text-lg font-semibold text-orange-600">
+                    @if($sale->saleItems->sum('quantity') > 0)
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-chart-line text-gray-400"></i>
+                            <span class="text-sm text-gray-600">Promedio/Unidad</span>
+                        </div>
+                        <span class="text-lg font-bold text-amber-600">
                             ${{ number_format($sale->total / $sale->saleItems->sum('quantity'), 2) }}
                         </span>
                     </div>
+                    @endif
                 </div>
             </div>
             
-            <!-- Acciones rápidas -->
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Acciones rápidas</h3>
+            <!-- Acciones Rápidas -->
+            <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
+                <div class="flex items-center space-x-3 mb-4 sm:mb-6">
+                    <div class="p-2 rounded-xl bg-indigo-50 text-indigo-600">
+                        <i class="fas fa-bolt text-lg"></i>
+                    </div>
+                    <h2 class="text-lg sm:text-xl font-bold text-gray-900">Acciones Rápidas</h2>
+                </div>
                 
                 <div class="space-y-3">
-                    <a href="{{ route('sales.pdf', $sale) }}" 
-                       class="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200">
+                    @if(route('sales.pdf', $sale))
+                    <a href="{{ route('sales.pdf', $sale) }}"
+                       class="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl border-2 border-red-600 bg-red-600 text-white text-sm font-semibold hover:bg-red-700 hover:border-red-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 shadow-sm hover:shadow-md">
                         <i class="fas fa-file-pdf mr-2"></i>
                         Descargar PDF
                     </a>
+                    @endif
                     
                     @can('edit_sales')
-                    <a href="{{ route('sales.edit', $sale) }}" 
-                       class="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
+                    <a href="{{ route('sales.edit', $sale) }}"
+                       class="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl border-2 border-gray-200 bg-white text-gray-700 text-sm font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500">
                         <i class="fas fa-edit mr-2"></i>
-                        Editar venta
+                        Editar Venta
                     </a>
-                    @endcan
-                    
-                    @can('delete_sales')
-                    <form method="POST" action="{{ route('sales.destroy', $sale) }}" 
-                          onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta venta? Esta acción no se puede deshacer.')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" 
-                                class="w-full inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200">
-                            <i class="fas fa-trash mr-2"></i>
-                            Eliminar venta
-                        </button>
-                    </form>
                     @endcan
                 </div>
             </div>
