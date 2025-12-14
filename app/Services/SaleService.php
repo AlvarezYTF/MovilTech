@@ -21,15 +21,31 @@ class SaleService
     public function createSale(array $data): Sale
     {
         return DB::transaction(function () use ($data) {
-            // Verify stock availability
-            $product = Product::findOrFail($data['product_id']);
+            $items = $data['items'] ?? [];
             
-            if ($product->quantity < $data['quantity']) {
-                throw new \Exception('Stock insuficiente. Stock disponible: ' . $product->quantity);
+            if (empty($items)) {
+                throw new \Exception('Debe agregar al menos un producto a la venta.');
+            }
+
+            // Verify stock availability for all products
+            $subtotal = 0;
+            foreach ($items as $item) {
+                $product = Product::findOrFail($item['product_id']);
+                
+                if ($product->quantity < $item['quantity']) {
+                    throw new \Exception('Stock insuficiente para ' . $product->name . '. Stock disponible: ' . $product->quantity);
+                }
+
+                $itemTotal = $item['quantity'] * $item['unit_price'];
+                $subtotal += $itemTotal;
             }
 
             // Generate invoice number
             $invoiceNumber = $this->generateInvoiceNumber();
+
+            $taxAmount = $data['tax_amount'] ?? 0;
+            $discountAmount = $data['discount_amount'] ?? 0;
+            $total = $subtotal + $taxAmount - $discountAmount;
 
             // Create the sale
             $sale = Sale::create([
@@ -37,25 +53,30 @@ class SaleService
                 'customer_id' => $data['customer_id'],
                 'user_id' => Auth::id(),
                 'sale_date' => $data['sale_date'],
-                'subtotal' => $data['total'],
-                'tax_amount' => $data['tax_amount'] ?? 0,
-                'discount_amount' => $data['discount_amount'] ?? 0,
-                'total' => $data['total'],
+                'subtotal' => $subtotal,
+                'tax_amount' => $taxAmount,
+                'discount_amount' => $discountAmount,
+                'total' => $total,
                 'status' => $data['status'] ?? 'completed',
                 'notes' => $data['notes'] ?? null,
             ]);
 
-            // Create sale item
-            SaleItem::create([
-                'sale_id' => $sale->id,
-                'product_id' => $data['product_id'],
-                'quantity' => $data['quantity'],
-                'unit_price' => $data['unit_price'],
-                'total_price' => $data['total'],
-            ]);
+            // Create sale items and update stock
+            foreach ($items as $item) {
+                $product = Product::findOrFail($item['product_id']);
+                $itemTotal = $item['quantity'] * $item['unit_price'];
 
-            // Update product stock
-            $product->decrement('quantity', $data['quantity']);
+                SaleItem::create([
+                    'sale_id' => $sale->id,
+                    'product_id' => $item['product_id'],
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $item['unit_price'],
+                    'total_price' => $itemTotal,
+                ]);
+
+                // Update product stock
+                $product->decrement('quantity', $item['quantity']);
+            }
 
             return $sale->load(['customer', 'user', 'saleItems.product']);
         });

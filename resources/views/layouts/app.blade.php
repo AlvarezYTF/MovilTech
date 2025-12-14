@@ -15,12 +15,18 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Alpine.js Cloak -->
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+    
     @stack('styles')
 </head>
-<body class="bg-gray-100" x-data="{ sidebarOpen: false }">
+<body class="bg-gray-100" x-data="{ sidebarOpen: false }" x-cloak>
     <div class="min-h-screen flex">
         <!-- Overlay para móvil -->
         <div x-show="sidebarOpen"
+             x-cloak
              @click="sidebarOpen = false"
              x-transition:enter="transition-opacity ease-linear duration-300"
              x-transition:enter-start="opacity-0"
@@ -32,8 +38,8 @@
              style="display: none;"></div>
         
         <!-- Sidebar -->
-        <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-               class="fixed inset-y-0 left-0 z-50 w-64 bg-gray-800 text-white transform transition-transform duration-300 ease-in-out lg:static lg:inset-0 flex-shrink-0 flex flex-col">
+        <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+               class="fixed inset-y-0 left-0 z-50 w-64 bg-gray-800 text-white transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 flex-shrink-0 flex flex-col">
             <div class="flex items-center justify-between p-4 lg:justify-center">
                 <div>
                     <h1 class="text-xl lg:text-2xl font-bold text-center">MovilTech</h1>

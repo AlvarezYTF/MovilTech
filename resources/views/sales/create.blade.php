@@ -92,116 +92,166 @@
         </div>
 
         <!-- Productos -->
-        <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
-            <div class="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
-                <div class="p-2 rounded-xl bg-violet-50 text-violet-600">
-                    <i class="fas fa-box text-sm"></i>
+        <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6" 
+             x-data="saleProducts()" 
+             x-init="init()">
+            <div class="flex items-center justify-between mb-4 sm:mb-6">
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <div class="p-2 rounded-xl bg-violet-50 text-violet-600">
+                        <i class="fas fa-box text-sm"></i>
+                    </div>
+                    <h2 class="text-base sm:text-lg font-semibold text-gray-900">Productos</h2>
                 </div>
-                <h2 class="text-base sm:text-lg font-semibold text-gray-900">Productos</h2>
+                <div class="text-sm text-gray-600">
+                    <span x-text="items.length"></span> producto(s) agregado(s)
+                </div>
             </div>
 
-            <div class="space-y-5 sm:space-y-6">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+            <!-- Formulario para agregar producto -->
+            <div class="bg-gray-50 rounded-xl p-4 sm:p-5 mb-4 sm:mb-6 border border-gray-200">
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
                     <!-- Producto -->
                     <div>
-                        <label for="product_id" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">
                             Producto <span class="text-red-500">*</span>
                         </label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                                <i class="fas fa-box text-gray-400 text-sm"></i>
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-box text-gray-400 text-xs"></i>
                             </div>
-                            <select name="product_id" id="product_id" required
-                                    class="block w-full pl-10 sm:pl-11 pr-10 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent appearance-none bg-white transition-all @error('product_id') border-red-300 focus:ring-red-500 @enderror">
-                                <option value="">Selecciona un producto</option>
+                            <select x-model="newItem.product_id" 
+                                    @change="updateProductInfo()"
+                                    class="block w-full pl-9 pr-8 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent appearance-none bg-white">
+                                <option value="">Selecciona...</option>
                                 @foreach($products as $product)
                                     <option value="{{ $product->id }}"
                                             data-price="{{ $product->price }}"
                                             data-stock="{{ $product->quantity }}"
-                                            {{ old('product_id') == $product->id ? 'selected' : '' }}>
-                                        {{ $product->name }} - Stock: {{ $product->quantity }} - ${{ number_format($product->price, 2) }}
+                                            data-name="{{ $product->name }}">
+                                        {{ $product->name }} - Stock: {{ $product->quantity }}
                                     </option>
                                 @endforeach
                             </select>
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <div class="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
                                 <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
                             </div>
                         </div>
-                        @error('product_id')
-                            <p class="mt-1.5 text-xs text-red-600 flex items-center">
-                                <i class="fas fa-exclamation-circle mr-1.5"></i>
-                                {{ $message }}
-                            </p>
-                        @enderror
                     </div>
 
                     <!-- Cantidad -->
                     <div>
-                        <label for="quantity" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">
                             Cantidad <span class="text-red-500">*</span>
                         </label>
-                        <div class="relative">
-                            <input type="number" name="quantity" id="quantity" min="1" required
-                                   value="{{ old('quantity', 1) }}"
-                                   class="block w-full px-3 sm:px-4 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all @error('quantity') border-red-300 focus:ring-red-500 @enderror">
+                        <input type="number" 
+                               x-model.number="newItem.quantity" 
+                               min="1"
+                               :max="newItem.stock"
+                               @input="updateItemTotal()"
+                               class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                        <div class="mt-1 text-xs text-gray-500">
+                            Stock: <span x-text="newItem.stock || '-'"></span>
                         </div>
-                        <div class="mt-1.5 flex items-center space-x-2">
-                            <span class="text-xs text-gray-500">Stock disponible:</span>
-                            <span id="stock-display" class="text-xs font-semibold text-gray-900">-</span>
-                        </div>
-                        @error('quantity')
-                            <p class="mt-1.5 text-xs text-red-600 flex items-center">
-                                <i class="fas fa-exclamation-circle mr-1.5"></i>
-                                {{ $message }}
-                            </p>
-                        @enderror
                     </div>
-                </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
                     <!-- Precio Unitario -->
                     <div>
-                        <label for="unit_price" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">
                             Precio Unitario <span class="text-red-500">*</span>
                         </label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                                <span class="text-gray-500 text-sm">$</span>
+                            <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                                <span class="text-gray-500 text-xs">$</span>
                             </div>
-                            <input type="number" name="unit_price" id="unit_price" step="0.01" min="0" required
-                                   value="{{ old('unit_price', '0.00') }}"
-                                   class="block w-full pl-10 sm:pl-11 pr-3 sm:pr-4 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all @error('unit_price') border-red-300 focus:ring-red-500 @enderror">
+                            <input type="number" 
+                                   x-model.number="newItem.unit_price" 
+                                   step="0.01" 
+                                   min="0"
+                                   @input="updateItemTotal()"
+                                   class="block w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
                         </div>
-                        @error('unit_price')
-                            <p class="mt-1.5 text-xs text-red-600 flex items-center">
-                                <i class="fas fa-exclamation-circle mr-1.5"></i>
-                                {{ $message }}
-                            </p>
-                        @enderror
                     </div>
 
-                    <!-- Total -->
-                    <div>
-                        <label for="total" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
-                            Total <span class="text-red-500">*</span>
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                                <span class="text-gray-500 text-sm">$</span>
+                    <!-- Total y Botón -->
+                    <div class="flex items-end space-x-2">
+                        <div class="flex-1">
+                            <label class="block text-xs font-semibold text-gray-700 mb-2">Total</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 text-xs">$</span>
+                                </div>
+                                <input type="text" 
+                                       :value="formatCurrency(newItem.total)" 
+                                       readonly
+                                       class="block w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 bg-gray-50 focus:outline-none">
                             </div>
-                            <input type="number" name="total" id="total" step="0.01" min="0" required readonly
-                                   value="{{ old('total', '0.00') }}"
-                                   class="block w-full pl-10 sm:pl-11 pr-3 sm:pr-4 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-900 bg-gray-50 focus:outline-none">
                         </div>
-                        @error('total')
-                            <p class="mt-1.5 text-xs text-red-600 flex items-center">
-                                <i class="fas fa-exclamation-circle mr-1.5"></i>
-                                {{ $message }}
-                            </p>
-                        @enderror
+                        <button type="button" 
+                                @click="addItem()"
+                                :disabled="!canAddItem()"
+                                class="px-4 py-2 rounded-lg border-2 border-emerald-600 bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 hover:border-emerald-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i class="fas fa-plus"></i>
+                        </button>
                     </div>
                 </div>
             </div>
+
+            <!-- Lista de productos agregados -->
+            <div x-show="items.length > 0" class="space-y-3">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Producto</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Cantidad</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Precio Unit.</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Total</th>
+                                <th class="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <template x-for="(item, index) in items" :key="index">
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-4 py-3 text-sm text-gray-900" x-text="item.product_name"></td>
+                                    <td class="px-4 py-3 text-sm text-gray-900" x-text="item.quantity"></td>
+                                    <td class="px-4 py-3 text-sm text-gray-900" x-text="formatCurrency(item.unit_price)"></td>
+                                    <td class="px-4 py-3 text-sm font-semibold text-emerald-600" x-text="formatCurrency(item.total)"></td>
+                                    <td class="px-4 py-3 text-right">
+                                        <button type="button" 
+                                                @click="removeItem(index)"
+                                                class="text-red-600 hover:text-red-700 transition-colors"
+                                                title="Eliminar">
+                                            <i class="fas fa-trash text-sm"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                        <tfoot class="bg-gray-50">
+                            <tr>
+                                <td colspan="3" class="px-4 py-3 text-sm font-bold text-gray-900 text-right">Total General:</td>
+                                <td class="px-4 py-3 text-lg font-bold text-emerald-600" x-text="formatCurrency(grandTotal)"></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Mensaje cuando no hay productos -->
+            <div x-show="items.length === 0" class="text-center py-8 text-gray-500">
+                <i class="fas fa-box text-3xl mb-2"></i>
+                <p class="text-sm">Agrega productos a la venta</p>
+            </div>
+
+            <!-- Campos ocultos para el formulario -->
+            <template x-for="(item, index) in items" :key="index">
+                <div>
+                    <input type="hidden" :name="`items[${index}][product_id]`" :value="item.product_id">
+                    <input type="hidden" :name="`items[${index}][quantity]`" :value="item.quantity">
+                    <input type="hidden" :name="`items[${index}][unit_price]`" :value="item.unit_price">
+                </div>
+            </template>
         </div>
 
         <!-- Notas -->
@@ -369,12 +419,147 @@
 
 @push('scripts')
 <script>
+function saleProducts() {
+    return {
+        items: [],
+        newItem: {
+            product_id: '',
+            product_name: '',
+            quantity: 1,
+            unit_price: 0,
+            stock: 0,
+            total: 0
+        },
+        products: @json($products->map(function($product) {
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'price' => (float)$product->price,
+                'stock' => (int)$product->quantity
+            ];
+        })->values()),
+
+        init() {
+            // Inicializar
+        },
+
+        updateProductInfo() {
+            const productId = parseInt(this.newItem.product_id);
+            const product = this.products.find(p => p.id === productId);
+            
+            if (product) {
+                this.newItem.product_name = product.name;
+                this.newItem.unit_price = product.price;
+                this.newItem.stock = product.stock;
+                this.newItem.quantity = 1;
+                this.updateItemTotal();
+            } else {
+                this.newItem.product_name = '';
+                this.newItem.unit_price = 0;
+                this.newItem.stock = 0;
+                this.newItem.total = 0;
+            }
+        },
+
+        updateItemTotal() {
+            const quantity = parseFloat(this.newItem.quantity) || 0;
+            const unitPrice = parseFloat(this.newItem.unit_price) || 0;
+            this.newItem.total = quantity * unitPrice;
+        },
+
+        canAddItem() {
+            return this.newItem.product_id && 
+                   this.newItem.quantity > 0 && 
+                   this.newItem.unit_price > 0 &&
+                   this.newItem.quantity <= this.newItem.stock;
+        },
+
+        addItem() {
+            if (!this.canAddItem()) {
+                this.showNotification('Por favor completa todos los campos correctamente', 'error');
+                return;
+            }
+
+            // Verificar que no se exceda el stock
+            if (this.newItem.quantity > this.newItem.stock) {
+                this.showNotification('La cantidad no puede exceder el stock disponible', 'error');
+                return;
+            }
+
+            // Verificar si el producto ya está agregado
+            const existingIndex = this.items.findIndex(item => item.product_id === this.newItem.product_id);
+            if (existingIndex !== -1) {
+                // Actualizar cantidad si ya existe
+                const existingItem = this.items[existingIndex];
+                const newQuantity = existingItem.quantity + this.newItem.quantity;
+                
+                if (newQuantity > this.newItem.stock) {
+                    this.showNotification('La cantidad total excede el stock disponible', 'error');
+                    return;
+                }
+                
+                existingItem.quantity = newQuantity;
+                existingItem.total = newQuantity * existingItem.unit_price;
+            } else {
+                // Agregar nuevo producto
+                this.items.push({
+                    product_id: this.newItem.product_id,
+                    product_name: this.newItem.product_name,
+                    quantity: this.newItem.quantity,
+                    unit_price: this.newItem.unit_price,
+                    total: this.newItem.total
+                });
+            }
+
+            // Resetear formulario
+            this.newItem = {
+                product_id: '',
+                product_name: '',
+                quantity: 1,
+                unit_price: 0,
+                stock: 0,
+                total: 0
+            };
+        },
+
+        removeItem(index) {
+            this.items.splice(index, 1);
+        },
+
+        get grandTotal() {
+            return this.items.reduce((sum, item) => sum + item.total, 0);
+        },
+
+        formatCurrency(value) {
+            return '$' + parseFloat(value).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        },
+
+        showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-xl shadow-lg ${
+                type === 'success' ? 'bg-emerald-100 text-emerald-800 border-2 border-emerald-200' : 'bg-red-100 text-red-800 border-2 border-red-200'
+            }`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} mr-2"></i>
+                    <span class="text-sm font-medium">${message}</span>
+                </div>
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.transition = 'opacity 0.3s ease-out';
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    notification.remove();
+                }, 300);
+            }, 3000);
+        }
+    };
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    const productSelect = document.getElementById('product_id');
-    const quantityInput = document.getElementById('quantity');
-    const unitPriceInput = document.getElementById('unit_price');
-    const totalInput = document.getElementById('total');
-    const stockDisplay = document.getElementById('stock-display');
     const customerSelect = document.getElementById('customer_id');
 
     // Elementos del modal
@@ -383,39 +568,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeCustomerModal = document.getElementById('close-customer-modal');
     const cancelCustomerModal = document.getElementById('cancel-customer-modal');
     const customerForm = document.getElementById('customer-form');
-
-    function updateTotal() {
-        const quantity = parseFloat(quantityInput.value) || 0;
-        const unitPrice = parseFloat(unitPriceInput.value) || 0;
-        const total = quantity * unitPrice;
-        totalInput.value = total.toFixed(2);
-    }
-
-    function updateStock() {
-        const selectedOption = productSelect.options[productSelect.selectedIndex];
-        if (selectedOption && selectedOption.dataset.stock) {
-            const stock = parseInt(selectedOption.dataset.stock);
-            stockDisplay.textContent = stock;
-            quantityInput.max = stock;
-            
-            // Validar cantidad actual si es mayor que el stock
-            if (parseInt(quantityInput.value) > stock) {
-                quantityInput.value = stock;
-                updateTotal();
-            }
-        } else {
-            stockDisplay.textContent = '-';
-            quantityInput.removeAttribute('max');
-        }
-    }
-
-    function updatePrice() {
-        const selectedOption = productSelect.options[productSelect.selectedIndex];
-        if (selectedOption && selectedOption.dataset.price) {
-            unitPriceInput.value = parseFloat(selectedOption.dataset.price).toFixed(2);
-            updateTotal();
-        }
-    }
 
     // Funciones del modal
     function openCustomerModal() {
@@ -528,40 +680,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 
-    // Event listeners para productos
-    if (productSelect) {
-        productSelect.addEventListener('change', function() {
-            updatePrice();
-            updateStock();
-        });
-    }
-
-    if (quantityInput) {
-        quantityInput.addEventListener('input', function() {
-            updateTotal();
-            // Validar que no exceda el stock disponible
-            const selectedOption = productSelect.options[productSelect.selectedIndex];
-            if (selectedOption && selectedOption.dataset.stock) {
-                const stock = parseInt(selectedOption.dataset.stock);
-                if (parseInt(this.value) > stock) {
-                    this.value = stock;
-                    updateTotal();
-                    showNotification('La cantidad no puede exceder el stock disponible', 'error');
-                }
+    // Validar que haya al menos un producto antes de enviar
+    const saleForm = document.getElementById('sale-form');
+    if (saleForm) {
+        saleForm.addEventListener('submit', function(e) {
+            const items = document.querySelectorAll('input[name^="items["]');
+            if (items.length === 0) {
+                e.preventDefault();
+                showNotification('Debe agregar al menos un producto a la venta', 'error');
+                return false;
             }
         });
     }
-
-    if (unitPriceInput) {
-        unitPriceInput.addEventListener('input', updateTotal);
-    }
-
-    // Inicializar
-    if (productSelect && productSelect.value) {
-        updatePrice();
-        updateStock();
-    }
-    updateTotal();
 });
 </script>
 @endpush
