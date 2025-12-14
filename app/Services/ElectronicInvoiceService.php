@@ -155,7 +155,7 @@ class ElectronicInvoiceService
 
                 // Extraer el número de documento de la respuesta si está disponible
                 $documentNumber = $response['number'] ?? $response['document'] ?? null;
-                
+
                 $invoice->update([
                     'status' => $this->mapStatusFromResponse($response),
                     'document' => $documentNumber ?? $invoice->document, // Actualizar con el número real de Factus si está disponible
@@ -212,11 +212,11 @@ class ElectronicInvoiceService
         // Si tenemos factus_company_id, podemos usarlo, pero también debemos enviar los datos
         // porque Factus puede requerir ambos para validación
         $issuer = [
-            'nit' => $company->nit,
-            'dv' => $company->dv,
-            'company_name' => $company->company_name,
-            'email' => $company->email,
-            'municipality_id' => $company->municipality->factus_id,
+                'nit' => $company->nit,
+                'dv' => $company->dv,
+                'company_name' => $company->company_name,
+                'email' => $company->email,
+                'municipality_id' => $company->municipality->factus_id,
             'economic_activity' => $company->economic_activity ?? null,
         ];
         
@@ -233,9 +233,9 @@ class ElectronicInvoiceService
         
         $customerData = [
             'identification_document_id' => $identificationDocument->id,
-            'identification' => $taxProfile->identification,
+                'identification' => $taxProfile->identification,
             'dv' => $taxProfile->dv ?? null,
-            'municipality_id' => $taxProfile->municipality->factus_id,
+                'municipality_id' => $taxProfile->municipality->factus_id,
         ];
         
         // Add names or company based on document type

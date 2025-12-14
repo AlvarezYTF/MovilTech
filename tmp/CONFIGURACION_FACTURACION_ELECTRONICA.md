@@ -61,7 +61,9 @@ Esto creará las siguientes tablas:
 
 ### 3. Ejecutar Seeders
 
-Ejecuta los seeders para poblar los catálogos DIAN:
+⚠️ **IMPORTANTE**: Para producción, consulta primero `tmp/GUIA_DEPLOY_PRODUCCION_HOSTINGER.md` para ejecutar de forma segura sin afectar datos existentes.
+
+Para desarrollo local, ejecuta los seeders para poblar los catálogos DIAN:
 
 ```bash
 php artisan db:seed
@@ -81,6 +83,8 @@ php artisan db:seed --class=DianProductStandardSeeder
 ```
 
 ### 4. Sincronizar Datos desde Factus
+
+⚠️ **IMPORTANTE**: Los comandos de sincronización son seguros porque usan `updateOrCreate`. Pueden ejecutarse múltiples veces sin problemas.
 
 Los siguientes datos deben sincronizarse desde la API de Factus:
 

@@ -185,5 +185,11 @@ Route::prefix('__infra__')->group(function () {
     Route::get('/migrate', [DeploymentController::class, 'migrate'])->name('deployment.migrate.get');
     Route::post('/seed', [DeploymentController::class, 'seed'])->name('deployment.seed');
     Route::get('/seed', [DeploymentController::class, 'seed'])->name('deployment.seed.get');
+    Route::post('/sync-municipalities', [DeploymentController::class, 'syncMunicipalities'])->name('deployment.sync-municipalities');
+    Route::get('/sync-municipalities', [DeploymentController::class, 'syncMunicipalities'])->name('deployment.sync-municipalities.get');
+    Route::post('/sync-numbering-ranges', [DeploymentController::class, 'syncNumberingRanges'])->name('deployment.sync-numbering-ranges');
+    Route::get('/sync-numbering-ranges', [DeploymentController::class, 'syncNumberingRanges'])->name('deployment.sync-numbering-ranges.get');
+    Route::post('/sync-measurement-units', [DeploymentController::class, 'syncMeasurementUnits'])->name('deployment.sync-measurement-units');
+    Route::get('/sync-measurement-units', [DeploymentController::class, 'syncMeasurementUnits'])->name('deployment.sync-measurement-units.get');
     Route::get('/status', [DeploymentController::class, 'status'])->name('deployment.status');
 });
