@@ -1,23 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UnitController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\Order\OrderController;
-use App\Http\Controllers\Order\DueOrderController;
-use App\Http\Controllers\Product\ProductController;
-use App\Http\Controllers\Purchase\PurchaseController;
-use App\Http\Controllers\Order\OrderPendingController;
-use App\Http\Controllers\Order\OrderVendidoController;
-use App\Http\Controllers\Quotation\QuotationController;
-use App\Http\Controllers\Dashboards\DashboardController;
-use App\Http\Controllers\Product\ProductExportController;
-use App\Http\Controllers\Product\ProductImportController;
+use App\Http\Controllers\SaleController;
+use App\Http\Controllers\RepairController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,80 +21,94 @@ use App\Http\Controllers\Product\ProductImportController;
 |
 */
 
-Route::get('php/', function () {
-    return phpinfo();
-});
-
+// Rutas de autenticación
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+    Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:3,1');
+});
 
+Route::middleware('auth')->group(function () {
+    // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // User Management
-    Route::resource('/users', UserController::class); //->except(['show']);
-    Route::put('/user/change-password/{username}', [UserController::class, 'updatePassword'])->name('users.updatePassword');
+    // Logout
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::get('/profile/settings', [ProfileController::class, 'settings'])->name('profile.settings');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Productos (Inventario) - Resource route with rate limiting
+    Route::resource('products', ProductController::class)->middleware('throttle:60,1');
 
-    Route::resource('/categories', CategoryController::class);
+    // Clientes - Resource route
+    Route::resource('customers', CustomerController::class);
 
-    // Route Products
-    Route::get('/products/import', [ProductImportController::class, 'create'])->name('products.import.view');
-    Route::post('/products/import', [ProductImportController::class, 'store'])->name('products.import.store');
-    Route::get('/products/export', [ProductExportController::class, 'create'])->name('products.export.store');
-    Route::resource('/products', ProductController::class);
+    // Categorías - con middleware de permisos para administradores
+    Route::middleware('permission:view_categories')->group(function () {
+        Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+    });
 
-    // Route Orders
-    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
-    Route::delete('/orders/{order}', [OrderController::class, 'destroy'])->name('orders.destroy');
-    Route::get('/orders/pendiente', OrderPendingController::class)->name('orders.pendiente');
-    Route::get('/orders/vendido', OrderVendidoController::class)->name('orders.vendido');
+    Route::middleware('permission:create_categories')->group(function () {
+        Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
+        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+    });
 
-    Route::get('/orders/create', [OrderController::class, 'create'])->name('orders.create');
-    Route::post('/orders/store', [OrderController::class, 'store'])->name('orders.store');
+    Route::middleware('permission:edit_categories')->group(function () {
+        Route::get('/categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
+        Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+    });
 
-    Route::post('/invoice/create', [InvoiceController::class, 'create'])->name('invoice.create');
-    
-    Route::put('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+    Route::middleware('permission:delete_categories')->group(function () {
+        Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+    });
 
-    // SHOW ORDER
-    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
-    Route::put('/orders/update/{order}', [OrderController::class, 'update'])->name('orders.update');
+    // Show debe ir al final para evitar conflictos con create y edit
+    Route::middleware('permission:view_categories')->group(function () {
+        Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
+    });
 
-    // DUES
-    Route::get('/due/orders/', [DueOrderController::class, 'index'])->name('due.index');
-    Route::get('/due/order/view/{order}', [DueOrderController::class, 'show'])->name('due.show');
-    Route::get('/due/order/edit/{order}', [DueOrderController::class, 'edit'])->name('due.edit');
-    Route::put('/due/order/update/{order}', [DueOrderController::class, 'update'])->name('due.update');
+    // Ventas - con middleware de permisos
+    Route::middleware('permission:view_sales')->group(function () {
+        Route::get('/sales', [SaleController::class, 'index'])->name('sales.index');
+    });
 
-    // TODO: Remove from OrderController
-    Route::get('/orders/details/{order_id}/download', [OrderController::class, 'downloadInvoice'])->name('order.downloadInvoice');
+    // Create
+    Route::middleware('permission:create_sales')->group(function () {
+        Route::get('/sales/create', [SaleController::class, 'create'])->name('sales.create');
+        Route::post('/sales', [SaleController::class, 'store'])->name('sales.store')->middleware('throttle:30,1');
+    });
 
-    // Route Purchases
-    Route::get('/purchases/approved', [PurchaseController::class, 'approvedPurchases'])->name('purchases.approvedPurchases');
-    Route::get('/purchases/report', [PurchaseController::class, 'dailyPurchaseReport'])->name('purchases.dailyPurchaseReport');
-    Route::get('/purchases/report/export', [PurchaseController::class, 'getPurchaseReport'])->name('purchases.getPurchaseReport');
-    Route::post('/purchases/report/export', [PurchaseController::class, 'exportPurchaseReport'])->name('purchases.exportPurchaseReport');
+    // Edit
+    Route::middleware('permission:edit_sales')->group(function () {
+        Route::get('/sales/{sale}/edit', [SaleController::class, 'edit'])->name('sales.edit');
+        Route::put('/sales/{sale}', [SaleController::class, 'update'])->name('sales.update');
+    });
 
-    Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases.index');
-    Route::get('/purchases/create', [PurchaseController::class, 'create'])->name('purchases.create');
-    Route::post('/purchases', [PurchaseController::class, 'store'])->name('purchases.store');
+    // Show (debe ir al final de los GET)
+    Route::middleware('permission:view_sales')->group(function () {
+        Route::get('/sales/{sale}', [SaleController::class, 'show'])->name('sales.show');
+    });
 
-    Route::get('/purchases/{purchase}', [PurchaseController::class, 'show'])->name('purchases.show');
-    Route::get('/purchases/{purchase}/edit', [PurchaseController::class, 'edit'])->name('purchases.edit');
-    Route::put('/purchases/{purchase}/edit', [PurchaseController::class, 'update'])->name('purchases.update');
-    Route::delete('/purchases/{purchase}', [PurchaseController::class, 'destroy'])->name('purchases.delete');
-});
+    // Delete
+    Route::middleware('permission:delete_sales')->group(function () {
+        Route::delete('/sales/{sale}', [SaleController::class, 'destroy'])->name('sales.destroy');
+    });
 
-require __DIR__.'/auth.php';
 
-Route::get('test/', function (){
-//    return view('test');
-    return view('orders.create');
+    // Reparaciones - Resource route
+    Route::resource('repairs', RepairController::class);
+
+    // Reportes
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/sales', [ReportController::class, 'salesReport'])->name('reports.sales');
+    Route::get('reports/repairs', [ReportController::class, 'repairsReport'])->name('reports.repairs');
+    Route::post('reports/pdf', [ReportController::class, 'generatePDF'])->name('reports.pdf');
+
+    // PDF de ventas - con middleware de permisos
+    Route::middleware('permission:view_sales')->group(function () {
+        Route::get('/sales/{sale}/pdf', [SaleController::class, 'pdf'])->name('sales.pdf');
+    });
 });

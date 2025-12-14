@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
@@ -13,18 +14,36 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $users = collect([
-            [
-                'name' => 'Admin',
-                'email' => 'admin@admin.com',
-                'email_verified_at' => now(),
-                'password' => bcrypt('password'),
-                'created_at' => now()
-            ]
+        // Usuario administrador
+        $admin = User::create([
+            'name' => 'Administrador',
+            'email' => 'admin@moviltech.com',
+            'password' => Hash::make('password'),
         ]);
+        $admin->assignRole('Administrador');
 
-        $users->each(function ($user){
-            User::insert($user);
-        });
+        // Usuario vendedor
+        $seller = User::create([
+            'name' => 'Vendedor',
+            'email' => 'vendedor@moviltech.com',
+            'password' => Hash::make('password'),
+        ]);
+        $seller->assignRole('Vendedor');
+
+        // Usuario técnico
+        $technician = User::create([
+            'name' => 'Técnico',
+            'email' => 'tecnico@moviltech.com',
+            'password' => Hash::make('password'),
+        ]);
+        $technician->assignRole('Técnico');
+
+        // Usuario cliente
+        $customer = User::create([
+            'name' => 'Cliente Demo',
+            'email' => 'cliente@moviltech.com',
+            'password' => Hash::make('password'),
+        ]);
+        $customer->assignRole('Cliente');
     }
 }

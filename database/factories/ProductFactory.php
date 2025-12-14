@@ -2,7 +2,8 @@
 
 namespace Database\Factories;
 
-use Haruncpi\LaravelIdGenerator\IdGenerator;
+use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,15 +19,34 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->word(),
-            'category_id' => fake()->randomElement([1, 2, 3, 4, 5]),
-            'unit_id' => fake()->randomElement([1, 2, 3]),
-            'quantity' => fake()->randomNumber(2),
-            'buying_price' => fake()->randomNumber(2),
-            'selling_price' => fake()->randomNumber(2),
-            'quantity_alert' => fake()->randomElement([5,10,15]),
-            'tax' => fake()->randomElement([5,10,15,20,25]),
-            'tax_type' => fake()->randomElement([1,2]),
+            'name' => fake()->words(3, true),
+            'sku' => fake()->unique()->bothify('SKU-####'),
+            'category_id' => Category::factory(),
+            'quantity' => fake()->numberBetween(0, 100),
+            'low_stock_threshold' => 10,
+            'price' => fake()->randomFloat(2, 10, 1000),
+            'cost_price' => fake()->randomFloat(2, 5, 500),
+            'status' => fake()->randomElement(['active', 'inactive', 'discontinued']),
         ];
+    }
+
+    /**
+     * Indicate that the product is active.
+     */
+    public function active(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'active',
+        ]);
+    }
+
+    /**
+     * Indicate that the product is in stock.
+     */
+    public function inStock(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'quantity' => fake()->numberBetween(1, 100),
+        ]);
     }
 }
