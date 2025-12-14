@@ -18,6 +18,14 @@ class DatabaseSeeder extends Seeder
             SupplierSeeder::class,
             ProductSeeder::class,
             CustomerSeeder::class,
+            DianIdentificationDocumentSeeder::class,
+            DianLegalOrganizationSeeder::class,
+            DianCustomerTributeSeeder::class,
+            DianDocumentTypeSeeder::class,
+            DianOperationTypeSeeder::class,
+            DianPaymentMethodSeeder::class,
+            DianPaymentFormSeeder::class,
+            DianProductStandardSeeder::class,
         ]);
     }
 }

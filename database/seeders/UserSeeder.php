@@ -17,33 +17,19 @@ class UserSeeder extends Seeder
         // Usuario administrador
         $admin = User::create([
             'name' => 'Administrador',
+            'username' => 'admin',
             'email' => 'admin@moviltech.com',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('Brandon-Administrador-2025#'),
         ]);
         $admin->assignRole('Administrador');
 
         // Usuario vendedor
         $seller = User::create([
             'name' => 'Vendedor',
+            'username' => 'vendedor',
             'email' => 'vendedor@moviltech.com',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('Vendedor2025#'),
         ]);
         $seller->assignRole('Vendedor');
-
-        // Usuario técnico
-        $technician = User::create([
-            'name' => 'Técnico',
-            'email' => 'tecnico@moviltech.com',
-            'password' => Hash::make('password'),
-        ]);
-        $technician->assignRole('Técnico');
-
-        // Usuario cliente
-        $customer = User::create([
-            'name' => 'Cliente Demo',
-            'email' => 'cliente@moviltech.com',
-            'password' => Hash::make('password'),
-        ]);
-        $customer->assignRole('Cliente');
     }
 }

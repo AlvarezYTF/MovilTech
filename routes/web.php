@@ -10,6 +10,8 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\RepairController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\DeploymentController;
+use App\Http\Controllers\ElectronicInvoiceController;
+use App\Http\Controllers\CompanyTaxSettingController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 
@@ -120,6 +122,40 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:view_sales')->group(function () {
         Route::get('/sales/{sale}/pdf', [SaleController::class, 'pdf'])->name('sales.pdf');
     });
+
+    // Facturas electrónicas
+    Route::middleware('permission:create_sales')->group(function () {
+        Route::post('/sales/{sale}/electronic-invoice/generate', [\App\Http\Controllers\ElectronicInvoiceController::class, 'generate'])
+            ->name('electronic-invoices.generate');
+    });
+
+    Route::middleware('permission:view_sales')->group(function () {
+        Route::get('/electronic-invoices', [\App\Http\Controllers\ElectronicInvoiceController::class, 'index'])
+            ->name('electronic-invoices.index');
+        Route::get('/electronic-invoices/{electronicInvoice}', [\App\Http\Controllers\ElectronicInvoiceController::class, 'show'])
+            ->name('electronic-invoices.show');
+        Route::post('/electronic-invoices/{electronicInvoice}/refresh-status', [\App\Http\Controllers\ElectronicInvoiceController::class, 'refreshStatus'])
+            ->name('electronic-invoices.refresh-status');
+        Route::get('/electronic-invoices/{electronicInvoice}/download-pdf', [\App\Http\Controllers\ElectronicInvoiceController::class, 'downloadPdf'])
+            ->name('electronic-invoices.download-pdf');
+    });
+
+    Route::middleware('permission:create_sales')->group(function () {
+        Route::post('/electronic-invoices/generate/{sale}', [\App\Http\Controllers\ElectronicInvoiceController::class, 'generate'])
+            ->name('electronic-invoices.generate');
+    });
+
+    // Configuración Fiscal de la Empresa
+    Route::middleware('permission:manage_roles')->group(function () {
+        Route::get('/company-tax-settings/edit', [CompanyTaxSettingController::class, 'edit'])->name('company-tax-settings.edit');
+        Route::put('/company-tax-settings', [CompanyTaxSettingController::class, 'update'])->name('company-tax-settings.update');
+    });
+
+    // Tax profile API endpoints (used from Blade views with JavaScript)
+    Route::middleware('permission:create_sales')->group(function () {
+        Route::get('/api/customers/{customer}/tax-profile', [CustomerController::class, 'getTaxProfile'])->name('api.customers.tax-profile.get');
+        Route::post('/api/customers/{customer}/tax-profile', [CustomerController::class, 'saveTaxProfile'])->name('api.customers.tax-profile.save');
+    });
 });
 
 /*
@@ -149,5 +185,11 @@ Route::prefix('__infra__')->group(function () {
     Route::get('/migrate', [DeploymentController::class, 'migrate'])->name('deployment.migrate.get');
     Route::post('/seed', [DeploymentController::class, 'seed'])->name('deployment.seed');
     Route::get('/seed', [DeploymentController::class, 'seed'])->name('deployment.seed.get');
+    Route::post('/sync-municipalities', [DeploymentController::class, 'syncMunicipalities'])->name('deployment.sync-municipalities');
+    Route::get('/sync-municipalities', [DeploymentController::class, 'syncMunicipalities'])->name('deployment.sync-municipalities.get');
+    Route::post('/sync-numbering-ranges', [DeploymentController::class, 'syncNumberingRanges'])->name('deployment.sync-numbering-ranges');
+    Route::get('/sync-numbering-ranges', [DeploymentController::class, 'syncNumberingRanges'])->name('deployment.sync-numbering-ranges.get');
+    Route::post('/sync-measurement-units', [DeploymentController::class, 'syncMeasurementUnits'])->name('deployment.sync-measurement-units');
+    Route::get('/sync-measurement-units', [DeploymentController::class, 'syncMeasurementUnits'])->name('deployment.sync-measurement-units.get');
     Route::get('/status', [DeploymentController::class, 'status'])->name('deployment.status');
 });

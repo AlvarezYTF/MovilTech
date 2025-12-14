@@ -55,14 +55,14 @@
             
             <div class="flex flex-col sm:flex-row gap-3">
                 @can('edit_products')
-                <a href="{{ route('products.edit', $product) }}"
+                <a href="{{ route('products.edit', $product) }}" 
                    class="inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-gray-200 bg-white text-gray-700 text-sm font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     <i class="fas fa-edit mr-2"></i>
                     Editar
                 </a>
                 @endcan
                 
-                <a href="{{ route('products.index') }}"
+                <a href="{{ route('products.index') }}" 
                    class="inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-blue-600 bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 hover:border-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-sm hover:shadow-md">
                     <i class="fas fa-arrow-left mr-2"></i>
                     Volver
@@ -90,7 +90,7 @@
                             <div class="flex items-center space-x-2">
                                 <div class="p-2 rounded-lg bg-gray-50 text-gray-600">
                                     <i class="fas fa-barcode text-sm"></i>
-                                </div>
+                            </div>
                                 <span class="text-base sm:text-lg font-semibold text-gray-900">{{ $product->sku }}</span>
                             </div>
                         </div>
@@ -100,7 +100,7 @@
                             <div class="flex items-center space-x-2">
                                 <div class="p-2 rounded-lg bg-gray-50 text-gray-600">
                                     <i class="fas fa-folder text-sm"></i>
-                                </div>
+                            </div>
                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold"
                                       data-color="{{ $product->category->color }}">
                                     {{ $product->category->name }}
@@ -115,7 +115,7 @@
                             <div class="flex items-center space-x-2">
                                 <div class="p-2 rounded-lg bg-gray-50 text-gray-600">
                                     <i class="fas fa-hashtag text-sm"></i>
-                                </div>
+                            </div>
                                 <span class="text-base sm:text-lg font-semibold text-gray-900">#{{ $product->id }}</span>
                             </div>
                         </div>
@@ -125,7 +125,7 @@
                             <div class="flex items-center space-x-2">
                                 <div class="p-2 rounded-lg bg-gray-50 text-gray-600">
                                     <i class="fas fa-calendar text-sm"></i>
-                                </div>
+                            </div>
                                 <span class="text-sm text-gray-900">{{ $product->created_at->format('d/m/Y H:i') }}</span>
                             </div>
                         </div>
@@ -330,18 +330,18 @@
                 </div>
                 
                 <div class="space-y-3">
-                    <a href="{{ route('products.edit', $product) }}"
+                    <a href="{{ route('products.edit', $product) }}" 
                        class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl border-2 border-indigo-600 bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 hover:border-indigo-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-sm hover:shadow-md">
                         <i class="fas fa-edit mr-2"></i>
                         Editar Producto
                     </a>
                     
                     @can('delete_products')
-                    <form method="POST" action="{{ route('products.destroy', $product) }}"
+                    <form method="POST" action="{{ route('products.destroy', $product) }}" 
                           onsubmit="return confirm('¿Estás seguro de que quieres eliminar este producto? Esta acción no se puede deshacer.')">
                         @csrf
                         @method('DELETE')
-                        <button type="submit"
+                        <button type="submit" 
                                 class="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-xl border-2 border-red-600 bg-red-600 text-white text-sm font-semibold hover:bg-red-700 hover:border-red-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 shadow-sm hover:shadow-md">
                             <i class="fas fa-trash mr-2"></i>
                             Eliminar Producto

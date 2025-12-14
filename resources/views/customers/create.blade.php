@@ -18,7 +18,9 @@
         </div>
     </div>
 
-    <form method="POST" action="{{ route('customers.store') }}" id="customer-form" x-data="{ loading: false }" @submit="loading = true">
+    <form method="POST" action="{{ route('customers.store') }}" id="customer-form" 
+          x-data="customerForm()" 
+          @submit="loading = true">
         @csrf
 
         <!-- Información Personal -->
@@ -280,6 +282,258 @@
             </div>
         </div>
 
+        <!-- Facturación Electrónica DIAN -->
+        <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6"
+             x-data="{ requiresElectronicInvoice: {{ old('requires_electronic_invoice', false) ? 'true' : 'false' }} }">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 rounded-xl bg-blue-50 text-blue-600">
+                        <i class="fas fa-file-invoice text-sm"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-base sm:text-lg font-semibold text-gray-900">
+                            Facturación Electrónica DIAN
+                        </h2>
+                        <p class="text-xs text-gray-500 mt-0.5">
+                            Activa esta opción si el cliente requiere facturación electrónica
+                        </p>
+                    </div>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                    <input type="checkbox"
+                           name="requires_electronic_invoice"
+                           value="1"
+                           x-model="requiresElectronicInvoice"
+                           class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                </label>
+            </div>
+
+            <!-- Campos DIAN (mostrar/ocultar dinámicamente) -->
+            <div x-show="requiresElectronicInvoice"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 transform scale-95"
+                 x-transition:enter-end="opacity-100 transform scale-100"
+                 class="mt-6 space-y-5 border-t border-gray-200 pt-6">
+                
+                <!-- Mensaje informativo -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-blue-600 mt-0.5 mr-3"></i>
+                        <div class="text-sm text-blue-800">
+                            <p class="font-semibold mb-1">Campos Obligatorios para Facturación Electrónica</p>
+                            <p class="text-xs">Complete todos los campos marcados con <span class="text-red-500 font-bold">*</span> para poder generar facturas electrónicas válidas según la normativa DIAN.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tipo de Documento -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">
+                            Tipo de Documento <span class="text-red-500">*</span>
+                        </label>
+                        <select name="identification_document_id"
+                                x-model="identificationDocumentId"
+                                @change="updateRequiredFields()"
+                                class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                                required>
+                            <option value="">Seleccione...</option>
+                            @foreach($identificationDocuments as $doc)
+                                <option value="{{ $doc->id }}" 
+                                        data-code="{{ $doc->code }}"
+                                        data-requires-dv="{{ $doc->requires_dv ? 'true' : 'false' }}">
+                                    {{ $doc->name }}@if($doc->code) ({{ $doc->code }})@endif
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Identificación -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">
+                            Número de Identificación <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text"
+                               name="identification"
+                               x-model="identification"
+                               @input="calculateDV()"
+                               class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                               required>
+                    </div>
+                </div>
+
+                <!-- Dígito Verificador (solo si el documento lo requiere) -->
+                <div x-show="requiresDV" class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">
+                            Dígito Verificador (DV) <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text"
+                               name="dv"
+                               x-model="dv"
+                               maxlength="1"
+                               :required="requiresDV"
+                               class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
+                        <p class="mt-1 text-xs text-gray-500">
+                            Se calcula automáticamente para NIT
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Razón Social / Nombre Comercial (solo para personas jurídicas) -->
+                <div x-show="isJuridicalPerson" class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">
+                            Razón Social / Empresa <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text"
+                               name="company"
+                               :required="isJuridicalPerson"
+                               class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">
+                            Nombre Comercial
+                        </label>
+                        <input type="text"
+                               name="trade_name"
+                               class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
+                    </div>
+                </div>
+
+                <!-- Nombres (solo para personas naturales) -->
+                <div x-show="!isJuridicalPerson" class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">
+                            Nombres
+                        </label>
+                        <input type="text"
+                               name="names"
+                               class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                               placeholder="Nombres completos de la persona natural">
+                        <p class="mt-1 text-xs text-gray-500">
+                            Solo aplica para personas naturales
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Tipo de Organización Legal (opcional) -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-2">
+                        Tipo de Organización Legal
+                    </label>
+                    <select name="legal_organization_id"
+                            class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
+                        <option value="">Seleccione...</option>
+                        @foreach($legalOrganizations as $org)
+                            <option value="{{ $org->id }}">{{ $org->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Municipio -->
+                <div>
+                    <label for="municipality_id" class="block text-xs font-semibold text-gray-700 mb-2">
+                        Municipio <span class="text-red-500">*</span>
+                    </label>
+                    @if($municipalities->isEmpty())
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-yellow-600 mt-0.5 mr-3"></i>
+                                <div class="text-sm text-yellow-800">
+                                    <p class="font-semibold mb-1">No hay municipios disponibles</p>
+                                    <p class="text-xs">Ejecuta el comando <code class="bg-yellow-100 px-1 rounded">php artisan factus:sync-municipalities</code> para sincronizar los municipios desde Factus.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" name="municipality_id" value="">
+                    @else
+                        <select name="municipality_id"
+                                id="municipality_id"
+                                class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                required>
+                            <option value="">Seleccione un municipio...</option>
+                            @php
+                                $currentDepartment = null;
+                            @endphp
+                            @foreach($municipalities as $municipality)
+                                @if($currentDepartment !== $municipality->department)
+                                    @if($currentDepartment !== null)
+                                        </optgroup>
+                                    @endif
+                                    <optgroup label="{{ $municipality->department }}">
+                                    @php
+                                        $currentDepartment = $municipality->department;
+                                    @endphp
+                                @endif
+                                <option value="{{ $municipality->factus_id }}"
+                                        {{ old('municipality_id') == $municipality->factus_id ? 'selected' : '' }}>
+                                    {{ $municipality->name }}
+                                </option>
+                                @if($loop->last)
+                                    </optgroup>
+                                @endif
+                            @endforeach
+                        </select>
+                        <p class="mt-1 text-xs text-gray-500">
+                            Seleccione el municipio según el departamento
+                        </p>
+                    @endif
+                </div>
+
+                <!-- Régimen Tributario (opcional) -->
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-2">
+                        Régimen Tributario
+                    </label>
+                    <select name="tribute_id"
+                            class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
+                        <option value="">Seleccione...</option>
+                        @foreach($tributes as $tribute)
+                            <option value="{{ $tribute->id }}">{{ $tribute->name }} ({{ $tribute->code }})</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Información de Contacto Adicional -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">
+                            Dirección Fiscal
+                        </label>
+                        <input type="text"
+                               name="address"
+                               class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                               placeholder="Dirección para facturación">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">
+                            Email Fiscal
+                        </label>
+                        <input type="email"
+                               name="email"
+                               class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                               placeholder="email@ejemplo.com">
+                        <p class="mt-1 text-xs text-gray-500">
+                            Email para envío de facturas electrónicas
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-2">
+                        Teléfono Fiscal
+                    </label>
+                    <input type="text"
+                           name="phone"
+                           class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                           placeholder="Número de teléfono">
+                </div>
+            </div>
+        </div>
+
         <!-- Botones de Acción -->
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-4 border-t border-gray-100">
             <div class="text-xs sm:text-sm text-gray-500 flex items-center">
@@ -312,6 +566,44 @@
 
 @push('scripts')
 <script>
+function customerForm() {
+    return {
+        loading: false,
+        identificationDocumentId: null,
+        identification: '',
+        dv: '',
+        requiresDV: false,
+        isJuridicalPerson: false,
+        
+        updateRequiredFields() {
+            const select = document.querySelector('select[name="identification_document_id"]');
+            const selectedOption = select.options[select.selectedIndex];
+            
+            if (selectedOption) {
+                this.requiresDV = selectedOption.dataset.requiresDv === 'true';
+                this.isJuridicalPerson = selectedOption.dataset.code === 'NIT';
+                
+                // Si requiere DV y es NIT, calcular DV
+                if (this.requiresDV && this.isJuridicalPerson && this.identification) {
+                    this.calculateDV();
+                }
+            }
+        },
+        
+        calculateDV() {
+            if (this.requiresDV && this.identification && this.identification.length >= 9) {
+                // Algoritmo básico para calcular DV de NIT (simplificado)
+                // En producción, usar algoritmo completo de DIAN
+                const nit = this.identification.replace(/\D/g, '');
+                if (nit.length >= 9) {
+                    // Aquí iría el algoritmo completo de cálculo de DV
+                    // Por ahora se deja que el usuario lo ingrese manualmente
+                }
+            }
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('customer-form');
     const inputs = form.querySelectorAll('input, textarea');
@@ -333,7 +625,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const phoneInput = document.getElementById('phone');
     if (phoneInput) {
         phoneInput.addEventListener('input', function() {
-            // Formato básico mientras se escribe (opcional)
             let value = this.value.replace(/\D/g, '');
             if (value.length > 0 && !value.startsWith('+')) {
                 value = '+' + value;
@@ -356,7 +647,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function isValidPhone(phone) {
-        // Permite formato internacional con + y números
         const phoneRegex = /^[\+]?[1-9][\d\s\-\(\)]{7,15}$/;
         return phoneRegex.test(phone);
     }

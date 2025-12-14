@@ -19,6 +19,8 @@ class Sale extends Model
         'discount_amount',
         'total',
         'status',
+        'payment_method_code',
+        'payment_form_code',
         'notes',
     ];
 
@@ -97,5 +99,51 @@ class Sale extends Model
         $this->tax_amount = ($this->subtotal * $percentage) / 100;
         $this->calculateTotal();
         return $this;
+    }
+
+    /**
+     * Get the electronic invoice for the sale.
+     */
+    public function electronicInvoice()
+    {
+        return $this->hasOne(ElectronicInvoice::class);
+    }
+
+    /**
+     * Check if sale has electronic invoice.
+     */
+    public function hasElectronicInvoice(): bool
+    {
+        if (!$this->relationLoaded('electronicInvoice')) {
+            $this->load('electronicInvoice');
+        }
+        return $this->electronicInvoice !== null;
+    }
+
+    /**
+     * Check if sale requires electronic invoice.
+     */
+    public function requiresElectronicInvoice(): bool
+    {
+        if (!$this->relationLoaded('customer')) {
+            $this->load('customer');
+        }
+        return $this->customer && ($this->customer->requires_electronic_invoice ?? false);
+    }
+
+    /**
+     * Get the payment method for the sale.
+     */
+    public function paymentMethod()
+    {
+        return $this->belongsTo(DianPaymentMethod::class, 'payment_method_code', 'code');
+    }
+
+    /**
+     * Get the payment form for the sale.
+     */
+    public function paymentForm()
+    {
+        return $this->belongsTo(DianPaymentForm::class, 'payment_form_code', 'code');
     }
 }
