@@ -109,9 +109,9 @@
 
             <!-- Formulario para agregar producto -->
             <div class="bg-gray-50 rounded-xl p-4 sm:p-5 mb-4 sm:mb-6 border border-gray-200">
-                <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- Producto -->
-                    <div>
+                    <div class="md:col-span-2 lg:col-span-1">
                         <label class="block text-xs font-semibold text-gray-700 mb-2">
                             Producto <span class="text-red-500">*</span>
                         </label>
@@ -119,7 +119,7 @@
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <i class="fas fa-box text-gray-400 text-xs"></i>
                             </div>
-                            <select x-model="newItem.product_id" 
+                            <select x-model="newItem.product_id"
                                     @change="updateProductInfo()"
                                     class="block w-full pl-9 pr-8 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent appearance-none bg-white">
                                 <option value="">Selecciona...</option>
@@ -143,14 +143,16 @@
                         <label class="block text-xs font-semibold text-gray-700 mb-2">
                             Cantidad <span class="text-red-500">*</span>
                         </label>
-                        <input type="number" 
-                               x-model.number="newItem.quantity" 
-                               min="1"
-                               :max="newItem.stock"
-                               @input="updateItemTotal()"
-                               class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-                        <div class="mt-1 text-xs text-gray-500">
+                        <input type="number"
+                               x-model.number="newItem.quantity"
+                               x-bind="newItem.stock > 0 ? { min: '1', max: String(newItem.stock) } : {}"
+                               :disabled="newItem.stock === 0 || !newItem.product_id"
+                               @input="updateItemTotal(); validateQuantity()"
+                               @blur="validateQuantity()"
+                               :class="newItem.stock === 0 ? 'block w-full px-3 py-2 border border-red-300 rounded-lg text-sm text-gray-500 bg-gray-100 cursor-not-allowed' : 'block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent'">
+                        <div class="mt-1 text-xs" :class="newItem.stock === 0 ? 'text-red-600 font-semibold' : 'text-gray-500'">
                             Stock: <span x-text="newItem.stock || '-'"></span>
+                            <span x-show="newItem.stock === 0" class="ml-1">(Sin stock disponible)</span>
                         </div>
                     </div>
 
@@ -163,9 +165,9 @@
                             <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                                 <span class="text-gray-500 text-xs">$</span>
                             </div>
-                            <input type="number" 
-                                   x-model.number="newItem.unit_price" 
-                                   step="0.01" 
+                            <input type="number"
+                                   x-model.number="newItem.unit_price"
+                                   step="0.01"
                                    min="0"
                                    @input="updateItemTotal()"
                                    class="block w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
@@ -173,24 +175,25 @@
                     </div>
 
                     <!-- Total y Botón -->
-                    <div class="flex items-end space-x-2">
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-end gap-2">
                         <div class="flex-1">
                             <label class="block text-xs font-semibold text-gray-700 mb-2">Total</label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                                     <span class="text-gray-500 text-xs">$</span>
                                 </div>
-                                <input type="text" 
-                                       :value="formatCurrency(newItem.total)" 
+                                <input type="text"
+                                       :value="formatCurrency(newItem.total)"
                                        readonly
                                        class="block w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 bg-gray-50 focus:outline-none">
                             </div>
                         </div>
-                        <button type="button" 
+                        <button type="button"
                                 @click="addItem()"
                                 :disabled="!canAddItem()"
-                                class="px-4 py-2 rounded-lg border-2 border-emerald-600 bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 hover:border-emerald-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed">
-                            <i class="fas fa-plus"></i>
+                                class="px-4 py-2 rounded-lg border-2 border-emerald-600 bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 hover:border-emerald-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center sm:w-auto w-full">
+                            <i class="fas fa-plus mr-2 sm:mr-0"></i>
+                            <span class="sm:hidden">Agregar</span>
                         </button>
                     </div>
                 </div>
@@ -198,7 +201,8 @@
 
             <!-- Lista de productos agregados -->
             <div x-show="items.length > 0" class="space-y-3">
-                <div class="overflow-x-auto">
+                <!-- Tabla Desktop -->
+                <div class="hidden lg:block overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
@@ -217,7 +221,7 @@
                                     <td class="px-4 py-3 text-sm text-gray-900" x-text="formatCurrency(item.unit_price)"></td>
                                     <td class="px-4 py-3 text-sm font-semibold text-emerald-600" x-text="formatCurrency(item.total)"></td>
                                     <td class="px-4 py-3 text-right">
-                                        <button type="button" 
+                                        <button type="button"
                                                 @click="removeItem(index)"
                                                 class="text-red-600 hover:text-red-700 transition-colors"
                                                 title="Eliminar">
@@ -235,6 +239,47 @@
                             </tr>
                         </tfoot>
                     </table>
+                </div>
+
+                <!-- Cards Mobile/Tablet -->
+                <div class="lg:hidden space-y-3">
+                    <template x-for="(item, index) in items" :key="index">
+                        <div class="bg-white rounded-xl border border-gray-200 p-4">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="text-sm font-semibold text-gray-900 truncate" x-text="item.product_name"></h3>
+                                </div>
+                                <button type="button"
+                                        @click="removeItem(index)"
+                                        class="ml-2 p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                                        title="Eliminar">
+                                    <i class="fas fa-trash text-sm"></i>
+                                </button>
+                            </div>
+                            <div class="grid grid-cols-3 gap-3">
+                                <div>
+                                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Cantidad</p>
+                                    <p class="text-sm font-semibold text-gray-900" x-text="item.quantity"></p>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Precio Unit.</p>
+                                    <p class="text-sm text-gray-900" x-text="formatCurrency(item.unit_price)"></p>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Total</p>
+                                    <p class="text-sm font-bold text-emerald-600" x-text="formatCurrency(item.total)"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <!-- Total General Mobile -->
+                    <div class="bg-emerald-50 rounded-xl border-2 border-emerald-200 p-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-gray-900">Total General:</span>
+                            <span class="text-xl font-bold text-emerald-600" x-text="formatCurrency(grandTotal)"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -419,6 +464,8 @@
 
 @push('scripts')
 <script>
+const productsData = @json($productsData);
+
 function saleProducts() {
     return {
         items: [],
@@ -430,14 +477,7 @@ function saleProducts() {
             stock: 0,
             total: 0
         },
-        products: @json($products->map(function($product) {
-            return [
-                'id' => $product->id,
-                'name' => $product->name,
-                'price' => (float)$product->price,
-                'stock' => (int)$product->quantity
-            ];
-        })->values()),
+        products: productsData,
 
         init() {
             // Inicializar
@@ -451,12 +491,14 @@ function saleProducts() {
                 this.newItem.product_name = product.name;
                 this.newItem.unit_price = product.price;
                 this.newItem.stock = product.stock;
-                this.newItem.quantity = 1;
+                // Si el stock es 0, establecer cantidad en 0, sino en 1
+                this.newItem.quantity = product.stock > 0 ? 1 : 0;
                 this.updateItemTotal();
             } else {
                 this.newItem.product_name = '';
                 this.newItem.unit_price = 0;
                 this.newItem.stock = 0;
+                this.newItem.quantity = 0;
                 this.newItem.total = 0;
             }
         },
@@ -467,16 +509,44 @@ function saleProducts() {
             this.newItem.total = quantity * unitPrice;
         },
 
+        validateQuantity() {
+            // Solo validar si hay un producto seleccionado y stock disponible
+            if (!this.newItem.product_id || this.newItem.stock === 0) {
+                return;
+            }
+
+            // Validar y ajustar cantidad si es necesario
+            if (this.newItem.quantity > this.newItem.stock) {
+                this.newItem.quantity = this.newItem.stock;
+                this.updateItemTotal();
+                this.showNotification('La cantidad no puede exceder el stock disponible', 'error');
+            } else if (this.newItem.quantity < 1 && this.newItem.stock > 0) {
+                this.newItem.quantity = 1;
+                this.updateItemTotal();
+            }
+        },
+
         canAddItem() {
             return this.newItem.product_id && 
+                   this.newItem.stock > 0 &&
                    this.newItem.quantity > 0 && 
-                   this.newItem.unit_price > 0 &&
-                   this.newItem.quantity <= this.newItem.stock;
+                   this.newItem.quantity <= this.newItem.stock &&
+                   this.newItem.unit_price > 0;
         },
 
         addItem() {
             if (!this.canAddItem()) {
-                this.showNotification('Por favor completa todos los campos correctamente', 'error');
+                if (this.newItem.stock === 0) {
+                    this.showNotification('Este producto no tiene stock disponible', 'error');
+                } else if (!this.newItem.product_id) {
+                    this.showNotification('Por favor selecciona un producto', 'error');
+                } else if (this.newItem.quantity <= 0) {
+                    this.showNotification('La cantidad debe ser mayor a 0', 'error');
+                } else if (this.newItem.quantity > this.newItem.stock) {
+                    this.showNotification('La cantidad no puede exceder el stock disponible', 'error');
+                } else {
+                    this.showNotification('Por favor completa todos los campos correctamente', 'error');
+                }
                 return;
             }
 

@@ -39,7 +39,17 @@ class SaleController extends Controller
         $customers = Customer::active()->orderBy('name')->get();
         $products = $this->productRepository->getActiveProducts();
         
-        return view('sales.create', compact('customers', 'products'));
+        // Prepare products data for JavaScript
+        $productsData = $products->map(function($product) {
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'price' => (float)$product->price,
+                'stock' => (int)$product->quantity
+            ];
+        })->values();
+        
+        return view('sales.create', compact('customers', 'products', 'productsData'));
     }
 
     /**
@@ -78,7 +88,32 @@ class SaleController extends Controller
         $products = $this->productRepository->getActiveProducts();
         $sale->load(['saleItems.product']);
         
-        return view('sales.edit', compact('sale', 'customers', 'products'));
+        // Prepare products data for JavaScript
+        $productsData = $products->map(function($product) use ($sale) {
+            // For products already in the sale, add back the sold quantity to available stock
+            $saleItem = $sale->saleItems->firstWhere('product_id', $product->id);
+            $availableStock = $product->quantity + ($saleItem ? $saleItem->quantity : 0);
+            
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'price' => (float)$product->price,
+                'stock' => (int)$availableStock
+            ];
+        })->values();
+        
+        // Prepare existing sale items for JavaScript
+        $existingItems = $sale->saleItems->map(function($item) {
+            return [
+                'product_id' => $item->product_id,
+                'product_name' => $item->product->name,
+                'quantity' => $item->quantity,
+                'unit_price' => (float)$item->unit_price,
+                'total' => (float)$item->total_price
+            ];
+        })->values();
+        
+        return view('sales.edit', compact('sale', 'customers', 'products', 'productsData', 'existingItems'));
     }
 
     /**

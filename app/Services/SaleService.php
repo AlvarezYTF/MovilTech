@@ -93,42 +93,71 @@ class SaleService
     public function updateSale(Sale $sale, array $data): Sale
     {
         return DB::transaction(function () use ($sale, $data) {
-            // Get original sale item to restore stock
-            $originalItem = $sale->saleItems->first();
+            $items = $data['items'] ?? [];
             
-            if ($originalItem) {
-                $originalProduct = Product::findOrFail($originalItem->product_id);
-                $originalProduct->increment('quantity', $originalItem->quantity);
+            if (empty($items)) {
+                throw new \Exception('Debe agregar al menos un producto a la venta.');
             }
 
-            // Verify stock availability for new product
-            $newProduct = Product::findOrFail($data['product_id']);
-            
-            if ($newProduct->quantity < $data['quantity']) {
-                throw new \Exception('Stock insuficiente. Stock disponible: ' . $newProduct->quantity);
+            // Restore stock for all original items
+            foreach ($sale->saleItems as $originalItem) {
+                $originalProduct = Product::find($originalItem->product_id);
+                if ($originalProduct) {
+                    $originalProduct->increment('quantity', $originalItem->quantity);
+                }
             }
+
+            // Verify stock availability for all new products
+            $subtotal = 0;
+            foreach ($items as $item) {
+                $product = Product::findOrFail($item['product_id']);
+                
+                // Check if this product was in the original sale
+                $originalItem = $sale->saleItems->firstWhere('product_id', $item['product_id']);
+                $availableStock = $product->quantity + ($originalItem ? $originalItem->quantity : 0);
+                
+                if ($availableStock < $item['quantity']) {
+                    throw new \Exception('Stock insuficiente para ' . $product->name . '. Stock disponible: ' . $availableStock);
+                }
+
+                $itemTotal = $item['quantity'] * $item['unit_price'];
+                $subtotal += $itemTotal;
+            }
+
+            $taxAmount = $data['tax_amount'] ?? 0;
+            $discountAmount = $data['discount_amount'] ?? 0;
+            $total = $subtotal + $taxAmount - $discountAmount;
 
             // Update the sale
             $sale->update([
                 'customer_id' => $data['customer_id'],
                 'sale_date' => $data['sale_date'],
-                'subtotal' => $data['total'],
-                'total' => $data['total'],
+                'subtotal' => $subtotal,
+                'tax_amount' => $taxAmount,
+                'discount_amount' => $discountAmount,
+                'total' => $total,
                 'notes' => $data['notes'] ?? null,
             ]);
 
-            // Update or create sale item
-            if ($originalItem) {
-                $originalItem->update([
-                    'product_id' => $data['product_id'],
-                    'quantity' => $data['quantity'],
-                    'unit_price' => $data['unit_price'],
-                    'total_price' => $data['total'],
-                ]);
-            }
+            // Delete all existing sale items
+            $sale->saleItems()->delete();
 
-            // Update new product stock
-            $newProduct->decrement('quantity', $data['quantity']);
+            // Create new sale items and update stock
+            foreach ($items as $item) {
+                $product = Product::findOrFail($item['product_id']);
+                $itemTotal = $item['quantity'] * $item['unit_price'];
+
+                SaleItem::create([
+                    'sale_id' => $sale->id,
+                    'product_id' => $item['product_id'],
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $item['unit_price'],
+                    'total_price' => $itemTotal,
+                ]);
+
+                // Update product stock
+                $product->decrement('quantity', $item['quantity']);
+            }
 
             return $sale->fresh(['customer', 'user', 'saleItems.product']);
         });

@@ -221,7 +221,8 @@
                     </div>
                 </div>
                 
-                <div class="overflow-x-auto">
+                <!-- Tabla Desktop -->
+                <div class="hidden lg:block overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-100">
                         <thead class="bg-gray-50">
                             <tr>
@@ -273,6 +274,44 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Cards Mobile/Tablet -->
+                <div class="lg:hidden divide-y divide-gray-100">
+                    @foreach($sale->saleItems as $item)
+                    <div class="p-4 hover:bg-gray-50 transition-colors duration-150">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center space-x-3 flex-1 min-w-0">
+                                <div class="h-10 w-10 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-box text-gray-600 text-sm"></i>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="text-sm font-semibold text-gray-900 truncate">{{ $item->product->name }}</div>
+                                    <div class="text-xs text-gray-500 font-mono mt-0.5">{{ $item->product->sku }}</div>
+                                    @if($item->product->category)
+                                        <div class="text-xs text-gray-400 mt-0.5">{{ $item->product->category->name }}</div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div>
+                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Cantidad</p>
+                                <span class="inline-flex items-center px-2 py-1 rounded-lg bg-gray-100 text-gray-700 text-sm font-semibold">
+                                    {{ $item->quantity }}
+                                </span>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Precio Unit.</p>
+                                <p class="text-sm text-gray-900">${{ number_format($item->unit_price, 2) }}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Total</p>
+                                <p class="text-sm font-bold text-emerald-600">${{ number_format($item->total_price, 2) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
                 </div>
             </div>
             
