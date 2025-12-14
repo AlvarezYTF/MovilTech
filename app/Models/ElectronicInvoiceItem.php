@@ -12,7 +12,7 @@ class ElectronicInvoiceItem extends Model
         'code_reference', 'name',
         'quantity', 'price',
         'tax_rate', 'tax_amount',
-        'discount_rate', 'total',
+        'discount_rate', 'is_excluded', 'total',
     ];
 
     protected $casts = [
@@ -21,6 +21,7 @@ class ElectronicInvoiceItem extends Model
         'tax_rate' => 'decimal:2',
         'tax_amount' => 'decimal:2',
         'discount_rate' => 'decimal:2',
+        'is_excluded' => 'boolean',
         'total' => 'decimal:2',
     ];
 

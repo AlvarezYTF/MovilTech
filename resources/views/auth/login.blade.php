@@ -97,7 +97,7 @@
                 
                 <!-- Submit Button -->
                 <div class="pt-2">
-                    <button type="submit"
+                    <button type="submit" 
                             class="group relative w-full flex justify-center items-center py-3.5 px-4 border border-transparent text-base font-semibold rounded-xl text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-lg hover:shadow-xl transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
                         <i class="fas fa-sign-in-alt mr-2"></i>
                         Iniciar Sesión

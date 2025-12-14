@@ -4,7 +4,7 @@
 @section('header', 'Nueva Venta')
 
 @section('content')
-<div class="max-w-4xl mx-auto space-y-4 sm:space-y-6">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
     <!-- Header -->
     <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
         <div class="flex items-center space-x-3 sm:space-x-4">
@@ -30,7 +30,7 @@
                 <h2 class="text-base sm:text-lg font-semibold text-gray-900">Información básica</h2>
                 </div>
                 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
+            <div class="space-y-5 sm:space-y-6">
                 <!-- Cliente -->
                 <div>
                     <label for="customer_id" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
@@ -38,21 +38,25 @@
                     </label>
                     <div class="flex items-center space-x-2">
                         <div class="relative flex-1">
-                            <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
-                                <i class="fas fa-user text-gray-400 text-sm"></i>
-                            </div>
                         <select name="customer_id" id="customer_id" required 
-                                    class="block w-full pl-10 sm:pl-11 pr-10 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent appearance-none bg-white transition-all @error('customer_id') border-red-300 focus:ring-red-500 @enderror">
-                            <option value="">Selecciona un cliente</option>
+                                    class="block w-full border border-gray-300 rounded-xl text-sm @error('customer_id') border-red-300 @enderror">
+                            <option value="">{{ old('customer_id') ? '' : 'Selecciona un cliente' }}</option>
                             @foreach($customers as $customer)
+                                @php
+                                    $displayText = $customer->name;
+                                    if ($customer->taxProfile && $customer->taxProfile->identification) {
+                                        $docType = $customer->taxProfile->identificationDocument ? 
+                                            $customer->taxProfile->identificationDocument->code . ': ' : '';
+                                        $docNumber = $customer->taxProfile->identification;
+                                        $dv = $customer->taxProfile->dv ? '-' . $customer->taxProfile->dv : '';
+                                        $displayText .= ' - ' . $docType . $docNumber . $dv;
+                                    }
+                                @endphp
                                 <option value="{{ $customer->id }}" {{ old('customer_id') == $customer->id ? 'selected' : '' }}>
-                                        {{ $customer->name }}@if($customer->email) - {{ $customer->email }}@endif
+                                        {{ $displayText }}
                                 </option>
                             @endforeach
                         </select>
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
-                            </div>
                         </div>
                         <button type="button" id="add-customer-btn" 
                                 class="inline-flex items-center justify-center px-3 sm:px-4 py-2.5 rounded-xl border-2 border-gray-200 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500"
@@ -68,6 +72,8 @@
                     @enderror
                 </div>
 
+                <!-- Fecha de Venta, Método de Pago, Forma de Pago -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
                 <!-- Fecha de Venta -->
                 <div>
                     <label for="sale_date" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
@@ -88,8 +94,68 @@
                         </p>
                     @enderror
                 </div>
-            </div>
+
+                <!-- Método de Pago -->
+                <div>
+                    <label for="payment_method_code" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
+                        Método de Pago
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                            <i class="fas fa-credit-card text-gray-400 text-sm"></i>
+                        </div>
+                        <select name="payment_method_code" id="payment_method_code"
+                                class="block w-full pl-10 sm:pl-11 pr-10 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent appearance-none bg-white transition-all @error('payment_method_code') border-red-300 focus:ring-red-500 @enderror">
+                            <option value="">Seleccione un método...</option>
+                            @foreach($paymentMethods as $method)
+                                <option value="{{ $method->code }}" {{ old('payment_method_code', '10') == $method->code ? 'selected' : '' }}>
+                                    {{ $method->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+                        </div>
+                    </div>
+                    @error('payment_method_code')
+                        <p class="mt-1.5 text-xs text-red-600 flex items-center">
+                            <i class="fas fa-exclamation-circle mr-1.5"></i>
+                            {{ $message }}
+                        </p>
+                    @enderror
                 </div>
+
+                <!-- Forma de Pago -->
+                <div>
+                    <label for="payment_form_code" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
+                        Forma de Pago
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
+                            <i class="fas fa-money-bill-wave text-gray-400 text-sm"></i>
+                        </div>
+                        <select name="payment_form_code" id="payment_form_code"
+                                class="block w-full pl-10 sm:pl-11 pr-10 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent appearance-none bg-white transition-all @error('payment_form_code') border-red-300 focus:ring-red-500 @enderror">
+                            <option value="">Seleccione una forma...</option>
+                            @foreach($paymentForms as $form)
+                                <option value="{{ $form->code }}" {{ old('payment_form_code', '1') == $form->code ? 'selected' : '' }}>
+                                    {{ $form->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+                        </div>
+                    </div>
+                    @error('payment_form_code')
+                        <p class="mt-1.5 text-xs text-red-600 flex items-center">
+                            <i class="fas fa-exclamation-circle mr-1.5"></i>
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+            </div>
+        </div>
 
                 <!-- Productos -->
         <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6" 
@@ -146,26 +212,21 @@
                         Producto <span class="text-red-500">*</span>
                     </label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-box text-gray-400 text-xs"></i>
-                            </div>
                             <select x-model="newItem.product_id"
+                                    x-ref="productSelect"
                                     @change="updateProductInfo()"
-                                    class="block w-full pl-9 pr-8 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent appearance-none bg-white">
+                                    class="block w-full border border-gray-300 rounded-lg text-sm">
                                 <option value="">Selecciona un producto...</option>
                         @foreach($products as $product)
                             <option value="{{ $product->id }}" 
                                     data-price="{{ $product->price }}"
                                     data-stock="{{ $product->quantity }}"
-                                            data-name="{{ $product->name }}"
-                                            data-sku="{{ $product->sku }}">
+                                    data-name="{{ $product->name }}"
+                                    data-sku="{{ $product->sku }}">
                                         {{ $product->name }} - Stock: {{ $product->quantity }}
                             </option>
                         @endforeach
                     </select>
-                            <div class="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
-                                <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
-                            </div>
                         </div>
                 </div>
 
@@ -473,6 +534,248 @@
                                   placeholder="Información adicional sobre el cliente..."></textarea>
                     </div>
                 </div>
+
+                <!-- Facturación Electrónica DIAN -->
+                <div class="border-t border-gray-200 pt-4 mt-4"
+                     x-data="modalCustomerElectronicInvoice()">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="p-2 rounded-xl bg-blue-50 text-blue-600">
+                                <i class="fas fa-file-invoice text-sm"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-base font-semibold text-gray-900">Facturación Electrónica DIAN</h3>
+                                <p class="text-xs text-gray-500 mt-0.5">Activa esta opción si el cliente requiere facturación electrónica</p>
+                            </div>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox"
+                                   name="requires_electronic_invoice"
+                                   value="1"
+                                   x-model="requiresElectronicInvoice"
+                                   class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                        </label>
+                    </div>
+
+                    <!-- Campos DIAN (mostrar/ocultar dinámicamente) -->
+                    <div x-show="requiresElectronicInvoice"
+                         x-transition
+                         class="space-y-4 border-t border-gray-200 pt-4">
+                        
+                        <!-- Mensaje informativo -->
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                            <div class="flex items-start">
+                                <i class="fas fa-info-circle text-blue-600 mt-0.5 mr-2 text-sm"></i>
+                                <div class="text-xs text-blue-800">
+                                    <p class="font-semibold mb-1">Campos Obligatorios para Facturación Electrónica</p>
+                                    <p>Complete todos los campos marcados con <span class="text-red-500 font-bold">*</span> para poder generar facturas electrónicas válidas según la normativa DIAN.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tipo de Documento -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-2">
+                                    Tipo de Documento <span class="text-red-500">*</span>
+                                </label>
+                                <select name="identification_document_id"
+                                        x-model="identificationDocumentId"
+                                        @change="updateRequiredFields()"
+                                        class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                                        :required="requiresElectronicInvoice">
+                                    <option value="">Seleccione...</option>
+                                    @foreach($identificationDocuments as $doc)
+                                        <option value="{{ $doc->id }}" 
+                                                data-code="{{ $doc->code }}"
+                                                data-requires-dv="{{ $doc->requires_dv ? 'true' : 'false' }}">
+                                            {{ $doc->name }}@if($doc->code) ({{ $doc->code }})@endif
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <!-- Identificación -->
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-2">
+                                    Número de Identificación <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text"
+                                       name="identification"
+                                       x-model="identification"
+                                       @input="calculateDV()"
+                                       class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                                       :required="requiresElectronicInvoice">
+                            </div>
+                        </div>
+
+                        <!-- Dígito Verificador -->
+                        <div x-show="requiresDV" 
+                             x-transition
+                             class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-2">
+                                    Dígito Verificador (DV) <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text"
+                                       name="dv"
+                                       x-model="dv"
+                                       maxlength="1"
+                                       class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                                       :required="requiresDV">
+                                <p class="mt-1 text-xs text-gray-500">Se calcula automáticamente para NIT</p>
+                            </div>
+                        </div>
+
+                        <!-- Razón Social / Nombre Comercial -->
+                        <div x-show="isJuridicalPerson" 
+                             x-transition
+                             class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-2">
+                                    Razón Social / Empresa <span class="text-red-500">*</span>
+                                </label>
+                                <input type="text"
+                                       name="company"
+                                       class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                                       :required="isJuridicalPerson">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-2">
+                                    Nombre Comercial
+                                </label>
+                                <input type="text"
+                                       name="trade_name"
+                                       class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
+                            </div>
+                        </div>
+
+                        <!-- Nombres (solo para personas naturales) -->
+                        <div x-show="!isJuridicalPerson" 
+                             x-transition
+                             class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-2">
+                                    Nombres
+                                </label>
+                                <input type="text"
+                                       name="names"
+                                       class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                                       placeholder="Nombres completos de la persona natural">
+                                <p class="mt-1 text-xs text-gray-500">Solo aplica para personas naturales</p>
+                            </div>
+                        </div>
+
+                        <!-- Tipo de Organización Legal -->
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-2">
+                                Tipo de Organización Legal
+                            </label>
+                            <select name="legal_organization_id"
+                                    class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
+                                <option value="">Seleccione...</option>
+                                @foreach($legalOrganizations as $org)
+                                    <option value="{{ $org->id }}">{{ $org->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Municipio -->
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-2">
+                                Municipio <span class="text-red-500">*</span>
+                            </label>
+                            @if($municipalities->isEmpty())
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                    <div class="flex items-start">
+                                        <i class="fas fa-exclamation-triangle text-yellow-600 mt-0.5 mr-2 text-sm"></i>
+                                        <div class="text-xs text-yellow-800">
+                                            <p class="font-semibold mb-1">No hay municipios disponibles</p>
+                                            <p>Ejecuta el comando <code class="bg-yellow-100 px-1 rounded">php artisan factus:sync-municipalities</code> para sincronizar los municipios desde Factus.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="municipality_id" value="">
+                            @else
+                                <select name="municipality_id"
+                                        class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                                        :required="requiresElectronicInvoice">
+                                    <option value="">Seleccione un municipio...</option>
+                                    @php
+                                        $currentDepartment = null;
+                                    @endphp
+                                    @foreach($municipalities as $municipality)
+                                        @if($currentDepartment !== $municipality->department)
+                                            @if($currentDepartment !== null)
+                                                </optgroup>
+                                            @endif
+                                            <optgroup label="{{ $municipality->department }}">
+                                            @php
+                                                $currentDepartment = $municipality->department;
+                                            @endphp
+                                        @endif
+                                        <option value="{{ $municipality->factus_id }}">
+                                            {{ $municipality->name }}
+                                        </option>
+                                        @if($loop->last)
+                                            </optgroup>
+                                        @endif
+                                    @endforeach
+                                </select>
+                                <p class="mt-1 text-xs text-gray-500">Seleccione el municipio según el departamento</p>
+                            @endif
+                        </div>
+
+                        <!-- Régimen Tributario -->
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-2">
+                                Régimen Tributario
+                            </label>
+                            <select name="tribute_id"
+                                    class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
+                                <option value="">Seleccione...</option>
+                                @foreach($tributes as $tribute)
+                                    <option value="{{ $tribute->id }}">{{ $tribute->name }} ({{ $tribute->code }})</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Información de Contacto Adicional -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-2">
+                                    Dirección Fiscal
+                                </label>
+                                <input type="text"
+                                       name="address"
+                                       class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                                       placeholder="Dirección para facturación">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-2">
+                                    Email Fiscal
+                                </label>
+                                <input type="email"
+                                       name="email"
+                                       class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                                       placeholder="email@ejemplo.com">
+                                <p class="mt-1 text-xs text-gray-500">Email para envío de facturas electrónicas</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-2">
+                                Teléfono Fiscal
+                            </label>
+                            <input type="text"
+                                   name="phone"
+                                   class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                                   placeholder="Número de teléfono">
+                        </div>
+                    </div>
+                </div>
                 
                 <!-- Botones del modal -->
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-4 border-t border-gray-200">
@@ -493,7 +796,44 @@
     </div>
 </div>
 
+@push('styles')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    .select2-container--default .select2-selection--single {
+        height: 42px;
+        border: 1px solid #d1d5db !important;
+        border-radius: 0.75rem;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 40px;
+        padding-left: 1rem;
+        padding-right: 2rem;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 40px;
+        right: 10px;
+    }
+    .select2-dropdown {
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+    }
+    .select2-container--default .select2-search--dropdown .select2-search__field {
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+    }
+    .select2-container--default.select2-container--focus .select2-selection--single {
+        border-color: #10b981 !important;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+    .select2-container {
+        width: 100% !important;
+    }
+</style>
+@endpush
+
 @push('scripts')
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 const productsData = @json($productsData);
 
@@ -513,6 +853,89 @@ function saleProducts() {
         products: productsData,
 
         init() {
+            // Initialize Select2 for product after Alpine renders
+            this.$nextTick(() => {
+                // Wait a bit more to ensure Select2 is loaded
+                setTimeout(() => {
+                    if (this.$refs.productSelect && typeof jQuery !== 'undefined' && jQuery().select2) {
+                        const self = this;
+                        const $productSelect = jQuery(this.$refs.productSelect);
+                        if (!$productSelect.data('select2')) {
+                            $productSelect.select2({
+                                placeholder: 'Selecciona un producto',
+                                allowClear: true,
+                                language: {
+                                    noResults: function() {
+                                        return "No se encontraron productos";
+                                    },
+                                    searching: function() {
+                                        return "Buscando...";
+                                    }
+                                },
+                                ajax: {
+                                    url: '/api/products/search',
+                                    dataType: 'json',
+                                    delay: 250,
+                                    data: function (params) {
+                                        return {
+                                            q: params.term,
+                                            page: params.page
+                                        };
+                                    },
+                                    processResults: function (data) {
+                                        return {
+                                            results: data.results.map(function(item) {
+                                                return {
+                                                    id: item.id,
+                                                    text: item.text,
+                                                    price: item.price,
+                                                    stock: item.stock,
+                                                    name: item.name,
+                                                    sku: item.sku
+                                                };
+                                            })
+                                        };
+                                    },
+                                    cache: true
+                                },
+                                minimumInputLength: 0,
+                                templateResult: function(product) {
+                                    if (product.loading) {
+                                        return product.text;
+                                    }
+                                    return product.text;
+                                },
+                                templateSelection: function(product) {
+                                    return product.text || product.name;
+                                }
+                            });
+
+                            // Sync Select2 with Alpine.js
+                            $productSelect.on('select2:select', function(e) {
+                                const data = e.params.data;
+                                self.newItem.product_id = String(data.id);
+                                // Find product in local data for full info
+                                const localProduct = self.products.find(p => p.id == data.id);
+                                if (localProduct) {
+                                    self.newItem.unit_price = localProduct.price || 0;
+                                    self.newItem.stock = localProduct.stock || 0;
+                                } else {
+                                    self.newItem.unit_price = data.price || 0;
+                                    self.newItem.stock = data.stock || 0;
+                                }
+                                self.newItem.quantity = (self.newItem.stock || 0) > 0 ? 1 : 0;
+                                self.updateProductInfo();
+                            });
+
+                            $productSelect.on('select2:clear', function() {
+                                self.newItem.product_id = '';
+                                self.updateProductInfo();
+                            });
+                        }
+                    }
+                }, 200);
+            });
+
             // Focus on SKU search field for scanner
             this.$nextTick(() => {
                 const skuInput = document.querySelector('[x-model="skuSearch"]');
@@ -567,22 +990,33 @@ function saleProducts() {
         },
 
         updateProductInfo() {
-            const productId = parseInt(this.newItem.product_id);
-            const product = this.products.find(p => p.id === productId);
-            
-            if (product) {
-                this.newItem.product_name = product.name;
-                this.newItem.unit_price = product.price;
-                this.newItem.stock = product.stock;
-                // Si el stock es 0, establecer cantidad en 0, sino en 1
-                this.newItem.quantity = product.stock > 0 ? 1 : 0;
-                this.updateItemTotal();
-            } else {
+            const productId = this.newItem.product_id ? String(this.newItem.product_id) : '';
+            if (!productId) {
                 this.newItem.product_name = '';
                 this.newItem.unit_price = 0;
                 this.newItem.stock = 0;
                 this.newItem.quantity = 0;
                 this.newItem.total = 0;
+                return;
+            }
+            
+            const product = this.products.find(p => String(p.id) === productId);
+            
+            if (product) {
+                this.newItem.product_name = product.name;
+                this.newItem.unit_price = product.price || this.newItem.unit_price;
+                this.newItem.stock = product.stock !== undefined ? product.stock : this.newItem.stock;
+                // Si el stock es 0, establecer cantidad en 0, sino en 1
+                if (this.newItem.quantity === 0 || !this.newItem.quantity) {
+                    this.newItem.quantity = this.newItem.stock > 0 ? 1 : 0;
+                }
+                this.updateItemTotal();
+            } else {
+                // Si no está en los productos locales, los valores ya fueron establecidos por Select2
+                if (this.newItem.quantity === 0 || !this.newItem.quantity) {
+                    this.newItem.quantity = this.newItem.stock > 0 ? 1 : 0;
+                }
+                this.updateItemTotal();
             }
         },
 
@@ -712,7 +1146,105 @@ function saleProducts() {
     };
 }
 
+// Alpine.js function for customer modal electronic invoice section
+function modalCustomerElectronicInvoice() {
+    return {
+        requiresElectronicInvoice: false,
+        identificationDocumentId: null,
+        identification: '',
+        dv: '',
+        requiresDV: false,
+        isJuridicalPerson: false,
+        
+        updateRequiredFields() {
+            const select = document.querySelector('#customer-form select[name="identification_document_id"]');
+            if (select && select.selectedIndex >= 0) {
+                const selectedOption = select.options[select.selectedIndex];
+                if (selectedOption) {
+                    this.requiresDV = selectedOption.dataset.requiresDv === 'true';
+                    this.isJuridicalPerson = selectedOption.dataset.code === 'NIT';
+                }
+            }
+        },
+        
+        calculateDV() {
+            // Basic DV calculation placeholder
+            if (this.requiresDV && this.isJuridicalPerson && this.identification && this.identification.length >= 9) {
+                // Algoritmo de cálculo de DV puede ir aquí
+            }
+        }
+    };
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Select2 for customer
+    $('#customer_id').select2({
+        placeholder: 'Selecciona un cliente',
+        allowClear: true,
+        language: {
+            noResults: function() {
+                return "No se encontraron clientes";
+            },
+            searching: function() {
+                return "Buscando...";
+            }
+        },
+        ajax: {
+            url: '/api/customers/search',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return {
+                    q: params.term,
+                    page: params.page
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: data.results
+                };
+            },
+            cache: true
+        },
+        minimumInputLength: 0,
+        templateResult: function(customer) {
+            if (customer.loading) {
+                return customer.text;
+            }
+            return customer.text;
+        },
+        templateSelection: function(customer) {
+            return customer.text || customer.name;
+        }
+    });
+
+    // If there's an old value, set it
+    @php
+        $oldCustomerId = old('customer_id');
+        $oldCustomerText = '';
+        if ($oldCustomerId) {
+            $oldCustomer = $customers->firstWhere('id', $oldCustomerId);
+            if ($oldCustomer) {
+                $oldCustomerText = $oldCustomer->name;
+                if ($oldCustomer->taxProfile && $oldCustomer->taxProfile->identification) {
+                    $docType = $oldCustomer->taxProfile->identificationDocument ? 
+                        $oldCustomer->taxProfile->identificationDocument->code . ': ' : '';
+                    $docNumber = $oldCustomer->taxProfile->identification;
+                    $dv = $oldCustomer->taxProfile->dv ? '-' . $oldCustomer->taxProfile->dv : '';
+                    $oldCustomerText .= ' - ' . $docType . $docNumber . $dv;
+                }
+            }
+        }
+    @endphp
+    @if($oldCustomerId && $oldCustomerText)
+        const oldCustomerId = {{ $oldCustomerId }};
+        const oldCustomerText = @json($oldCustomerText);
+        if (oldCustomerId && oldCustomerText) {
+            const option = new Option(oldCustomerText, oldCustomerId, true, true);
+            $('#customer_id').append(option).trigger('change');
+        }
+    @endif
+
     const customerSelect = document.getElementById('customer_id');
     
     // Elementos del modal
@@ -780,12 +1312,19 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Agregar el nuevo cliente al select
-                const newOption = document.createElement('option');
-                newOption.value = data.customer.id;
-                    newOption.textContent = data.customer.name + (data.customer.email ? ' - ' + data.customer.email : '');
-                newOption.selected = true;
-                customerSelect.appendChild(newOption);
+                // Agregar el nuevo cliente al select2
+                // Si tiene perfil fiscal, mostrar número de documento
+                let customerText = data.customer.name;
+                if (data.customer.tax_profile && data.customer.tax_profile.identification) {
+                    const docType = data.customer.tax_profile.document_type ? data.customer.tax_profile.document_type + ': ' : '';
+                    const docNumber = data.customer.tax_profile.identification;
+                    const dv = data.customer.tax_profile.dv ? '-' + data.customer.tax_profile.dv : '';
+                    customerText += ' - ' + docType + docNumber + dv;
+                } else if (data.customer.email) {
+                    customerText += ' - ' + data.customer.email;
+                }
+                const newOption = new Option(customerText, data.customer.id, true, true);
+                $('#customer_id').append(newOption).trigger('change');
                 
                 // Cerrar modal
                 closeModal();

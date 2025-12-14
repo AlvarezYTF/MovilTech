@@ -47,3 +47,70 @@ Route::get('/measurement-units/search', function (Request $request) {
     
     return response()->json($units);
 });
+
+Route::get('/customers/search', function (Request $request) {
+    $term = $request->query('q', '');
+    
+    $query = \App\Models\Customer::active()->with('taxProfile.identificationDocument');
+    
+    if (strlen($term) >= 2) {
+        $query->where(function ($q) use ($term) {
+            $q->where('name', 'like', "%{$term}%")
+              ->orWhere('email', 'like', "%{$term}%")
+              ->orWhere('phone', 'like', "%{$term}%")
+              ->orWhereHas('taxProfile', function($subQ) use ($term) {
+                  $subQ->where('identification', 'like', "%{$term}%");
+              });
+        });
+    }
+    
+    $customers = $query->orderBy('name')->limit(50)->get()->map(function ($customer) {
+        $text = $customer->name;
+        
+        // Add document number if available
+        if ($customer->taxProfile && $customer->taxProfile->identification) {
+            $documentType = $customer->taxProfile->identificationDocument ? 
+                $customer->taxProfile->identificationDocument->code . ': ' : '';
+            $documentNumber = $customer->taxProfile->identification;
+            $dv = $customer->taxProfile->dv ? '-' . $customer->taxProfile->dv : '';
+            $text .= ' - ' . $documentType . $documentNumber . $dv;
+        }
+        
+        return [
+            'id' => $customer->id,
+            'text' => $text,
+            'name' => $customer->name,
+            'email' => $customer->email,
+            'identification' => $customer->taxProfile?->identification,
+            'document_type' => $customer->taxProfile?->identificationDocument?->code,
+        ];
+    });
+    
+    return response()->json(['results' => $customers]);
+});
+
+Route::get('/products/search', function (Request $request) {
+    $term = $request->query('q', '');
+    
+    $query = \App\Models\Product::where('status', 'active');
+    
+    if (strlen($term) >= 2) {
+        $query->where(function ($q) use ($term) {
+            $q->where('name', 'like', "%{$term}%")
+              ->orWhere('sku', 'like', "%{$term}%");
+        });
+    }
+    
+    $products = $query->orderBy('name')->limit(50)->get()->map(function ($product) {
+        return [
+            'id' => $product->id,
+            'text' => $product->name . ' - Stock: ' . $product->quantity,
+            'name' => $product->name,
+            'sku' => $product->sku,
+            'price' => $product->price,
+            'stock' => $product->quantity,
+        ];
+    });
+    
+    return response()->json(['results' => $products]);
+});

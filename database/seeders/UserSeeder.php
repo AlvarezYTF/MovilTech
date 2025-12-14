@@ -17,6 +17,7 @@ class UserSeeder extends Seeder
         // Usuario administrador
         $admin = User::create([
             'name' => 'Administrador',
+            'username' => 'admin',
             'email' => 'admin@moviltech.com',
             'password' => Hash::make('password'),
         ]);
@@ -25,6 +26,7 @@ class UserSeeder extends Seeder
         // Usuario vendedor
         $seller = User::create([
             'name' => 'Vendedor',
+            'username' => 'vendedor',
             'email' => 'vendedor@moviltech.com',
             'password' => Hash::make('password'),
         ]);
@@ -33,6 +35,7 @@ class UserSeeder extends Seeder
         // Usuario técnico
         $technician = User::create([
             'name' => 'Técnico',
+            'username' => 'tecnico',
             'email' => 'tecnico@moviltech.com',
             'password' => Hash::make('password'),
         ]);
@@ -41,6 +44,7 @@ class UserSeeder extends Seeder
         // Usuario cliente
         $customer = User::create([
             'name' => 'Cliente Demo',
+            'username' => 'cliente',
             'email' => 'cliente@moviltech.com',
             'password' => Hash::make('password'),
         ]);

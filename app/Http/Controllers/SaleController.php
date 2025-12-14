@@ -36,8 +36,16 @@ class SaleController extends Controller
      */
     public function create(): View
     {
-        $customers = Customer::active()->orderBy('name')->get();
+        $customers = Customer::active()->with('taxProfile.identificationDocument')->orderBy('name')->get();
         $products = $this->productRepository->getActiveProducts();
+        $paymentMethods = \App\Models\DianPaymentMethod::orderBy('name')->get();
+        $paymentForms = \App\Models\DianPaymentForm::orderBy('name')->get();
+        
+        // Load DIAN catalogs for customer modal electronic invoice section
+        $identificationDocuments = \App\Models\DianIdentificationDocument::orderBy('id')->get();
+        $legalOrganizations = \App\Models\DianLegalOrganization::orderBy('id')->get();
+        $tributes = \App\Models\DianCustomerTribute::orderBy('id')->get();
+        $municipalities = \App\Models\DianMunicipality::orderBy('department')->orderBy('name')->get();
         
         // Prepare products data for JavaScript
         $productsData = $products->map(function($product) {
@@ -50,7 +58,17 @@ class SaleController extends Controller
             ];
         })->values();
         
-        return view('sales.create', compact('customers', 'products', 'productsData'));
+        return view('sales.create', compact(
+            'customers', 
+            'products', 
+            'productsData', 
+            'paymentMethods', 
+            'paymentForms',
+            'identificationDocuments',
+            'legalOrganizations',
+            'tributes',
+            'municipalities'
+        ));
     }
 
     /**
@@ -75,7 +93,7 @@ class SaleController extends Controller
      */
     public function show(Sale $sale): View
     {
-        $sale->load(['customer', 'user', 'saleItems.product']);
+        $sale->load(['customer', 'user', 'saleItems.product', 'electronicInvoice']);
         
         return view('sales.show', compact('sale'));
     }

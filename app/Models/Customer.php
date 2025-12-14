@@ -74,6 +74,9 @@ class Customer extends Model
             return false;
         }
         
+        // Load necessary relationships
+        $profile->load('identificationDocument');
+        
         $required = ['identification_document_id', 'identification', 'municipality_id'];
         
         foreach ($required as $field) {
@@ -91,6 +94,50 @@ class Customer extends Model
         }
         
         return true;
+    }
+
+    /**
+     * Get missing tax profile fields.
+     *
+     * @return array<string>
+     */
+    public function getMissingTaxProfileFields(): array
+    {
+        $missing = [];
+
+        if (!$this->requires_electronic_invoice) {
+            return ['Facturación electrónica no está activada'];
+        }
+
+        $profile = $this->taxProfile;
+        if (!$profile) {
+            return ['Perfil fiscal no está configurado. Por favor, complete los datos fiscales del cliente.'];
+        }
+
+        // Load necessary relationships
+        $profile->load('identificationDocument');
+
+        $required = [
+            'identification_document_id' => 'Tipo de documento',
+            'identification' => 'Número de identificación',
+            'municipality_id' => 'Municipio',
+        ];
+
+        foreach ($required as $field => $label) {
+            if (empty($profile->$field)) {
+                $missing[] = $label;
+            }
+        }
+
+        if ($profile->requiresDV() && empty($profile->dv)) {
+            $missing[] = 'Dígito verificador (DV)';
+        }
+
+        if ($profile->isJuridicalPerson() && empty($profile->company)) {
+            $missing[] = 'Razón social / Empresa';
+        }
+
+        return $missing;
     }
 
     /**

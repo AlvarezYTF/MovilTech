@@ -6,4 +6,5 @@ return [
     'client_secret' => env('FACTUS_CLIENT_SECRET'),
     'username' => env('FACTUS_USERNAME'),
     'password' => env('FACTUS_PASSWORD'),
+    'verify_ssl' => env('FACTUS_VERIFY_SSL', true),
 ];

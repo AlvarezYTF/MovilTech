@@ -150,9 +150,21 @@ INSERT INTO company_tax_settings (
 );
 ```
 
-**Opción B: Crear interfaz administrativa** (recomendado para el futuro)
+**Opción B: Usar la interfaz administrativa** (recomendado)
 
-Puedes crear un CRUD en `/admin/company-tax-settings` para gestionar estos datos desde la interfaz.
+La interfaz administrativa está disponible en `/company-tax-settings/edit` para gestionar estos datos desde la aplicación.
+
+**Acceso:**
+- Requiere el permiso `manage_roles`
+- Disponible en el menú lateral bajo "Administración" → "Configuración Fiscal"
+- O accede directamente a: `/company-tax-settings/edit`
+
+**Características de la interfaz:**
+- ✅ Indicador de estado de configuración (completa/incompleta)
+- ✅ Lista de campos faltantes si la configuración está incompleta
+- ✅ Validación en tiempo real
+- ✅ Selector de municipios agrupado por departamento
+- ✅ Información del sistema (ID Factus, municipio configurado)
 
 ### 6. Verificar Configuración
 
@@ -288,3 +300,4 @@ Si encuentras problemas:
 2. Verifica que todas las migraciones y seeders se ejecutaron correctamente
 3. Verifica la configuración de `.env`
 4. Consulta la documentación en `tmp/ANALISIS_FACTURACION_ELECTRONICA_DIAN.md`
+

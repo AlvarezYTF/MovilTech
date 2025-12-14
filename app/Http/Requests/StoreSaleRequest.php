@@ -34,6 +34,8 @@ class StoreSaleRequest extends FormRequest
         return [
             'customer_id' => 'required|exists:customers,id',
             'sale_date' => 'required|date',
+            'payment_method_code' => 'nullable|exists:dian_payment_methods,code',
+            'payment_form_code' => 'nullable|exists:dian_payment_forms,code',
             'notes' => 'nullable|string|max:1000',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',

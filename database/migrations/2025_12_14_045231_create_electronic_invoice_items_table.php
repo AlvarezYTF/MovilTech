@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('electronic_invoice_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('electronic_invoice_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('electronic_invoice_id');
             $table->foreignId('tribute_id')->nullable()->constrained('dian_customer_tributes')->onDelete('restrict');
             $table->foreignId('standard_code_id')->nullable()->constrained('dian_product_standards')->onDelete('restrict');
             
@@ -39,6 +39,33 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (Schema::hasTable('electronic_invoice_items')) {
+            // Drop foreign keys if they exist
+            try {
+                Schema::table('electronic_invoice_items', function (Blueprint $table) {
+                    $table->dropForeign(['electronic_invoice_id']);
+                });
+            } catch (\Exception $e) {
+                // Foreign key might not exist or already dropped
+            }
+            
+            try {
+                Schema::table('electronic_invoice_items', function (Blueprint $table) {
+                    $table->dropForeign(['tribute_id']);
+                });
+            } catch (\Exception $e) {
+                // Foreign key might not exist or already dropped
+            }
+            
+            try {
+                Schema::table('electronic_invoice_items', function (Blueprint $table) {
+                    $table->dropForeign(['standard_code_id']);
+                });
+            } catch (\Exception $e) {
+                // Foreign key might not exist or already dropped
+            }
+        }
+        
         Schema::dropIfExists('electronic_invoice_items');
     }
 };

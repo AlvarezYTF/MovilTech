@@ -373,8 +373,8 @@
                                name="dv"
                                x-model="dv"
                                maxlength="1"
-                               class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
-                               required>
+                               :required="requiresDV"
+                               class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
                         <p class="mt-1 text-xs text-gray-500">
                             Se calcula automáticamente para NIT
                         </p>
@@ -389,8 +389,8 @@
                         </label>
                         <input type="text"
                                name="company"
-                               class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
-                               required>
+                               :required="isJuridicalPerson"
+                               class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-gray-700 mb-2">
@@ -399,6 +399,22 @@
                         <input type="text"
                                name="trade_name"
                                class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
+                    </div>
+                </div>
+
+                <!-- Nombres (solo para personas naturales) -->
+                <div x-show="!isJuridicalPerson" class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">
+                            Nombres
+                        </label>
+                        <input type="text"
+                               name="names"
+                               class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                               placeholder="Nombres completos de la persona natural">
+                        <p class="mt-1 text-xs text-gray-500">
+                            Solo aplica para personas naturales
+                        </p>
                     </div>
                 </div>
 
@@ -416,41 +432,54 @@
                     </select>
                 </div>
 
-                <!-- Municipio (con autocomplete) -->
+                <!-- Municipio -->
                 <div>
-                    <label class="block text-xs font-semibold text-gray-700 mb-2">
+                    <label for="municipality_id" class="block text-xs font-semibold text-gray-700 mb-2">
                         Municipio <span class="text-red-500">*</span>
                     </label>
-                    <div x-data="municipalitySearch()">
-                        <input 
-                            type="text"
-                            x-model="searchTerm"
-                            @input.debounce.300ms="search()"
-                            placeholder="Buscar municipio (ej: Medellín)..."
-                            class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
-                            required
-                        />
-                        
-                        <div x-show="results.length > 0" 
-                             class="mt-2 border rounded bg-white shadow-lg max-h-60 overflow-y-auto">
-                            <template x-for="municipality in results" :key="municipality.factus_id">
-                                <div 
-                                    @click="select(municipality)"
-                                    class="p-2 hover:bg-gray-100 cursor-pointer"
-                                >
-                                    <span x-text="municipality.name"></span> – 
-                                    <span x-text="municipality.department"></span>
+                    @if($municipalities->isEmpty())
+                        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-yellow-600 mt-0.5 mr-3"></i>
+                                <div class="text-sm text-yellow-800">
+                                    <p class="font-semibold mb-1">No hay municipios disponibles</p>
+                                    <p class="text-xs">Ejecuta el comando <code class="bg-yellow-100 px-1 rounded">php artisan factus:sync-municipalities</code> para sincronizar los municipios desde Factus.</p>
                                 </div>
-                            </template>
+                            </div>
                         </div>
-                        
-                        <input 
-                            type="hidden" 
-                            name="municipality_id" 
-                            x-model="selectedId"
-                            required
-                        />
-                    </div>
+                        <input type="hidden" name="municipality_id" value="">
+                    @else
+                        <select name="municipality_id"
+                                id="municipality_id"
+                                class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                                required>
+                            <option value="">Seleccione un municipio...</option>
+                            @php
+                                $currentDepartment = null;
+                            @endphp
+                            @foreach($municipalities as $municipality)
+                                @if($currentDepartment !== $municipality->department)
+                                    @if($currentDepartment !== null)
+                                        </optgroup>
+                                    @endif
+                                    <optgroup label="{{ $municipality->department }}">
+                                    @php
+                                        $currentDepartment = $municipality->department;
+                                    @endphp
+                                @endif
+                                <option value="{{ $municipality->factus_id }}"
+                                        {{ old('municipality_id') == $municipality->factus_id ? 'selected' : '' }}>
+                                    {{ $municipality->name }}
+                                </option>
+                                @if($loop->last)
+                                    </optgroup>
+                                @endif
+                            @endforeach
+                        </select>
+                        <p class="mt-1 text-xs text-gray-500">
+                            Seleccione el municipio según el departamento
+                        </p>
+                    @endif
                 </div>
 
                 <!-- Régimen Tributario (opcional) -->
@@ -465,6 +494,42 @@
                             <option value="{{ $tribute->id }}">{{ $tribute->name }} ({{ $tribute->code }})</option>
                         @endforeach
                     </select>
+                </div>
+
+                <!-- Información de Contacto Adicional -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">
+                            Dirección Fiscal
+                        </label>
+                        <input type="text"
+                               name="address"
+                               class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                               placeholder="Dirección para facturación">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">
+                            Email Fiscal
+                        </label>
+                        <input type="email"
+                               name="email"
+                               class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                               placeholder="email@ejemplo.com">
+                        <p class="mt-1 text-xs text-gray-500">
+                            Email para envío de facturas electrónicas
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-700 mb-2">
+                        Teléfono Fiscal
+                    </label>
+                    <input type="text"
+                           name="phone"
+                           class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
+                           placeholder="Número de teléfono">
                 </div>
             </div>
         </div>
@@ -535,36 +600,6 @@ function customerForm() {
                     // Por ahora se deja que el usuario lo ingrese manualmente
                 }
             }
-        }
-    }
-}
-
-function municipalitySearch() {
-    return {
-        searchTerm: '',
-        results: [],
-        selectedId: null,
-        
-        async search() {
-            if (this.searchTerm.length < 2) {
-                this.results = [];
-                return;
-            }
-            
-            try {
-                const response = await fetch(`/api/municipalities/search?q=${encodeURIComponent(this.searchTerm)}`);
-                const data = await response.json();
-                this.results = data;
-            } catch (error) {
-                console.error('Error al buscar municipios:', error);
-                this.results = [];
-            }
-        },
-        
-        select(municipality) {
-            this.selectedId = municipality.factus_id;
-            this.searchTerm = `${municipality.name} – ${municipality.department}`;
-            this.results = [];
         }
     }
 }

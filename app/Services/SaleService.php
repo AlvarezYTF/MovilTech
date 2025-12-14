@@ -58,6 +58,8 @@ class SaleService
                 'discount_amount' => $discountAmount,
                 'total' => $total,
                 'status' => $data['status'] ?? 'completed',
+                'payment_method_code' => $data['payment_method_code'] ?? null,
+                'payment_form_code' => $data['payment_form_code'] ?? null,
                 'notes' => $data['notes'] ?? null,
             ]);
 

@@ -86,6 +86,13 @@
                 </a>
                 @endcan
                 
+                @can('view_sales')
+                <a href="{{ route('electronic-invoices.index') }}" @click="sidebarOpen = false" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors {{ request()->routeIs('electronic-invoices.*') ? 'bg-gray-700 text-white' : '' }}">
+                    <i class="fas fa-file-invoice-dollar w-5"></i>
+                    <span class="ml-3">Facturas Electrónicas</span>
+                </a>
+                @endcan
+                
                 @can('view_repairs')
                 <a href="{{ route('repairs.index') }}" @click="sidebarOpen = false" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors {{ request()->routeIs('repairs.*') ? 'bg-gray-700 text-white' : '' }}">
                     <i class="fas fa-tools w-5"></i>
@@ -97,6 +104,29 @@
                 <a href="{{ route('reports.index') }}" @click="sidebarOpen = false" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors {{ request()->routeIs('reports.*') ? 'bg-gray-700 text-white' : '' }}">
                     <i class="fas fa-chart-bar w-5"></i>
                     <span class="ml-3">Reportes</span>
+                </a>
+                @endcan
+
+                @can('manage_roles')
+                <div class="px-4 mt-4 mb-2">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Administración</p>
+                </div>
+                <a href="{{ route('company-tax-settings.edit') }}" @click="sidebarOpen = false" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors {{ request()->routeIs('company-tax-settings.*') ? 'bg-gray-700 text-white' : '' }}">
+                    <i class="fas fa-building w-5"></i>
+                    <span class="ml-3">Configuración Fiscal</span>
+                </a>
+                @endcan
+            </nav>
+
+            <nav class="px-4 pt-4 border-t border-gray-700">
+                <div class="px-4 mb-4">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Configuración</p>
+                </div>
+                
+                @can('manage_roles')
+                <a href="{{ route('company-tax-settings.edit') }}" @click="sidebarOpen = false" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors {{ request()->routeIs('company-tax-settings.*') ? 'bg-gray-700 text-white' : '' }}">
+                    <i class="fas fa-building w-5"></i>
+                    <span class="ml-3">Datos Fiscales</span>
                 </a>
                 @endcan
             </nav>

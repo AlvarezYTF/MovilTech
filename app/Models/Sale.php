@@ -19,6 +19,8 @@ class Sale extends Model
         'discount_amount',
         'total',
         'status',
+        'payment_method_code',
+        'payment_form_code',
         'notes',
     ];
 
@@ -112,6 +114,9 @@ class Sale extends Model
      */
     public function hasElectronicInvoice(): bool
     {
+        if (!$this->relationLoaded('electronicInvoice')) {
+            $this->load('electronicInvoice');
+        }
         return $this->electronicInvoice !== null;
     }
 
@@ -120,6 +125,25 @@ class Sale extends Model
      */
     public function requiresElectronicInvoice(): bool
     {
-        return $this->customer->requires_electronic_invoice ?? false;
+        if (!$this->relationLoaded('customer')) {
+            $this->load('customer');
+        }
+        return $this->customer && ($this->customer->requires_electronic_invoice ?? false);
+    }
+
+    /**
+     * Get the payment method for the sale.
+     */
+    public function paymentMethod()
+    {
+        return $this->belongsTo(DianPaymentMethod::class, 'payment_method_code', 'code');
+    }
+
+    /**
+     * Get the payment form for the sale.
+     */
+    public function paymentForm()
+    {
+        return $this->belongsTo(DianPaymentForm::class, 'payment_form_code', 'code');
     }
 }

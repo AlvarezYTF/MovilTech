@@ -13,15 +13,10 @@ return new class extends Migration
     {
         Schema::create('order_details', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignIdFor(\App\Models\Order::class)
-                ->constrained()
+            $table->foreignId('order_id')
+                ->constrained('orders')
                 ->cascadeOnDelete();
-
-            $table->foreignIdFor(\App\Models\Product::class)
-                ->constrained()
-                ->cascadeOnDelete();
-
+            $table->unsignedBigInteger('product_id');
             $table->integer('quantity');
             $table->integer('unitcost');
             $table->integer('total');
@@ -34,6 +29,25 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (Schema::hasTable('order_details')) {
+            // Drop foreign keys if they exist
+            try {
+                Schema::table('order_details', function (Blueprint $table) {
+                    $table->dropForeign(['order_id']);
+                });
+            } catch (\Exception $e) {
+                // Foreign key might not exist or already dropped
+            }
+            
+            try {
+                Schema::table('order_details', function (Blueprint $table) {
+                    $table->dropForeign(['product_id']);
+                });
+            } catch (\Exception $e) {
+                // Foreign key might not exist or already dropped
+            }
+        }
+        
         Schema::dropIfExists('order_details');
     }
 };

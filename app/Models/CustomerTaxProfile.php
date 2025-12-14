@@ -14,6 +14,10 @@ class CustomerTaxProfile extends Model
         'legal_organization_id',
         'company',
         'trade_name',
+        'names',
+        'address',
+        'email',
+        'phone',
         'tribute_id',
         'municipality_id',
     ];

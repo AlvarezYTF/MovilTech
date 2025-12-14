@@ -31,7 +31,7 @@ return new class extends Migration
             $table->timestamps();
             
             $table->index('customer_id');
-            $table->index(['identification', 'identification_document_id']);
+            $table->index(['identification', 'identification_document_id'], 'ctp_ident_doc_idx');
             $table->index('municipality_id');
         });
     }

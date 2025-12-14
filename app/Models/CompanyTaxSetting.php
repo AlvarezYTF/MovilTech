@@ -27,11 +27,44 @@ class CompanyTaxSetting extends Model
         return !empty($this->nit) && 
                !empty($this->dv) && 
                !empty($this->municipality_id) &&
-               !empty($this->email);
+               !empty($this->email) &&
+               !empty($this->company_name);
     }
 
     public function hasFactusId(): bool
     {
         return !empty($this->factus_company_id);
+    }
+
+    /**
+     * Get missing company tax configuration fields.
+     *
+     * @return array<string>
+     */
+    public function getMissingFields(): array
+    {
+        $missing = [];
+
+        if (empty($this->company_name)) {
+            $missing[] = 'Nombre de la empresa';
+        }
+
+        if (empty($this->nit)) {
+            $missing[] = 'NIT';
+        }
+
+        if (empty($this->dv)) {
+            $missing[] = 'Dígito verificador (DV)';
+        }
+
+        if (empty($this->email)) {
+            $missing[] = 'Email';
+        }
+
+        if (empty($this->municipality_id)) {
+            $missing[] = 'Municipio';
+        }
+
+        return $missing;
     }
 }

@@ -5,6 +5,44 @@
 
 @section('content')
 <div class="space-y-4 sm:space-y-6">
+    @if(session('success'))
+        <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded-lg">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-check-circle text-emerald-500"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm font-semibold text-emerald-800">{{ session('success') }}</p>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-lg">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-circle text-red-500"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm font-semibold text-red-800">{{ session('error') }}</p>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if(session('warning'))
+        <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-lg">
+            <div class="flex items-center">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-triangle text-amber-500"></i>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm font-semibold text-amber-800">{{ session('warning') }}</p>
+                </div>
+            </div>
+        </div>
+    @endif
     <!-- Header -->
     <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -69,9 +107,27 @@
                         <i class="fas fa-file-pdf mr-2"></i>
                         <span>PDF</span>
                     </a>
+                @else
+                    <a href="{{ route('electronic-invoices.download-pdf', $electronicInvoice) }}"
+                       class="inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-red-600 bg-red-600 text-white text-sm font-semibold hover:bg-red-700 hover:border-red-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 shadow-sm hover:shadow-md">
+                        <i class="fas fa-download mr-2"></i>
+                        <span>Descargar PDF</span>
+                    </a>
                 @endif
 
-                <a href="{{ route('sales.index') }}"
+                @if(!$electronicInvoice->isAccepted())
+                    <form action="{{ route('electronic-invoices.refresh-status', $electronicInvoice) }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit"
+                                class="inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-blue-600 bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 hover:border-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-sm hover:shadow-md"
+                                title="Actualizar estado desde Factus">
+                            <i class="fas fa-sync-alt mr-2"></i>
+                            <span>Actualizar Estado</span>
+                        </button>
+                    </form>
+                @endif
+
+                <a href="{{ $returnUrl ?? route('electronic-invoices.index') }}"
                    class="inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-emerald-600 bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 hover:border-emerald-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 shadow-sm hover:shadow-md">
                     <i class="fas fa-arrow-left mr-2"></i>
                     <span>Volver</span>
@@ -411,7 +467,9 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
 @endsection
+
