@@ -44,6 +44,7 @@ class SaleController extends Controller
             return [
                 'id' => $product->id,
                 'name' => $product->name,
+                'sku' => $product->sku,
                 'price' => (float)$product->price,
                 'stock' => (int)$product->quantity
             ];
@@ -97,6 +98,7 @@ class SaleController extends Controller
             return [
                 'id' => $product->id,
                 'name' => $product->name,
+                'sku' => $product->sku,
                 'price' => (float)$product->price,
                 'stock' => (int)$availableStock
             ];

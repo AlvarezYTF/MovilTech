@@ -103,14 +103,45 @@
             </div>
 
             <!-- Formulario para agregar/editar producto -->
-            <div class="bg-gray-50 rounded-xl p-4 sm:p-5 mb-4 sm:mb-6 border border-gray-200"
+            <div class="bg-white rounded-xl border border-gray-200 p-4 sm:p-5 mb-4 sm:mb-6"
                  :class="editingIndex !== null ? 'border-blue-300 bg-blue-50' : ''">
-                <div x-show="editingIndex !== null" class="mb-3 p-2 bg-blue-100 border border-blue-200 rounded-lg">
-                    <div class="flex items-center text-blue-800 text-xs font-semibold">
+                <div x-show="editingIndex !== null" class="mb-4 p-3 bg-blue-100 border border-blue-200 rounded-lg">
+                    <div class="flex items-center text-blue-800 text-sm font-semibold">
                         <i class="fas fa-edit mr-2"></i>
                         <span>Editando producto: <span x-text="newItem.product_name"></span></span>
                     </div>
                 </div>
+
+                <!-- Búsqueda por SKU / Escáner -->
+                <div class="mb-4">
+                    <label class="block text-xs font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-barcode mr-1"></i>
+                        Buscar por SKU / Escanear código
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-barcode text-gray-400 text-sm"></i>
+                        </div>
+                        <input type="text"
+                               x-model="skuSearch"
+                               @keydown.enter.prevent="searchBySku()"
+                               @input="clearSkuError()"
+                               placeholder="Escanee o ingrese el SKU del producto"
+                               class="block w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                               :class="skuError ? 'border-red-300 focus:ring-red-500' : ''">
+                        <button type="button"
+                                @click="searchBySku()"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-emerald-600 hover:text-emerald-700 transition-colors">
+                            <i class="fas fa-search text-sm"></i>
+                        </button>
+                    </div>
+                    <p x-show="skuError" class="mt-1.5 text-xs text-red-600 flex items-center">
+                        <i class="fas fa-exclamation-circle mr-1.5"></i>
+                        <span x-text="skuError"></span>
+                    </p>
+                </div>
+
+                <!-- Campos del producto -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <!-- Producto -->
                     <div class="md:col-span-2 lg:col-span-1">
@@ -124,13 +155,14 @@
                             <select x-model="newItem.product_id"
                                     @change="updateProductInfo()"
                                     :disabled="editingIndex !== null"
-                                    class="block w-full pl-9 pr-8 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent appearance-none bg-white disabled:bg-gray-100 disabled:cursor-not-allowed">
-                                <option value="">Selecciona...</option>
+                                    class="block w-full pl-9 pr-8 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent appearance-none bg-white disabled:bg-gray-100 disabled:cursor-not-allowed">
+                                <option value="">Selecciona un producto...</option>
                                 @foreach($products as $product)
                                     <option value="{{ $product->id }}"
                                             data-price="{{ $product->price }}"
                                             data-stock="{{ $product->quantity }}"
-                                            data-name="{{ $product->name }}">
+                                            data-name="{{ $product->name }}"
+                                            data-sku="{{ $product->sku }}">
                                         {{ $product->name }} - Stock: {{ $product->quantity }}
                                     </option>
                                 @endforeach
@@ -152,10 +184,10 @@
                                :disabled="newItem.stock === 0 || !newItem.product_id"
                                @input="updateItemTotal(); validateQuantity()"
                                @blur="validateQuantity()"
-                               class="block w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-                        <div class="mt-1 text-xs text-gray-500">
+                               class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed">
+                        <div class="mt-1.5 text-xs" :class="newItem.stock === 0 ? 'text-red-600 font-semibold' : 'text-gray-500'">
                             Stock: <span x-text="newItem.stock || '-'"></span>
-                            <span x-show="newItem.stock === 0" class="ml-1 text-red-600">(Sin stock)</span>
+                            <span x-show="newItem.stock === 0" class="ml-1">(Sin stock disponible)</span>
                         </div>
                     </div>
 
@@ -165,7 +197,7 @@
                             Precio Unitario <span class="text-red-500">*</span>
                         </label>
                         <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <span class="text-gray-500 text-xs">$</span>
                             </div>
                             <input type="number"
@@ -173,22 +205,22 @@
                                    step="0.01"
                                    min="0"
                                    @input="updateItemTotal()"
-                                   class="block w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
+                                   class="block w-full pl-8 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
                         </div>
                     </div>
 
                     <!-- Total y Botón -->
-                    <div class="flex flex-col sm:flex-row items-stretch sm:items-end gap-2">
-                        <div class="flex-1">
+                    <div class="flex flex-col gap-2">
+                        <div>
                             <label class="block text-xs font-semibold text-gray-700 mb-2">Total</label>
                             <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <span class="text-gray-500 text-xs">$</span>
                                 </div>
                                 <input type="text"
                                        :value="formatCurrency(newItem.total)"
                                        readonly
-                                       class="block w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 bg-gray-50 focus:outline-none">
+                                       class="block w-full pl-8 pr-3 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 bg-gray-50 focus:outline-none font-semibold">
                             </div>
                         </div>
                         <div class="flex gap-2">
@@ -196,22 +228,22 @@
                                     x-show="editingIndex === null"
                                     @click="addItem()"
                                     :disabled="!canAddItem()"
-                                    class="px-4 py-2 rounded-lg border-2 border-emerald-600 bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 hover:border-emerald-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center sm:w-auto w-full">
-                                <i class="fas fa-plus mr-2 sm:mr-0"></i>
-                                <span class="sm:hidden">Agregar</span>
+                                    class="flex-1 px-4 py-2.5 rounded-lg border-2 border-emerald-600 bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 hover:border-emerald-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+                                <i class="fas fa-plus mr-2"></i>
+                                <span>Agregar</span>
                             </button>
                             <template x-if="editingIndex !== null">
-                                <div class="flex gap-2 w-full sm:w-auto">
+                                <div class="flex gap-2 flex-1">
                                     <button type="button"
                                             @click="updateItem()"
                                             :disabled="!canAddItem()"
-                                            class="flex-1 sm:flex-none px-4 py-2 rounded-lg border-2 border-emerald-600 bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 hover:border-emerald-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
+                                            class="flex-1 px-4 py-2.5 rounded-lg border-2 border-emerald-600 bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 hover:border-emerald-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
                                         <i class="fas fa-save mr-2"></i>
-                                        <span class="sm:hidden">Guardar</span>
+                                        <span>Guardar</span>
                                     </button>
                                     <button type="button"
                                             @click="cancelEdit()"
-                                            class="px-4 py-2 rounded-lg border-2 border-gray-300 bg-white text-gray-700 text-sm font-semibold hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 flex items-center justify-center">
+                                            class="px-4 py-2.5 rounded-lg border-2 border-gray-300 bg-white text-gray-700 text-sm font-semibold hover:bg-gray-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 flex items-center justify-center">
                                         <i class="fas fa-times"></i>
                                     </button>
                                 </div>
@@ -478,6 +510,8 @@ function saleProducts() {
     return {
         items: existingItems || [],
         editingIndex: null,
+        skuSearch: '',
+        skuError: null,
         newItem: {
             product_id: '',
             product_name: '',
@@ -490,6 +524,59 @@ function saleProducts() {
 
         init() {
             // Los items existentes ya están cargados en this.items
+            // Focus on SKU search field for scanner
+            this.$nextTick(() => {
+                const skuInput = document.querySelector('[x-model="skuSearch"]');
+                if (skuInput) {
+                    skuInput.focus();
+                }
+            });
+        },
+
+        searchBySku() {
+            if (!this.skuSearch || !this.skuSearch.trim()) {
+                this.skuError = 'Por favor ingrese un SKU';
+                return;
+            }
+
+            const sku = this.skuSearch.trim().toUpperCase();
+            const product = this.products.find(p => p.sku && p.sku.toUpperCase() === sku);
+
+            if (!product) {
+                this.skuError = 'Producto no encontrado con el SKU: ' + sku;
+                this.skuSearch = '';
+                return;
+            }
+
+            // Check if product is already in items (excluding the one being edited)
+            const existingIndex = this.editingIndex !== null ?
+                this.items.findIndex((item, idx) => item.product_id === product.id && idx !== this.editingIndex) :
+                this.items.findIndex(item => item.product_id === product.id);
+
+            if (existingIndex !== -1) {
+                this.skuError = 'Este producto ya está en la lista';
+                this.skuSearch = '';
+                return;
+            }
+
+            // Set the product
+            this.newItem.product_id = product.id;
+            this.updateProductInfo();
+            this.skuSearch = '';
+            this.skuError = null;
+
+            // Focus on quantity field
+            this.$nextTick(() => {
+                const quantityInput = document.querySelector('[x-model.number="newItem.quantity"]');
+                if (quantityInput) {
+                    quantityInput.focus();
+                    quantityInput.select();
+                }
+            });
+        },
+
+        clearSkuError() {
+            this.skuError = null;
         },
 
         updateProductInfo() {
