@@ -80,6 +80,18 @@ Route::middleware('auth')->group(function () {
     // Show debe ir al final para evitar conflictos con create y edit
     Route::middleware('permission:view_categories')->group(function () {
         Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('categories.show');
+        // API route to get products by subcategory - using where to allow numeric IDs
+        Route::get('/categories/{category}/subcategories/{subcategory}/products', [CategoryController::class, 'getProductsBySubcategory'])
+            ->where('subcategory', '[0-9]+')
+            ->name('categories.subcategories.products');
+    });
+
+    // Admin routes (if needed for compatibility)
+    Route::prefix('admin')->middleware('permission:view_categories')->group(function () {
+        Route::get('/categories/{category}', [CategoryController::class, 'show'])->name('admin.categories.show');
+        Route::get('/categories/{category}/subcategories/{subcategory}/products', [CategoryController::class, 'getProductsBySubcategory'])
+            ->where('subcategory', '[0-9]+')
+            ->name('admin.categories.subcategories.products');
     });
 
     // Ventas - con middleware de permisos
