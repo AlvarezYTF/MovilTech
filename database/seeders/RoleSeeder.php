@@ -64,14 +64,14 @@ class RoleSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
-        // Crear roles
-        $adminRole = Role::create(['name' => 'Administrador']);
-        $sellerRole = Role::create(['name' => 'Vendedor']);
-        $technicianRole = Role::create(['name' => 'Técnico']);
-        $customerRole = Role::create(['name' => 'Cliente']);
+        // Crear roles (safe - won't duplicate)
+        $adminRole = Role::firstOrCreate(['name' => 'Administrador']);
+        $sellerRole = Role::firstOrCreate(['name' => 'Vendedor']);
+        $technicianRole = Role::firstOrCreate(['name' => 'Técnico']);
+        $customerRole = Role::firstOrCreate(['name' => 'Cliente']);
 
         // Asignar permisos al administrador (todos)
         $adminRole->givePermissionTo(Permission::all());

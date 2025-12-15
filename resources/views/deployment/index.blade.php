@@ -182,35 +182,88 @@
 
             <!-- Seeders -->
             <div class="mb-6 pb-6 border-b">
-                <h3 class="text-lg font-medium mb-3">Seeders de Catálogos DIAN</h3>
+                <h3 class="text-lg font-medium mb-3">Seeders Disponibles</h3>
                 <p class="text-sm text-gray-600 mb-3">
-                    Estos seeders son seguros y pueden ejecutarse múltiples veces sin duplicar datos.
+                    Todos los seeders son seguros y pueden ejecutarse múltiples veces sin duplicar datos (usan firstOrCreate/updateOrCreate).
                 </p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <button onclick="runSeeder('DianIdentificationDocumentSeeder')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm">
-                        📄 Documentos de Identificación
-                    </button>
-                    <button onclick="runSeeder('DianLegalOrganizationSeeder')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm">
-                        🏢 Organizaciones Legales
-                    </button>
-                    <button onclick="runSeeder('DianCustomerTributeSeeder')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm">
-                        💰 Tributos de Cliente
-                    </button>
-                    <button onclick="runSeeder('DianDocumentTypeSeeder')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm">
-                        📋 Tipos de Documento
-                    </button>
-                    <button onclick="runSeeder('DianOperationTypeSeeder')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm">
-                        ⚙️ Tipos de Operación
-                    </button>
-                    <button onclick="runSeeder('DianPaymentMethodSeeder')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm">
-                        💳 Métodos de Pago
-                    </button>
-                    <button onclick="runSeeder('DianPaymentFormSeeder')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm">
-                        💵 Formas de Pago
-                    </button>
-                    <button onclick="runSeeder('DianProductStandardSeeder')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm">
-                        📦 Estándares de Producto
-                    </button>
+                
+                <!-- Sistema y Roles -->
+                <div class="mb-4">
+                    <h4 class="text-md font-semibold mb-2 text-gray-700">Sistema y Roles</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <button onclick="runSeeder('RoleSeeder')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                            🔐 Roles y Permisos
+                        </button>
+                        <button onclick="runSeeder('UserSeeder')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                            👤 Usuarios del Sistema
+                        </button>
+                        <button onclick="runSeeder('SalesPermissionSeeder')" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                            📊 Permisos de Ventas
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Catálogos de Negocio -->
+                <div class="mb-4">
+                    <h4 class="text-md font-semibold mb-2 text-gray-700">Catálogos de Negocio</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <button onclick="runSeeder('CategorySeeder')" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors text-sm">
+                            📁 Categorías
+                        </button>
+                        <button onclick="runSeeder('SupplierSeeder')" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors text-sm">
+                            🏭 Proveedores
+                        </button>
+                        <button onclick="runSeeder('ProductSeeder')" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors text-sm">
+                            📦 Productos
+                        </button>
+                        <button onclick="runSeeder('CustomerSeeder')" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors text-sm">
+                            👥 Clientes
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Catálogos DIAN -->
+                <div class="mb-4">
+                    <h4 class="text-md font-semibold mb-2 text-gray-700">Catálogos DIAN</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <button onclick="runSeeder('DianIdentificationDocumentSeeder')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm">
+                            📄 Documentos de Identificación
+                        </button>
+                        <button onclick="runSeeder('DianLegalOrganizationSeeder')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm">
+                            🏢 Organizaciones Legales
+                        </button>
+                        <button onclick="runSeeder('DianCustomerTributeSeeder')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm">
+                            💰 Tributos de Cliente
+                        </button>
+                        <button onclick="runSeeder('DianDocumentTypeSeeder')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm">
+                            📋 Tipos de Documento
+                        </button>
+                        <button onclick="runSeeder('DianOperationTypeSeeder')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm">
+                            ⚙️ Tipos de Operación
+                        </button>
+                        <button onclick="runSeeder('DianPaymentMethodSeeder')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm">
+                            💳 Métodos de Pago
+                        </button>
+                        <button onclick="runSeeder('DianPaymentFormSeeder')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm">
+                            💵 Formas de Pago
+                        </button>
+                        <button onclick="runSeeder('DianProductStandardSeeder')" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm">
+                            📦 Estándares de Producto
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Seeders Compuestos -->
+                <div>
+                    <h4 class="text-md font-semibold mb-2 text-gray-700">Seeders Compuestos</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <button onclick="runSeeder('DatabaseSeeder')" class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors text-sm">
+                            🗄️ Database Seeder (Todos los básicos)
+                        </button>
+                        <button onclick="runSeeder('ProductionSeeder')" class="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors text-sm">
+                            🏭 Production Seeder (Solo DIAN)
+                        </button>
+                    </div>
                 </div>
             </div>
 

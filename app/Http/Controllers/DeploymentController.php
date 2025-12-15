@@ -86,8 +86,14 @@ class DeploymentController extends Controller
 
         $seeder = $request->get('seeder', 'DatabaseSeeder');
 
-        // Only allow safe seeders
-        $safeSeeders = [
+        // All seeders use safe methods (firstOrCreate, updateOrCreate, etc.)
+        $allowedSeeders = [
+            'RoleSeeder',
+            'UserSeeder',
+            'CategorySeeder',
+            'SupplierSeeder',
+            'ProductSeeder',
+            'CustomerSeeder',
             'DianIdentificationDocumentSeeder',
             'DianLegalOrganizationSeeder',
             'DianCustomerTributeSeeder',
@@ -96,12 +102,15 @@ class DeploymentController extends Controller
             'DianPaymentMethodSeeder',
             'DianPaymentFormSeeder',
             'DianProductStandardSeeder',
+            'ProductionSeeder',
+            'SalesPermissionSeeder',
+            'DatabaseSeeder',
         ];
 
-        if (!in_array($seeder, $safeSeeders)) {
+        if (!in_array($seeder, $allowedSeeders)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Seeder no permitido por seguridad. Solo se permiten seeders de catálogos DIAN.',
+                'message' => 'Seeder no permitido. Solo se permiten seeders de la lista autorizada.',
             ], 403);
         }
 

@@ -14,22 +14,30 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Usuario administrador
-        $admin = User::create([
-            'name' => 'Administrador',
-            'username' => 'admin',
-            'email' => 'admin@moviltech.com',
-            'password' => Hash::make('Brandon-Administrador-2025#'),
-        ]);
-        $admin->assignRole('Administrador');
+        // Usuario administrador (safe - won't duplicate if exists)
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@moviltech.com'],
+            [
+                'name' => 'Administrador',
+                'username' => 'admin',
+                'password' => Hash::make('Brandon-Administrador-2025#'),
+            ]
+        );
+        if (!$admin->hasRole('Administrador')) {
+            $admin->assignRole('Administrador');
+        }
 
-        // Usuario vendedor
-        $seller = User::create([
-            'name' => 'Vendedor',
-            'username' => 'vendedor',
-            'email' => 'vendedor@moviltech.com',
-            'password' => Hash::make('Vendedor2025#'),
-        ]);
-        $seller->assignRole('Vendedor');
+        // Usuario vendedor (safe - won't duplicate if exists)
+        $seller = User::firstOrCreate(
+            ['email' => 'vendedor@moviltech.com'],
+            [
+                'name' => 'Vendedor',
+                'username' => 'vendedor',
+                'password' => Hash::make('Vendedor2025#'),
+            ]
+        );
+        if (!$seller->hasRole('Vendedor')) {
+            $seller->assignRole('Vendedor');
+        }
     }
 }

@@ -83,7 +83,19 @@ class CustomerSeeder extends Seeder
         ];
 
         foreach ($customers as $customer) {
-            Customer::create($customer);
+            // Use email as unique identifier if available, otherwise use name
+            if (!empty($customer['email'])) {
+                Customer::firstOrCreate(
+                    ['email' => $customer['email']],
+                    $customer
+                );
+            } else {
+                // For customers without email, use name as identifier
+                Customer::firstOrCreate(
+                    ['name' => $customer['name'], 'email' => null],
+                    $customer
+                );
+            }
         }
     }
 }
