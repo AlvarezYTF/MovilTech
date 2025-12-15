@@ -76,9 +76,9 @@ class CustomerController extends Controller
                 'company' => $request->input('company'),
                 'trade_name' => $request->input('trade_name'),
                 'names' => $request->input('names'),
-                'address' => $request->input('address'),
-                'email' => $request->input('email'),
-                'phone' => $request->input('phone'),
+                'address' => $request->input('tax_address') ?: $request->input('address'),
+                'email' => $request->input('tax_email') ?: $request->input('email'),
+                'phone' => $request->input('tax_phone') ?: $request->input('phone'),
                 'tribute_id' => $request->input('tribute_id'),
             ]);
         }
@@ -173,9 +173,9 @@ class CustomerController extends Controller
                     'company' => $request->input('company'),
                     'trade_name' => $request->input('trade_name'),
                     'names' => $request->input('names'),
-                    'address' => $request->input('address'),
-                    'email' => $request->input('email'),
-                    'phone' => $request->input('phone'),
+                    'address' => $request->input('tax_address') ?: $request->input('address'),
+                    'email' => $request->input('tax_email') ?: $request->input('email'),
+                    'phone' => $request->input('tax_phone') ?: $request->input('phone'),
                     'tribute_id' => $request->input('tribute_id'),
                     'municipality_id' => $request->input('municipality_id'),
                 ]);
@@ -190,9 +190,9 @@ class CustomerController extends Controller
                     'company' => $request->input('company'),
                     'trade_name' => $request->input('trade_name'),
                     'names' => $request->input('names'),
-                    'address' => $request->input('address'),
-                    'email' => $request->input('email'),
-                    'phone' => $request->input('phone'),
+                    'address' => $request->input('tax_address') ?: $request->input('address'),
+                    'email' => $request->input('tax_email') ?: $request->input('email'),
+                    'phone' => $request->input('tax_phone') ?: $request->input('phone'),
                     'tribute_id' => $request->input('tribute_id'),
                     'municipality_id' => $request->input('municipality_id'),
                 ]);

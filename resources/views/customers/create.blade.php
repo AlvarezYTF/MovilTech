@@ -337,7 +337,7 @@
                                 x-model="identificationDocumentId"
                                 @change="updateRequiredFields()"
                                 class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
-                                required>
+                                :required="requiresElectronicInvoice">
                             <option value="">Seleccione...</option>
                             @foreach($identificationDocuments as $doc)
                                 <option value="{{ $doc->id }}" 
@@ -359,7 +359,7 @@
                                x-model="identification"
                                @input="calculateDV()"
                                class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
-                               required>
+                               :required="requiresElectronicInvoice">
                     </div>
                 </div>
 
@@ -373,7 +373,7 @@
                                name="dv"
                                x-model="dv"
                                maxlength="1"
-                               :required="requiresDV"
+                               :required="requiresElectronicInvoice && requiresDV"
                                class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
                         <p class="mt-1 text-xs text-gray-500">
                             Se calcula automáticamente para NIT
@@ -389,7 +389,7 @@
                         </label>
                         <input type="text"
                                name="company"
-                               :required="isJuridicalPerson"
+                               :required="requiresElectronicInvoice && isJuridicalPerson"
                                class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm">
                     </div>
                     <div>
@@ -452,7 +452,7 @@
                         <select name="municipality_id"
                                 id="municipality_id"
                                 class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                                required>
+                                :required="requiresElectronicInvoice">
                             <option value="">Seleccione un municipio...</option>
                             @php
                                 $currentDepartment = null;
@@ -503,9 +503,13 @@
                             Dirección Fiscal
                         </label>
                         <input type="text"
-                               name="address"
+                               name="tax_address"
+                               value="{{ old('tax_address') }}"
                                class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
                                placeholder="Dirección para facturación">
+                        <p class="mt-1 text-xs text-gray-500">
+                            Si no se especifica, se usará la dirección principal del cliente
+                        </p>
                     </div>
 
                     <div>
@@ -513,11 +517,12 @@
                             Email Fiscal
                         </label>
                         <input type="email"
-                               name="email"
+                               name="tax_email"
+                               value="{{ old('tax_email') }}"
                                class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
                                placeholder="email@ejemplo.com">
                         <p class="mt-1 text-xs text-gray-500">
-                            Email para envío de facturas electrónicas
+                            Email para envío de facturas electrónicas. Si no se especifica, se usará el email principal.
                         </p>
                     </div>
                 </div>
@@ -527,9 +532,13 @@
                         Teléfono Fiscal
                     </label>
                     <input type="text"
-                           name="phone"
+                           name="tax_phone"
+                           value="{{ old('tax_phone') }}"
                            class="block w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm"
                            placeholder="Número de teléfono">
+                    <p class="mt-1 text-xs text-gray-500">
+                        Si no se especifica, se usará el teléfono principal del cliente
+                    </p>
                 </div>
             </div>
         </div>
@@ -607,6 +616,20 @@ function customerForm() {
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('customer-form');
     const inputs = form.querySelectorAll('input, textarea');
+
+    // Remove required attribute from hidden fields before submit
+    form.addEventListener('submit', function(e) {
+        const requiresElectronicInvoice = form.querySelector('input[name="requires_electronic_invoice"]');
+        const isChecked = requiresElectronicInvoice && requiresElectronicInvoice.checked;
+        
+        if (!isChecked) {
+            // Remove required from all electronic invoice fields
+            const electronicInvoiceFields = form.querySelectorAll('[name="identification_document_id"], [name="identification"], [name="municipality_id"], [name="dv"], [name="company"]');
+            electronicInvoiceFields.forEach(function(field) {
+                field.removeAttribute('required');
+            });
+        }
+    });
 
     // Validación en tiempo real para email
     const emailInput = document.getElementById('email');
