@@ -15,12 +15,18 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Alpine.js Cloak -->
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+    
     @stack('styles')
 </head>
-<body class="bg-gray-100" x-data="{ sidebarOpen: false }">
+<body class="bg-gray-100" x-data="{ sidebarOpen: false }" x-cloak>
     <div class="min-h-screen flex">
         <!-- Overlay para móvil -->
         <div x-show="sidebarOpen"
+             x-cloak
              @click="sidebarOpen = false"
              x-transition:enter="transition-opacity ease-linear duration-300"
              x-transition:enter-start="opacity-0"
@@ -32,8 +38,8 @@
              style="display: none;"></div>
         
         <!-- Sidebar -->
-        <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-               class="fixed inset-y-0 left-0 z-50 w-64 bg-gray-800 text-white transform transition-transform duration-300 ease-in-out lg:static lg:inset-0 flex-shrink-0 flex flex-col">
+        <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
+               class="fixed inset-y-0 left-0 z-50 w-64 bg-gray-800 text-white transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 flex-shrink-0 flex flex-col">
             <div class="flex items-center justify-between p-4 lg:justify-center">
                 <div>
                     <h1 class="text-xl lg:text-2xl font-bold text-center">MovilTech</h1>
@@ -80,6 +86,13 @@
                 </a>
                 @endcan
                 
+                @can('view_sales')
+                <a href="{{ route('electronic-invoices.index') }}" @click="sidebarOpen = false" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors {{ request()->routeIs('electronic-invoices.*') ? 'bg-gray-700 text-white' : '' }}">
+                    <i class="fas fa-file-invoice-dollar w-5"></i>
+                    <span class="ml-3">Facturas Electrónicas</span>
+                </a>
+                @endcan
+                
                 @can('view_repairs')
                 <a href="{{ route('repairs.index') }}" @click="sidebarOpen = false" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors {{ request()->routeIs('repairs.*') ? 'bg-gray-700 text-white' : '' }}">
                     <i class="fas fa-tools w-5"></i>
@@ -91,6 +104,29 @@
                 <a href="{{ route('reports.index') }}" @click="sidebarOpen = false" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors {{ request()->routeIs('reports.*') ? 'bg-gray-700 text-white' : '' }}">
                     <i class="fas fa-chart-bar w-5"></i>
                     <span class="ml-3">Reportes</span>
+                </a>
+                @endcan
+
+                @can('manage_roles')
+                <div class="px-4 mt-4 mb-2">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Administración</p>
+                </div>
+                <a href="{{ route('company-tax-settings.edit') }}" @click="sidebarOpen = false" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors {{ request()->routeIs('company-tax-settings.*') ? 'bg-gray-700 text-white' : '' }}">
+                    <i class="fas fa-building w-5"></i>
+                    <span class="ml-3">Configuración Fiscal</span>
+                </a>
+                @endcan
+            </nav>
+
+            <nav class="px-4 pt-4 border-t border-gray-700">
+                <div class="px-4 mb-4">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Configuración</p>
+                </div>
+                
+                @can('manage_roles')
+                <a href="{{ route('company-tax-settings.edit') }}" @click="sidebarOpen = false" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors {{ request()->routeIs('company-tax-settings.*') ? 'bg-gray-700 text-white' : '' }}">
+                    <i class="fas fa-building w-5"></i>
+                    <span class="ml-3">Datos Fiscales</span>
                 </a>
                 @endcan
             </nav>

@@ -37,9 +37,9 @@
                         <label for="name" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
                             Nombre del producto <span class="text-red-500">*</span>
                         </label>
-                        <input type="text"
-                               id="name"
-                               name="name"
+                        <input type="text" 
+                               id="name" 
+                               name="name" 
                                value="{{ old('name') }}"
                                class="block w-full px-3 sm:px-4 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all @error('name') border-red-300 focus:ring-red-500 @enderror"
                                placeholder="Ej: iPhone 13 Pro Max 128GB - Negro"
@@ -56,60 +56,60 @@
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                        <!-- SKU -->
-                        <div>
+                    <!-- SKU -->
+                    <div>
                             <label for="sku" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
-                                Código SKU <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text"
-                                   id="sku"
-                                   name="sku"
-                                   value="{{ old('sku') }}"
+                            Código SKU <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" 
+                               id="sku" 
+                               name="sku" 
+                               value="{{ old('sku') }}"
                                    class="block w-full px-3 sm:px-4 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all @error('sku') border-red-300 focus:ring-red-500 @enderror"
-                                   placeholder="Ej: IP13PM-128-SLV"
-                                   required>
+                               placeholder="Ej: IP13PM-128-SLV"
+                               required>
                             <p class="mt-1.5 text-xs text-gray-500">
-                                Código único para identificar el producto (máx. 50 caracteres)
-                            </p>
-                            @error('sku')
+                            Código único para identificar el producto (máx. 50 caracteres)
+                        </p>
+                        @error('sku')
                                 <p class="mt-1.5 text-xs text-red-600 flex items-center">
                                     <i class="fas fa-exclamation-circle mr-1.5"></i>
-                                    {{ $message }}
-                                </p>
-                            @enderror
-                        </div>
+                                {{ $message }}
+                            </p>
+                        @enderror
+                    </div>
 
-                        <!-- Categoría -->
-                        <div>
+                    <!-- Categoría -->
+                    <div>
                             <label for="category_id" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
-                                Categoría <span class="text-red-500">*</span>
-                            </label>
+                            Categoría <span class="text-red-500">*</span>
+                        </label>
                             <div class="relative">
-                                <select id="category_id"
-                                        name="category_id"
+                        <select id="category_id" 
+                                name="category_id"
                                         class="block w-full pl-3 sm:pl-4 pr-10 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white @error('category_id') border-red-300 focus:ring-red-500 @enderror"
-                                        required>
-                                    <option value="">Seleccionar categoría</option>
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                            {{ $category->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                required>
+                            <option value="">Seleccionar categoría</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                     <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
                                 </div>
                             </div>
                             <p class="mt-1.5 text-xs text-gray-500">
-                                Organiza tus productos por tipo o marca
-                            </p>
-                            @error('category_id')
+                            Organiza tus productos por tipo o marca
+                        </p>
+                        @error('category_id')
                                 <p class="mt-1.5 text-xs text-red-600 flex items-center">
                                     <i class="fas fa-exclamation-circle mr-1.5"></i>
-                                    {{ $message }}
-                                </p>
-                            @enderror
-                        </div>
+                                {{ $message }}
+                            </p>
+                        @enderror
+                    </div>
                     </div>
                 </div>
             </div>
@@ -192,15 +192,15 @@
                             <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
                                 <span class="text-gray-500 text-sm">$</span>
                             </div>
-                            <input type="number"
-                                   id="price"
-                                   name="price"
+                            <input type="number" 
+                                   id="price" 
+                                   name="price" 
                                    x-model.number="price"
                                    value="{{ old('price') }}"
                                    class="block w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all @error('price') border-red-300 focus:ring-red-500 @enderror"
-                                   step="0.01"
-                                   min="0"
-                                   placeholder="0.00"
+                                   step="0.01" 
+                                   min="0" 
+                                   placeholder="0.00" 
                                    required>
                         </div>
                         <p class="mt-1.5 text-xs text-gray-500">
@@ -223,14 +223,14 @@
                             <div class="absolute inset-y-0 left-0 pl-3 sm:pl-4 flex items-center pointer-events-none">
                                 <span class="text-gray-500 text-sm">$</span>
                             </div>
-                            <input type="number"
-                                   id="cost_price"
-                                   name="cost_price"
+                            <input type="number" 
+                                   id="cost_price" 
+                                   name="cost_price" 
                                    x-model.number="costPrice"
                                    value="{{ old('cost_price') }}"
                                    class="block w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all @error('cost_price') border-red-300 focus:ring-red-500 @enderror"
-                                   step="0.01"
-                                   min="0"
+                                   step="0.01" 
+                                   min="0" 
                                    placeholder="0.00">
                         </div>
                         <p class="mt-1.5 text-xs text-gray-500">
@@ -250,16 +250,16 @@
                     <div class="flex items-center space-x-2 mb-3">
                         <i class="fas fa-calculator text-gray-400 text-sm"></i>
                         <h3 class="text-xs sm:text-sm font-semibold text-gray-700">Cálculo de ganancia</h3>
-                    </div>
+                            </div>
                     <div class="grid grid-cols-3 gap-3 sm:gap-4 text-center">
                         <div>
                             <p class="text-xs text-gray-500 mb-1">Precio de venta</p>
                             <p class="text-sm sm:text-base font-semibold text-gray-900" x-text="'$' + (price || 0).toFixed(2)">$0.00</p>
-                        </div>
+                            </div>
                         <div>
                             <p class="text-xs text-gray-500 mb-1">Precio de costo</p>
                             <p class="text-sm sm:text-base font-semibold text-gray-900" x-text="'$' + (costPrice || 0).toFixed(2)">$0.00</p>
-                        </div>
+                            </div>
                         <div>
                             <p class="text-xs text-gray-500 mb-1">Ganancia</p>
                             <p class="text-sm sm:text-base font-semibold" 
@@ -279,12 +279,12 @@
                     <h2 class="text-base sm:text-lg font-semibold text-gray-900">Estado del Producto</h2>
                 </div>
                 
-                <div>
+                    <div>
                     <label for="status" class="block text-xs sm:text-sm font-semibold text-gray-700 mb-2">
-                        Estado
-                    </label>
+                            Estado
+                        </label>
                     <div class="relative">
-                        <select id="status"
+                        <select id="status" 
                                 name="status"
                                 class="block w-full pl-3 sm:pl-4 pr-10 py-2.5 border border-gray-300 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent appearance-none bg-white @error('status') border-red-300 focus:ring-red-500 @enderror">
                             <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>Activo</option>
@@ -296,14 +296,14 @@
                         </div>
                     </div>
                     <p class="mt-1.5 text-xs text-gray-500">
-                        Los productos inactivos no aparecerán en las ventas
-                    </p>
-                    @error('status')
+                            Los productos inactivos no aparecerán en las ventas
+                        </p>
+                        @error('status')
                         <p class="mt-1.5 text-xs text-red-600 flex items-center">
                             <i class="fas fa-exclamation-circle mr-1.5"></i>
-                            {{ $message }}
-                        </p>
-                    @enderror
+                                {{ $message }}
+                            </p>
+                        @enderror
                 </div>
             </div>
 
@@ -311,29 +311,29 @@
             <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <p class="text-xs text-gray-500">
-                        Los campos marcados con <span class="text-red-500">*</span> son obligatorios
+                    Los campos marcados con <span class="text-red-500">*</span> son obligatorios
                     </p>
-                    
+                
                     <div class="flex flex-col sm:flex-row gap-3 sm:gap-3">
-                        <a href="{{ route('products.index') }}"
+                    <a href="{{ route('products.index') }}" 
                            class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 rounded-xl border border-gray-300 text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
-                            <i class="fas fa-arrow-left mr-2"></i>
+                        <i class="fas fa-arrow-left mr-2"></i>
                             Volver
-                        </a>
-                        
-                        <button type="submit"
-                                x-bind:disabled="loading"
+                    </a>
+                    
+                    <button type="submit" 
+                            x-bind:disabled="loading"
                                 class="inline-flex items-center justify-center px-4 sm:px-6 py-2.5 rounded-xl border-2 border-blue-600 bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700 hover:border-blue-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
-                            <i class="fas fa-plus mr-2" x-show="!loading"></i>
-                            <i class="fas fa-spinner fa-spin mr-2" x-show="loading"></i>
-                            <span x-show="!loading">Crear Producto</span>
-                            <span x-show="loading">Procesando...</span>
-                        </button>
+                        <i class="fas fa-plus mr-2" x-show="!loading"></i>
+                        <i class="fas fa-spinner fa-spin mr-2" x-show="loading"></i>
+                        <span x-show="!loading">Crear Producto</span>
+                        <span x-show="loading">Procesando...</span>
+                    </button>
                     </div>
                 </div>
+                </div>
             </div>
-        </div>
-    </form>
+        </form>
 </div>
 
 @push('scripts')
@@ -344,14 +344,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const skuInput = document.getElementById('sku');
     
     if (nameInput && skuInput) {
-        nameInput.addEventListener('blur', function() {
-            if (this.value && !skuInput.value) {
-                const sku = this.value
-                    .toUpperCase()
-                    .replace(/[^A-Z0-9\s]/g, '')
-                    .replace(/\s+/g, '-')
-                    .substring(0, 20);
-                skuInput.value = sku;
+    nameInput.addEventListener('blur', function() {
+        if (this.value && !skuInput.value) {
+            const sku = this.value
+                .toUpperCase()
+                .replace(/[^A-Z0-9\s]/g, '')
+                .replace(/\s+/g, '-')
+                .substring(0, 20);
+            skuInput.value = sku;
             }
         });
     }

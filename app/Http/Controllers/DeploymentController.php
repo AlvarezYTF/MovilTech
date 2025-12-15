@@ -14,7 +14,7 @@ class DeploymentController extends Controller
      * Security token for deployment routes
      * IMPORTANT: Change this token and remove routes after deployment
      */
-    private const DEPLOYMENT_TOKEN = 'CHANGE_THIS_TOKEN_IN_PRODUCTION';
+    private const DEPLOYMENT_TOKEN = 'DeployMovilTech2025!SecretKeyXYZ789';
 
     /**
      * Verify deployment token
@@ -34,12 +34,13 @@ class DeploymentController extends Controller
             abort(403, 'Invalid deployment token');
         }
 
-        $migrations = $this->getPendingMigrations();
-        $tables = $this->getTableStatus();
+        $migrationStatus = $this->getMigrationStatus();
+        $catalogCounts = $this->getCatalogCounts();
 
         return view('deployment.index', [
-            'migrations' => $migrations,
-            'tables' => $tables,
+            'migrationStatus' => $migrationStatus,
+            'catalogCounts' => $catalogCounts,
+            'token' => $request->get('token'),
         ]);
     }
 
@@ -54,6 +55,7 @@ class DeploymentController extends Controller
 
         try {
             Artisan::call('migrate', [
+                '--force' => true,
                 '--no-interaction' => true,
             ]);
 
@@ -84,9 +86,29 @@ class DeploymentController extends Controller
 
         $seeder = $request->get('seeder', 'DatabaseSeeder');
 
+        // Only allow safe seeders
+        $safeSeeders = [
+            'DianIdentificationDocumentSeeder',
+            'DianLegalOrganizationSeeder',
+            'DianCustomerTributeSeeder',
+            'DianDocumentTypeSeeder',
+            'DianOperationTypeSeeder',
+            'DianPaymentMethodSeeder',
+            'DianPaymentFormSeeder',
+            'DianProductStandardSeeder',
+        ];
+
+        if (!in_array($seeder, $safeSeeders)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Seeder no permitido por seguridad. Solo se permiten seeders de catálogos DIAN.',
+            ], 403);
+        }
+
         try {
             Artisan::call('db:seed', [
                 '--class' => $seeder,
+                '--force' => true,
                 '--no-interaction' => true,
             ]);
 
@@ -101,6 +123,96 @@ class DeploymentController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Seeder failed: ' . $e->getMessage(),
+                'error' => $e->getTraceAsString(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Sync municipalities from Factus
+     */
+    public function syncMunicipalities(Request $request)
+    {
+        if (!$this->verifyToken($request)) {
+            abort(403, 'Invalid deployment token');
+        }
+
+        try {
+            Artisan::call('factus:sync-municipalities', [
+                '--no-interaction' => true,
+            ]);
+
+            $output = Artisan::output();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Municipios sincronizados exitosamente',
+                'output' => $output,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al sincronizar municipios: ' . $e->getMessage(),
+                'error' => $e->getTraceAsString(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Sync numbering ranges from Factus
+     */
+    public function syncNumberingRanges(Request $request)
+    {
+        if (!$this->verifyToken($request)) {
+            abort(403, 'Invalid deployment token');
+        }
+
+        try {
+            Artisan::call('factus:sync-numbering-ranges', [
+                '--no-interaction' => true,
+            ]);
+
+            $output = Artisan::output();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Rangos de numeración sincronizados exitosamente',
+                'output' => $output,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al sincronizar rangos de numeración: ' . $e->getMessage(),
+                'error' => $e->getTraceAsString(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Sync measurement units from Factus
+     */
+    public function syncMeasurementUnits(Request $request)
+    {
+        if (!$this->verifyToken($request)) {
+            abort(403, 'Invalid deployment token');
+        }
+
+        try {
+            Artisan::call('factus:sync-measurement-units', [
+                '--no-interaction' => true,
+            ]);
+
+            $output = Artisan::output();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Unidades de medida sincronizadas exitosamente',
+                'output' => $output,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al sincronizar unidades de medida: ' . $e->getMessage(),
                 'error' => $e->getTraceAsString(),
             ], 500);
         }
@@ -150,6 +262,31 @@ class DeploymentController extends Controller
     }
 
     /**
+     * Get catalog counts
+     */
+    private function getCatalogCounts(): array
+    {
+        try {
+            return [
+                'identification_documents' => \App\Models\DianIdentificationDocument::count(),
+                'legal_organizations' => \App\Models\DianLegalOrganization::count(),
+                'customer_tributes' => \App\Models\DianCustomerTribute::count(),
+                'document_types' => \App\Models\DianDocumentType::count(),
+                'operation_types' => \App\Models\DianOperationType::count(),
+                'payment_methods' => \App\Models\DianPaymentMethod::count(),
+                'payment_forms' => \App\Models\DianPaymentForm::count(),
+                'product_standards' => \App\Models\DianProductStandard::count(),
+                'municipalities' => \App\Models\DianMunicipality::count(),
+                'numbering_ranges' => \App\Models\FactusNumberingRange::count(),
+                'active_ranges' => \App\Models\FactusNumberingRange::where('is_active', true)->count(),
+                'measurement_units' => \App\Models\DianMeasurementUnit::count(),
+            ];
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    /**
      * Get table status
      */
     private function getTableStatus(): array
@@ -180,26 +317,47 @@ class DeploymentController extends Controller
     private function getMigrationStatus(): array
     {
         try {
+            $migrationsPath = database_path('migrations');
+            $files = glob($migrationsPath . '/*.php');
+            $totalMigrations = count($files);
+
             if (!Schema::hasTable('migrations')) {
                 return [
-                    'table_exists' => false,
-                    'migrations' => [],
+                    'total' => $totalMigrations,
+                    'executed' => 0,
+                    'pending' => $totalMigrations,
+                    'pending_list' => array_map(function($file) {
+                        return basename($file, '.php');
+                    }, $files),
                 ];
             }
 
-            $executed = DB::table('migrations')
-                ->orderBy('migration')
-                ->pluck('migration')
-                ->toArray();
+            $executedMigrations = DB::table('migrations')->count();
+            $executed = DB::table('migrations')->pluck('migration')->toArray();
+            $pendingMigrations = $totalMigrations - $executedMigrations;
+
+            $pendingList = [];
+            if ($pendingMigrations > 0) {
+                foreach ($files as $file) {
+                    $migrationName = basename($file, '.php');
+                    if (!in_array($migrationName, $executed)) {
+                        $pendingList[] = $migrationName;
+                    }
+                }
+            }
 
             return [
-                'table_exists' => true,
-                'executed_count' => count($executed),
-                'executed' => $executed,
+                'total' => $totalMigrations,
+                'executed' => $executedMigrations,
+                'pending' => $pendingMigrations,
+                'pending_list' => $pendingList,
             ];
         } catch (\Exception $e) {
             return [
-                'table_exists' => false,
+                'total' => 0,
+                'executed' => 0,
+                'pending' => 0,
+                'pending_list' => [],
                 'error' => $e->getMessage(),
             ];
         }

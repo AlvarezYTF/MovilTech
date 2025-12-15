@@ -121,3 +121,4 @@ Debes ver todas estas extensiones listadas:
 - [Documentación de Hostinger sobre PHP](https://support.hostinger.com/es/articles/actualizar-version-php)
 - [Requisitos de Laravel 12](https://laravel.com/docs/12.x/installation#server-requirements)
 
+
