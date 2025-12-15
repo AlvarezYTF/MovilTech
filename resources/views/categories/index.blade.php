@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Categorías')
-@section('header', 'Gestión de Categorías')
+@section('title', 'Panel de Categorías')
+@section('header', 'Panel de Categorías')
 
 @section('content')
-<div class="space-y-4 sm:space-y-6">
+<div class="max-w-7xl mx-auto space-y-4 sm:space-y-6">
     <!-- Header -->
     <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -30,12 +30,56 @@
             <a href="{{ route('categories.create') }}" 
                class="inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-violet-600 bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700 hover:border-violet-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 shadow-sm hover:shadow-md">
                 <i class="fas fa-plus mr-2"></i>
-                <span>Nueva Categoría</span>
+                <span>+ Crear Categoría</span>
             </a>
             @endcan
         </div>
     </div>
-    
+
+    <!-- Summary Statistics -->
+    @php
+        $totalCategories = $categories->total();
+        $activeCategories = $categories->where('is_active', true)->count();
+        $inactiveCategories = $categories->where('is_active', false)->count();
+    @endphp
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600 mb-1">Total Categorías</p>
+                    <p class="text-3xl font-bold text-blue-600">{{ $totalCategories }}</p>
+                </div>
+                <div class="p-3 rounded-xl bg-blue-50 text-blue-600">
+                    <i class="fas fa-folder text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600 mb-1">Categorías Activas</p>
+                    <p class="text-3xl font-bold text-green-600">{{ $activeCategories }}</p>
+                </div>
+                <div class="p-3 rounded-xl bg-green-50 text-green-600">
+                    <i class="fas fa-check-circle text-2xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-600 mb-1">Categorías Inactivas</p>
+                    <p class="text-3xl font-bold text-red-600">{{ $inactiveCategories }}</p>
+                </div>
+                <div class="p-3 rounded-xl bg-red-50 text-red-600">
+                    <i class="fas fa-times-circle text-2xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Filtros -->
     <div class="bg-white rounded-xl border border-gray-100 p-4 sm:p-6">
         <form method="GET" action="{{ route('categories.index') }}" class="space-y-4">
@@ -202,111 +246,51 @@
             </table>
         </div>
         
-        <!-- Paginación Desktop -->
-        @if($categories->hasPages())
-        <div class="bg-white px-6 py-4 border-t border-gray-100">
-            {{ $categories->appends(request()->query())->links() }}
-        </div>
-        @endif
-    </div>
-    
-    <!-- Cards de categorías - Mobile/Tablet -->
-    <div class="lg:hidden space-y-4">
-        @forelse($categories as $category)
-        <div class="bg-white rounded-xl border border-gray-100 p-4 hover:shadow-md transition-shadow duration-200">
-            <div class="flex items-start justify-between mb-4">
-                <div class="flex items-center space-x-3 flex-1 min-w-0">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            @forelse($categories as $category)
+            <div class="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow duration-200 relative">
+                <!-- Status indicator -->
+                @if($category->is_active)
+                    <div class="absolute top-3 right-3 h-3 w-3 rounded-full bg-green-500"></div>
+                @else
+                    <div class="absolute top-3 right-3 h-3 w-3 rounded-full bg-gray-400"></div>
+                @endif
+
+                <div class="flex items-start space-x-3 mb-3">
                     <div class="h-12 w-12 rounded-xl flex items-center justify-center flex-shrink-0"
                          data-color="{{ $category->color }}">
-                        <i class="fas fa-tag"></i>
+                        <i class="fas fa-tag text-gray-400"></i>
                     </div>
-                    <div class="min-w-0 flex-1">
+                    <div class="flex-1 min-w-0">
                         <h3 class="text-sm font-semibold text-gray-900 truncate">{{ $category->name }}</h3>
-                        <p class="text-xs text-gray-500 mt-0.5">ID: {{ $category->id }}</p>
                     </div>
                 </div>
-                
-                <div class="flex items-center space-x-2 ml-2">
-                    @can('view_categories')
-                    <a href="{{ route('categories.show', $category) }}"
-                       class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                       title="Ver">
-                        <i class="fas fa-eye text-sm"></i>
-                    </a>
-                    @endcan
-                    
-                    @can('edit_categories')
-                    <a href="{{ route('categories.edit', $category) }}"
-                       class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                       title="Editar">
-                        <i class="fas fa-edit text-sm"></i>
-                    </a>
-                    @endcan
-                    
-                    @can('delete_categories')
-                    <button type="button"
-                            onclick="openDeleteModal({{ $category->id }}, {{ json_encode($category->name) }})"
-                            class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Eliminar">
-                        <i class="fas fa-trash text-sm"></i>
-                    </button>
-                    @endcan
+
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center space-x-1 text-sm text-gray-600">
+                        <i class="fas fa-folder text-xs"></i>
+                        <span>{{ $category->products_count ?? 0 }}</span>
+                    </div>
                 </div>
+
+                <a href="{{ url('/categories/' . $category->id) }}"
+                   class="w-full inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-bullseye mr-2"></i>
+                    Gestionar
+                </a>
             </div>
-            
-            <div class="space-y-3">
-                <div>
-                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Descripción</p>
-                    <p class="text-sm text-gray-700">
-                        {{ $category->description ?: 'Sin descripción' }}
-                    </p>
-                </div>
-                
-                <div class="grid grid-cols-3 gap-4">
-                    <div>
-                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Color</p>
-                        <div class="flex items-center space-x-2">
-                            <div class="h-5 w-5 rounded-full border-2 border-gray-200"
-                                 data-color-circle="{{ $category->color }}"></div>
-                            <span class="text-xs font-mono text-gray-600">{{ $category->color }}</span>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Productos</p>
-                        <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold">
-                            {{ $category->products_count ?? $category->products->count() ?? 0 }}
-                        </span>
-                    </div>
-                    
-                    <div>
-                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Estado</p>
-                        @if($category->is_active)
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">
-                                <i class="fas fa-check-circle mr-1"></i>
-                                Activo
-                            </span>
-                        @else
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">
-                                <i class="fas fa-times-circle mr-1"></i>
-                                Inactivo
-                            </span>
-                        @endif
-                    </div>
-                </div>
+            @empty
+            <div class="col-span-full bg-white rounded-xl border border-gray-100 p-12 text-center">
+                <i class="fas fa-tags text-4xl text-gray-300 mb-4"></i>
+                <p class="text-base font-semibold text-gray-500 mb-1">No se encontraron categorías</p>
+                <p class="text-sm text-gray-400">Crea tu primera categoría para comenzar</p>
             </div>
+            @endforelse
         </div>
-        @empty
-        <div class="bg-white rounded-xl border border-gray-100 p-12 text-center">
-            <i class="fas fa-tags text-4xl text-gray-300 mb-4"></i>
-            <p class="text-base font-semibold text-gray-500 mb-1">No se encontraron categorías</p>
-            <p class="text-sm text-gray-400">Crea tu primera categoría para comenzar</p>
-        </div>
-        @endforelse
-        
-        <!-- Paginación Mobile -->
+
+        <!-- Paginación -->
         @if($categories->hasPages())
-        <div class="bg-white rounded-xl border border-gray-100 p-4">
+        <div class="mt-6 pt-6 border-t border-gray-100">
             {{ $categories->appends(request()->query())->links() }}
         </div>
         @endif

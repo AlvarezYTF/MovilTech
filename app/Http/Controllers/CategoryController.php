@@ -64,7 +64,38 @@ class CategoryController extends Controller
     public function show(Category $category)
     {
         $category->load(['products']);
-        return view('categories.show', compact('category'));
+        // Load all categories as "subcategories" for the management view
+        $subcategories = Category::withCount('products')->orderBy('name')->get();
+        return view('categories.show', compact('category', 'subcategories'));
+    }
+
+    /**
+     * Get products by category (subcategory) for AJAX requests.
+     */
+    public function getProductsBySubcategory(Request $request, Category $category, $subcategory)
+    {
+        // Handle route model binding - Laravel will automatically resolve Category model
+        // But we need to handle if it's passed as ID string
+        if (!$subcategory instanceof Category) {
+            $subcategory = Category::findOrFail($subcategory);
+        }
+        
+        $products = $subcategory->products()->orderBy('name')->get();
+        
+        return response()->json([
+            'success' => true,
+            'products' => $products->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'sku' => $product->sku,
+                    'quantity' => $product->quantity,
+                    'price' => number_format($product->price, 2),
+                    'status' => $product->status,
+                    'low_stock' => $product->hasLowStock(),
+                ];
+            }),
+        ]);
     }
 
     /**
