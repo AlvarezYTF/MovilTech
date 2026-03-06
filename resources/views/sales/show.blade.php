@@ -450,6 +450,14 @@
                 </div>
                 
                 <div class="space-y-3">
+                    <button type="button"
+                            onclick="printSaleTicket({{ $sale->id }})"
+                            data-ticket-sale-id="{{ $sale->id }}"
+                            class="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl border-2 border-emerald-600 bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 hover:border-emerald-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 shadow-sm hover:shadow-md">
+                        <i class="fas fa-print mr-2"></i>
+                        Imprimir Ticket
+                    </button>
+
                     @if(route('sales.pdf', $sale))
                     <a href="{{ route('sales.pdf', $sale) }}" 
                        class="w-full inline-flex items-center justify-center px-4 py-3 rounded-xl border-2 border-red-600 bg-red-600 text-white text-sm font-semibold hover:bg-red-700 hover:border-red-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 shadow-sm hover:shadow-md">
@@ -973,4 +981,8 @@
     };
 })();
 </script>
+@endpush
+
+@push('scripts')
+@include('sales.partials.qz-ticket-printer')
 @endpush

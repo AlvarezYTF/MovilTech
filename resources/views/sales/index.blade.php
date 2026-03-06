@@ -219,6 +219,14 @@
                         
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex items-center justify-end space-x-3">
+                                <button type="button"
+                                        onclick="printSaleTicket({{ $sale->id }})"
+                                        data-ticket-sale-id="{{ $sale->id }}"
+                                        class="text-emerald-600 hover:text-emerald-700 transition-colors"
+                                        title="Imprimir Ticket">
+                                    <i class="fas fa-print"></i>
+                                </button>
+
                                 <a href="{{ route('sales.pdf', $sale) }}"
                                    class="text-red-600 hover:text-red-700 transition-colors"
                                    title="Descargar PDF">
@@ -377,6 +385,14 @@
             
             <!-- Acciones -->
             <div class="flex items-center justify-end space-x-3 pt-3 border-t border-gray-100">
+                <button type="button"
+                        onclick="printSaleTicket({{ $sale->id }})"
+                        data-ticket-sale-id="{{ $sale->id }}"
+                        class="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                        title="Imprimir Ticket">
+                    <i class="fas fa-print text-sm"></i>
+                </button>
+
                 <a href="{{ route('sales.pdf', $sale) }}"
                    class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                    title="PDF">
@@ -533,5 +549,7 @@ document.addEventListener('keydown', function(e) {
     }
 });
 </script>
+
+@include('sales.partials.qz-ticket-printer')
 @endpush
 @endsection

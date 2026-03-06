@@ -8,6 +8,8 @@ use App\Models\Sale;
 use App\Models\Customer;
 use App\Repositories\ProductRepository;
 use App\Services\SaleService;
+use App\Services\Printing\TicketFormatterService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -16,7 +18,8 @@ class SaleController extends Controller
 {
     public function __construct(
         private readonly SaleService $saleService,
-        private readonly ProductRepository $productRepository
+        private readonly ProductRepository $productRepository,
+        private readonly TicketFormatterService $ticketFormatterService
     ) {}
 
     /**
@@ -167,6 +170,23 @@ class SaleController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Error al eliminar la venta: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Build ESC/POS payload for QZ Tray thermal printing.
+     */
+    public function ticketPayload(Sale $sale): JsonResponse
+    {
+        $sale->loadMissing(['customer', 'user', 'saleItems.product']);
+
+        return response()->json([
+            'sale_id' => $sale->id,
+            'invoice_number' => $sale->invoice_number,
+            'job_name' => 'ticket-' . $sale->invoice_number,
+            'printer_hint' => (string) config('printing.default_printer', ''),
+            'encoding' => 'CP437',
+            'data' => $this->ticketFormatterService->buildEscPosPayload($sale),
+        ]);
     }
 
     /**

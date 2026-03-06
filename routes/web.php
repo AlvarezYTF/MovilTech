@@ -9,6 +9,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\RepairController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\QzSecurityController;
 use App\Http\Controllers\DeploymentController;
 use App\Http\Controllers\ElectronicInvoiceController;
 use App\Http\Controllers\CompanyTaxSettingController;
@@ -109,6 +110,13 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:edit_sales')->group(function () {
         Route::get('/sales/{sale}/edit', [SaleController::class, 'edit'])->name('sales.edit');
         Route::put('/sales/{sale}', [SaleController::class, 'update'])->name('sales.update');
+    });
+
+    // Ticket payload (QZ Tray)
+    Route::middleware('permission:view_sales')->group(function () {
+        Route::get('/qz/certificate', [QzSecurityController::class, 'certificate'])->name('qz.certificate');
+        Route::post('/qz/sign', [QzSecurityController::class, 'sign'])->name('qz.sign');
+        Route::get('/sales/{sale}/ticket-payload', [SaleController::class, 'ticketPayload'])->name('sales.ticket-payload');
     });
 
     // Show (debe ir al final de los GET)
