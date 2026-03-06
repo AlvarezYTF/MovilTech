@@ -49,6 +49,14 @@
             </div>
 
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                <button type="button"
+                        onclick="printRepairTicket({{ $repair->id }})"
+                        data-ticket-repair-id="{{ $repair->id }}"
+                        class="inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-amber-600 bg-amber-600 text-white text-sm font-semibold hover:bg-amber-700 hover:border-amber-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 shadow-sm hover:shadow-md">
+                    <i class="fas fa-print mr-2"></i>
+                    Imprimir Ticket
+                </button>
+
                 <a href="{{ route('repairs.edit', $repair) }}"
                    class="inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-gray-200 bg-white text-gray-700 text-sm font-semibold hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                     <i class="fas fa-edit mr-2"></i>
@@ -320,6 +328,14 @@
                 </div>
 
                 <div class="space-y-3">
+                    <button type="button"
+                            onclick="printRepairTicket({{ $repair->id }})"
+                            data-ticket-repair-id="{{ $repair->id }}"
+                            class="w-full inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-amber-600 bg-amber-600 text-white text-sm font-semibold hover:bg-amber-700 hover:border-amber-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 shadow-sm hover:shadow-md">
+                        <i class="fas fa-print mr-2"></i>
+                        Imprimir ticket
+                    </button>
+
                     <a href="{{ route('repairs.edit', $repair) }}"
                        class="w-full inline-flex items-center justify-center px-4 sm:px-5 py-2.5 rounded-xl border-2 border-amber-600 bg-amber-600 text-white text-sm font-semibold hover:bg-amber-700 hover:border-amber-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 shadow-sm hover:shadow-md">
                         <i class="fas fa-edit mr-2"></i>
@@ -442,5 +458,7 @@ document.addEventListener('keydown', function(e) {
     }
 });
 </script>
+
+@include('repairs.partials.qz-ticket-printer')
 @endpush
 @endsection

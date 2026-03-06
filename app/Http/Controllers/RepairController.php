@@ -5,9 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Repair;
 use App\Models\Customer;
+use App\Services\Printing\RepairTicketFormatterService;
+use Illuminate\Http\JsonResponse;
 
 class RepairController extends Controller
 {
+    public function __construct(
+        private readonly RepairTicketFormatterService $repairTicketFormatterService
+    ) {}
+
     /**
      * Display a listing of the resource.
      */
@@ -79,6 +85,22 @@ class RepairController extends Controller
     {
         $repair->load('customer');
         return view('repairs.show', compact('repair'));
+    }
+
+    /**
+     * Build ESC/POS payload for QZ Tray thermal printing.
+     */
+    public function ticketPayload(Repair $repair): JsonResponse
+    {
+        $repair->loadMissing('customer');
+
+        return response()->json([
+            'repair_id' => $repair->id,
+            'job_name' => 'repair-ticket-' . $repair->id,
+            'printer_hint' => (string) config('printing.default_printer', ''),
+            'encoding' => 'CP437',
+            'data' => $this->repairTicketFormatterService->buildEscPosPayload($repair),
+        ]);
     }
 
     /**

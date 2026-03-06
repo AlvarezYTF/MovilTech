@@ -219,6 +219,14 @@
                         
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex items-center justify-end space-x-3">
+                                <button type="button"
+                                        onclick="printRepairTicket({{ $repair->id }})"
+                                        data-ticket-repair-id="{{ $repair->id }}"
+                                        class="text-amber-600 hover:text-amber-700 transition-colors"
+                                        title="Imprimir Ticket">
+                                    <i class="fas fa-print"></i>
+                                </button>
+
                                 <a href="{{ route('repairs.show', $repair) }}"
                                    class="text-blue-600 hover:text-blue-700 transition-colors"
                                    title="Ver detalles">
@@ -349,6 +357,14 @@
             
             <!-- Acciones -->
             <div class="flex items-center justify-end space-x-3 pt-3 border-t border-gray-100">
+                <button type="button"
+                        onclick="printRepairTicket({{ $repair->id }})"
+                        data-ticket-repair-id="{{ $repair->id }}"
+                        class="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                        title="Imprimir Ticket">
+                    <i class="fas fa-print text-sm"></i>
+                </button>
+
                 <a href="{{ route('repairs.show', $repair) }}"
                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                    title="Ver">
@@ -493,5 +509,7 @@ document.addEventListener('keydown', function(e) {
     }
 });
 </script>
+
+@include('repairs.partials.qz-ticket-printer')
 @endpush
 @endsection

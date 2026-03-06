@@ -132,6 +132,7 @@ Route::middleware('auth')->group(function () {
 
     // Reparaciones - Resource route
     Route::resource('repairs', RepairController::class);
+    Route::get('/repairs/{repair}/ticket-payload', [RepairController::class, 'ticketPayload'])->name('repairs.ticket-payload');
 
     // Reportes
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
